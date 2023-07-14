@@ -39,7 +39,7 @@ module.exports = (shared) => {
     const httpsAgent = new httpsDependencies.Agent({
       rejectUnauthorized: false
     })
-    const fetchOptions = { agent: httpsAgent }
+    const fetchOptions = { agent: path.includes('https') && httpsAgent }
 
     const fetchedData = await fetchDependencies(
       withQueryDependencies(urlEncoderHelpers(path), params),

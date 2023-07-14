@@ -79,7 +79,7 @@ module.exports = (shared) => {
 
         const fetchedMissionPageData = await dataScraperHelpers(detailsPageUrl)
         const missionPageSelector = fetchedMissionPageData(
-          'table[width][border]'
+          'body table[width][border]'
         ).first()
 
         const gameIdentifier = missionPageSelector

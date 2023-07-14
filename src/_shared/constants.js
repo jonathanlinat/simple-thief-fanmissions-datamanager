@@ -33,6 +33,11 @@ module.exports = {
       recipeName: 'thiefTheLastGlass',
       sourceName: 'Thief - The Last GLASS',
       sourceUrl: 'https://www.ttlg.de'
+    },
+    {
+      recipeName: 'shadowDarkKeep',
+      sourceName: 'Shadowdark Keep',
+      sourceUrl: 'http://www.shadowdarkkeep.com'
     }
   ],
   iterationLimiter: {
@@ -108,11 +113,11 @@ module.exports = {
     },
     {
       gameAcronym: 'tds',
-      termsList: ['Thief: Deadly Shadows', 'Thief 3']
+      termsList: ['3', 'Thief: Deadly Shadows', 'Thief 3']
     },
     {
       gameAcronym: 'tdm',
-      termsList: ['The Dark Mod', 'Dark Mod']
+      termsList: ['D', 'The Dark Mod', 'Dark Mod']
     },
     {
       gameAcronym: 'ss2',
