@@ -23,29 +23,31 @@
  */
 
 module.exports = (shared) => {
-  return (structuredScrappedData, scrapedData) => {
-    const helpersShared = shared.helpers
+  const dependenciesShared = shared.dependencies
+  const helpersShared = shared.helpers
 
+  return (structuredScrappedData, scrapedData) => {
     const dataMergerHelpers = helpersShared.dataMerger(shared)
     const dataValidatorHelpers = helpersShared.dataValidator(shared)
+    const functionParamsValidator = helpersShared.functionParamsValidator()
+    const uuidDependencies = dependenciesShared.uuid
+
+    functionParamsValidator([structuredScrappedData, scrapedData])
 
     const validatedData = dataValidatorHelpers(scrapedData)
 
-    const { sourceName, gameIdentifier, fileSize, fileUrl, ...rest } =
-      validatedData
+    const { gameIdentifier, ...restOfValidatedData } = validatedData
 
     const structuredData = {
-      [sourceName]: {
-        [gameIdentifier]: [
-          {
-            ...rest,
-            file: {
-              size: fileSize,
-              url: fileUrl
-            }
+      [gameIdentifier]: [
+        {
+          _id: uuidDependencies.v4(),
+          created_at: new Date(Date.now()).toISOString(),
+          data: {
+            ...restOfValidatedData
           }
-        ]
-      }
+        }
+      ]
     }
 
     const mappedData = dataMergerHelpers(structuredScrappedData, structuredData)

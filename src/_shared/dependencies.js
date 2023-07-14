@@ -28,7 +28,9 @@ module.exports = {
   fetch: (...args) =>
     import('node-fetch').then(({ default: fetch }) => fetch(...args)),
   fs: require('fs'),
+  https: require('https'),
   joi: require('joi'),
   path: require('path'),
+  uuid: require('uuid'),
   withQuery: require('with-query').default
 }

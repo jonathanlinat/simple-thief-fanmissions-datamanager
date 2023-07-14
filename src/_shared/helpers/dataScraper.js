@@ -23,18 +23,26 @@
  */
 
 module.exports = (shared) => {
-  return async (path, params) => {
-    const dependenciesShared = shared.dependencies
+  const dependenciesShared = shared.dependencies
+  const helpersShared = shared.helpers
 
+  return async (path, params) => {
     const cheerioDependencies = dependenciesShared.cheerio
     const fetchDependencies = dependenciesShared.fetch
+    const httpsDependencies = dependenciesShared.https
+    const functionParamsValidator = helpersShared.functionParamsValidator()
     const withQueryDependencies = dependenciesShared.withQuery
 
+    functionParamsValidator([path])
+
+    const httpsAgent = new httpsDependencies.Agent({
+      rejectUnauthorized: false
+    })
+    const fetchOptions = { agent: httpsAgent }
+
     const fetchedData = await fetchDependencies(
-      withQueryDependencies(
-        `https://${path}` ?? '',
-        params ?? { search: '', sort: '' }
-      )
+      withQueryDependencies(path, params),
+      fetchOptions
     )
     const bodyOfFetchedData = await fetchedData.text()
     const cachedData = cheerioDependencies.load(bodyOfFetchedData)

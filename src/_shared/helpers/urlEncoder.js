@@ -22,11 +22,15 @@
  * SOFTWARE.
  */
 
-module.exports = () => {
-  return (singleSource, path) => {
-    const { baseUrl, protocol } = singleSource
+module.exports = (shared) => {
+  const helpersShared = shared.helpers
 
-    const encodedUrl = encodeURI(protocol + baseUrl + path)
+  return (providedUrl) => {
+    const functionParamsValidator = helpersShared.functionParamsValidator()
+
+    functionParamsValidator([providedUrl])
+
+    const encodedUrl = encodeURI(providedUrl)
 
     return encodedUrl
   }

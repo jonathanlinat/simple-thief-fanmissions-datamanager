@@ -23,5 +23,6 @@
  */
 
 module.exports = {
-  thiefMissions: require('./thiefMissions')
+  thiefMissions: require('./thiefMissions'),
+  thiefTheLastGlass: require('./thiefTheLastGlass')
 }

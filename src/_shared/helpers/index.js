@@ -23,14 +23,15 @@
  */
 
 module.exports = {
-  contentLengthFetcher: require('./contentLengthFetcher'),
   dataMerger: require('./dataMerger'),
   dataMapper: require('./dataMapper'),
   dataScraper: require('./dataScraper'),
   dataStringifier: require('./dataStringifier'),
   dataValidator: require('./dataValidator'),
   dateFormatter: require('./dateFormatter'),
+  functionParamsValidator: require('./functionParamsValidator'),
   gameIdentifierMapper: require('./gameIdentifierMapper'),
   languageMapper: require('./languageMapper'),
+  sizeToBytesParser: require('./sizeToBytesParser'),
   urlEncoder: require('./urlEncoder')
 }

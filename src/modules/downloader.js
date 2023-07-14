@@ -22,6 +22,6 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
+module.exports = () => {
   return () => {}
 }

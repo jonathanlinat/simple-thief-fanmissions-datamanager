@@ -22,8 +22,14 @@
  * SOFTWARE.
  */
 
-module.exports = () => {
+module.exports = (shared) => {
+  const helpersShared = shared.helpers
+
   return (structuredData) => {
+    const functionParamsValidator = helpersShared.functionParamsValidator()
+
+    functionParamsValidator([structuredData])
+
     const stringifiedData = JSON.stringify(structuredData, null, 2)
 
     return stringifiedData

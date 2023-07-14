@@ -23,84 +23,100 @@
  */
 
 module.exports = {
+  multipleSources: [
+    {
+      recipeName: 'thiefMissions',
+      sourceName: 'Cheap Thief Missions',
+      sourceUrl: 'https://www.thiefmissions.com'
+    },
+    {
+      recipeName: 'thiefTheLastGlass',
+      sourceName: 'Thief - The Last GLASS',
+      sourceUrl: 'https://www.ttlg.de'
+    }
+  ],
   iterationLimiter: {
-    isIterationLimiterEnabled: true,
-    maxIterationCount: 2
+    isIterationLimiterEnabled: false,
+    maxIterationCount: 10
   },
   languages: [
     {
-      acronym: 'cs',
+      langAcronym: 'cs',
       termsList: ['Czech']
     },
     {
-      acronym: 'en',
-      termsList: ['English']
+      langAcronym: 'de',
+      termsList: ['g01', 'German']
     },
     {
-      acronym: 'es',
+      langAcronym: 'en',
+      termsList: ['g02', 'English']
+    },
+    {
+      langAcronym: 'es',
       termsList: ['Spanish']
     },
     {
-      acronym: 'fr',
-      termsList: ['French']
+      langAcronym: 'fr',
+      termsList: ['g03', 'French']
     },
     {
-      acronym: 'hu',
+      langAcronym: 'hu',
       termsList: ['Hungarian']
     },
     {
-      acronym: 'it',
-      termsList: ['Italian']
+      langAcronym: 'it',
+      termsList: ['g04', 'Italian']
     },
     {
-      acronym: 'jp',
+      langAcronym: 'jp',
       termsList: ['Japanese']
     },
     {
-      acronym: 'nl',
+      langAcronym: 'nl',
       termsList: ['Dutch']
     },
     {
-      acronym: 'pl',
+      langAcronym: 'pl',
       termsList: ['Polish']
     },
     {
-      acronym: 'ru',
+      langAcronym: 'ru',
       termsList: ['Russian']
     }
   ],
   gameIdentifiers: [
     {
-      acronym: 'tdp',
-      termsList: ['Thief 1']
+      gameAcronym: 'tdp',
+      termsList: [
+        'Dark Project - Der Meisterdieb',
+        'Thief 1 mit NewDark-Patch',
+        'Thief 1'
+      ]
     },
     {
-      acronym: 'tg',
-      termsList: ['Thief Gold']
+      gameAcronym: 'tg',
+      termsList: ['Thief Gold mit NewDark-Patch', 'Thief Gold']
     },
     {
-      acronym: 'tma',
-      termsList: ['Thief 2']
+      gameAcronym: 'tma',
+      termsList: [
+        'Thief 2 mit NewDark-Patch',
+        'Dark Project 2 - The Metal Age',
+        'Thief 2'
+      ]
     },
     {
-      acronym: 'tds',
-      termsList: ['Thief 3']
+      gameAcronym: 'tds',
+      termsList: ['Thief: Deadly Shadows', 'Thief 3']
     },
     {
-      acronym: 'tdm',
-      termsList: ['Dark Mod']
+      gameAcronym: 'tdm',
+      termsList: ['The Dark Mod', 'Dark Mod']
     },
     {
-      acronym: 'ss2',
+      gameAcronym: 'ss2',
       termsList: ['Shock 2']
-    }
-  ],
-  multipleSources: [
-    {
-      recipeName: 'thiefMissions',
-      sourceName: 'Cheap Thief Missions',
-      baseUrl: 'thiefmissions.com',
-      protocol: 'https://'
     }
   ]
 }

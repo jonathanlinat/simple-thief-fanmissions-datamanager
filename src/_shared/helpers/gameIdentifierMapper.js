@@ -23,22 +23,23 @@
  */
 
 module.exports = (shared) => {
-  return (gameIdentifier) => {
-    const constantsShared = shared.constants
+  const constantsShared = shared.constants
+  const helpersShared = shared.helpers
 
+  return (gameIdentifier) => {
+    const functionParamsValidator = helpersShared.functionParamsValidator()
     const gameIdentifiersConstants = constantsShared.gameIdentifiers
 
-    for (const [gameIdentifierConstant] of Object.entries(
-      gameIdentifiersConstants
-    )) {
-      const selectedGameIdentifierConstant =
-        gameIdentifiersConstants[gameIdentifierConstant]
+    functionParamsValidator([gameIdentifier])
 
-      if (gameIdentifier.includes(selectedGameIdentifierConstant.termsList)) {
-        return selectedGameIdentifierConstant.acronym
-      }
-    }
+    const selectedGameIdentifier = gameIdentifiersConstants.find(
+      (selectedConstant) => selectedConstant.termsList.includes(gameIdentifier)
+    )
 
-    return gameIdentifier
+    const mappedGameIdentifier = selectedGameIdentifier
+      ? selectedGameIdentifier.gameAcronym
+      : gameIdentifier
+
+    return mappedGameIdentifier
   }
 }

@@ -4,7 +4,7 @@
  * Copyright (c) 2023 Jonathan Linat <https://github.com/jonathanlinat>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
+ * of this software and associated documentation files (the "Software:"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -48,10 +48,12 @@ module.exports = (shared) => {
       // Search page
 
       const fetchedSearchPageData = await dataScraperHelpers(
-        urlEncoderHelpers(sourceUrl + '/search.cgi'),
-        { search: '', sort: 'title' }
+        urlEncoderHelpers(sourceUrl + '/index.php?fm-download'),
+        { orderBy: 'title' }
       )
-      const searchPageReference = fetchedSearchPageData('body tr[bgcolor]')
+      const searchPageReference = fetchedSearchPageData(
+        'body div[id="postList"] tr:not(:first-child)'
+      )
 
       for (const searchPage of searchPageReference) {
         if (
@@ -64,59 +66,72 @@ module.exports = (shared) => {
         const searchPageSelector = fetchedSearchPageData(searchPage)
 
         const name =
-          searchPageSelector.find('td:nth-child(1)').text().trim() || ''
+          searchPageSelector
+            .find('a[href*="/index.php?fm-detail&id="]')
+            .text()
+            .trim() || ''
         const detailsPageUrl = urlEncoderHelpers(
-          sourceUrl +
-            searchPageSelector.find('a[href*="/m/"]')[0].attribs.href.trim() ||
-            ''
+          searchPageSelector
+            .find('a[href*="/index.php?fm-detail&id="]')[0]
+            .attribs.href.trim() || ''
         )
 
         // Mission page
 
         const fetchedMissionPageData = await dataScraperHelpers(detailsPageUrl)
         const missionPageSelector = fetchedMissionPageData(
-          'table[cellspacing][cellpadding]'
+          'table[width][border]'
         ).first()
 
         const gameIdentifier = gameIdentifierMapperHelpers(
           missionPageSelector
-            .find('tr:contains("Game") td:nth-child(2)')
+            .find('table[style] tr:contains("Spiel:") td:nth-child(2)')
             .text()
-            .match(/^(.*?)\([^)]+\)/)[1]
             .trim() || ''
         )
         const authors = missionPageSelector
-          .find('tr:contains("Author") td:nth-child(2)')
+          .find('table[style] tr:contains("Autor:") td:nth-child(2)')
           .text()
           .trim()
-          .split(',')
-          .map((author) =>
-            author
-              .replace(/\(missions by this author\)|\(homepage\)/g, '')
-              .trim()
-          ) || ['']
+          .split(/&|\n/)
+          .map((author) => author.replace(/https?:\/\/\S+/gi, '').trim()) || [
+          ''
+        ]
 
         const lastReleaseDate = dateFormatterHelpers(
-          missionPageSelector
-            .find('tr:contains("Released") td:nth-child(2)')
-            .text()
-            .match(/\d{4}\.\d{2}\.\d{2}/)[0]
-            .replace(/\./g, '-')
+          (
+            missionPageSelector
+              .find(
+                'table[style] tr:contains("Datum des letzten Updates:") td:nth-child(2)'
+              )
+              .text() ||
+            missionPageSelector
+              .find(
+                'table[style] tr:contains("Datum der Veröffentlichung:") td:nth-child(2)'
+              )
+              .text()
+          )
+            .match(/\d{4}-\d{2}-\d{2}/)[0]
             .trim() || '2000-01-01'
         )
 
         const fileSize = sizeToBytesParserHelpers(
           missionPageSelector
-            .find('tr:contains("Size") td:nth-child(2)')
+            .find('table[style] tr:contains("Speichergröße:") td:nth-child(2)')
             .text()
-            .match(/^\s*([^()\s]+)/)[1]
             .trim() || '0MB'
         )
         const languages = missionPageSelector
-          .find('tr:contains("Languages") td:nth-child(2)')
-          .text()
-          .split(' ')
-          .map((language) => languageMapperHelpers(language.trim())) || ['']
+          .find(
+            'table[style] tr:contains("Vorhandene Sprachen:") td:nth-child(2)'
+          )
+          .find('img')
+          .map((index, image) =>
+            languageMapperHelpers(
+              image.attribs.src.split('/').pop().split('.')[0].trim()
+            )
+          )
+          .get() || ['']
 
         const scrapedData = {
           authors,

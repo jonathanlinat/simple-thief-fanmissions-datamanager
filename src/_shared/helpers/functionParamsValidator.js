@@ -22,17 +22,14 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
-  return async (path) => {
-    const dependenciesShared = shared.dependencies
-
-    const fetchDependencies = dependenciesShared.fetch
-
-    const fetchedHeadData = await fetchDependencies(path, { method: 'HEAD' })
-    const extractedContentLength = parseFloat(
-      fetchedHeadData.headers.get('content-length')
-    )
-
-    return extractedContentLength
+module.exports = () => {
+  return (params) => {
+    params.forEach((param) => {
+      if (!param) {
+        throw new Error(
+          `Parameter is required and cannot be undefined neither empty`
+        )
+      }
+    })
   }
 }

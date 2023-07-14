@@ -23,23 +23,29 @@
  */
 
 module.exports = (shared) => {
-  return (scrapedData) => {
-    const dependenciesShared = shared.dependencies
+  const dependenciesShared = shared.dependencies
+  const helpersShared = shared.helpers
 
+  return (scrapedData) => {
+    const functionParamsValidator = helpersShared.functionParamsValidator()
     const joiDependencies = dependenciesShared.joi
 
+    functionParamsValidator([scrapedData])
+
     const structuredSchema = joiDependencies.object({
-      author: joiDependencies.string().required(),
+      authors: joiDependencies
+        .array()
+        .items(joiDependencies.string())
+        .required(),
+      detailsPageUrl: joiDependencies.string().uri().required(),
       fileSize: joiDependencies.number().required(),
-      fileUrl: joiDependencies.string().uri().required(),
       gameIdentifier: joiDependencies.string().required(),
       languages: joiDependencies
         .array()
         .items(joiDependencies.string())
         .required(),
+      lastReleaseDate: joiDependencies.date().iso().required(),
       name: joiDependencies.string().required(),
-      pageDetailsUrl: joiDependencies.string().uri().required(),
-      releaseDate: joiDependencies.date().iso().required(),
       sourceName: joiDependencies.string().required()
     })
 

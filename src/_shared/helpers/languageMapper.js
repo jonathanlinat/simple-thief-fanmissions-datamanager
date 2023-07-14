@@ -23,20 +23,24 @@
  */
 
 module.exports = (shared) => {
-  return (language) => {
-    const constantsShared = shared.constants
+  const constantsShared = shared.constants
+  const helpersShared = shared.helpers
 
+  return (language) => {
+    const functionParamsValidator = helpersShared.functionParamsValidator()
     const languagesConstants = constantsShared.languages
 
-    for (const [languageConstant] of Object.entries(languagesConstants)) {
-      const selectedGameIdentifierConstant =
-        languagesConstants[languageConstant]
+    functionParamsValidator([language])
 
-      if (language.includes(selectedGameIdentifierConstant.termsList)) {
-        return selectedGameIdentifierConstant.acronym
-      }
-    }
+    const selectedLanguage = languagesConstants.find(
+      (selectedLanguagesConstant) =>
+        selectedLanguagesConstant.termsList.includes(language)
+    )
 
-    return language
+    const mappedLanguage = selectedLanguage
+      ? selectedLanguage.langAcronym
+      : language
+
+    return mappedLanguage
   }
 }

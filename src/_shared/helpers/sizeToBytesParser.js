@@ -25,13 +25,29 @@
 module.exports = (shared) => {
   const helpersShared = shared.helpers
 
-  return (date) => {
+  return (size) => {
     const functionParamsValidator = helpersShared.functionParamsValidator()
 
-    functionParamsValidator([date])
+    functionParamsValidator([size])
 
-    const formattedDate = new Date(date).toISOString()
+    const unitsMap = { KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3 }
 
-    return formattedDate
+    const matches = size.match(/^(\d+(?:\.\d+)?)\s*(\D+)$/)
+    if (!matches) {
+      throw new Error('Invalid size format')
+    }
+
+    const value = parseFloat(matches[1])
+    const unit = matches[2].toUpperCase().trim()
+
+    if (!(unit in unitsMap)) {
+      throw new Error('Unsupported unit')
+    }
+
+    const determinedSize = value * unitsMap[unit]
+    const floatedSize = parseFloat(determinedSize)
+    const parsedSize = Math.round(floatedSize)
+
+    return parsedSize
   }
 }
