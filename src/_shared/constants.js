@@ -37,7 +37,7 @@ module.exports = {
   ],
   iterationLimiter: {
     isIterationLimiterEnabled: false,
-    maxIterationCount: 10
+    maxIterationCount: 5
   },
   languages: [
     {

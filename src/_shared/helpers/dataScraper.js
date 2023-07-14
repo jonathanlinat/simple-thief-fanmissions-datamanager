@@ -31,6 +31,7 @@ module.exports = (shared) => {
     const fetchDependencies = dependenciesShared.fetch
     const httpsDependencies = dependenciesShared.https
     const functionParamsValidator = helpersShared.functionParamsValidator()
+    const urlEncoderHelpers = helpersShared.urlEncoder(shared)
     const withQueryDependencies = dependenciesShared.withQuery
 
     functionParamsValidator([path])
@@ -41,7 +42,7 @@ module.exports = (shared) => {
     const fetchOptions = { agent: httpsAgent }
 
     const fetchedData = await fetchDependencies(
-      withQueryDependencies(path, params),
+      withQueryDependencies(urlEncoderHelpers(path), params),
       fetchOptions
     )
     const bodyOfFetchedData = await fetchedData.text()

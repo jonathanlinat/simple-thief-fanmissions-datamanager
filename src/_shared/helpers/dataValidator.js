@@ -39,6 +39,7 @@ module.exports = (shared) => {
         .required(),
       detailsPageUrl: joiDependencies.string().uri().required(),
       fileSize: joiDependencies.number().required(),
+      fileUrl: joiDependencies.string().required(),
       gameIdentifier: joiDependencies.string().required(),
       languages: joiDependencies
         .array()

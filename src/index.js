@@ -25,11 +25,12 @@
 require('module-alias/register')
 
 const modules = require('@modules')
+const recipes = require('@recipes')
 const shared = require('@shared')
 
 ;(async () => {
-  const scraperModules = modules.scraper(shared)
-  const downloaderModules = modules.downloader(shared)
+  const scraperModules = modules.scraper(recipes, shared)
+  const downloaderModules = modules.downloader(recipes, shared)
   const dependenciesShared = shared.dependencies
 
   const fsDependencies = dependenciesShared.fs

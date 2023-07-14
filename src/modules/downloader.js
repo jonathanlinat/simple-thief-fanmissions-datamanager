@@ -22,6 +22,6 @@
  * SOFTWARE.
  */
 
-module.exports = () => {
+module.exports = (recipes, shared) => {
   return () => {}
 }

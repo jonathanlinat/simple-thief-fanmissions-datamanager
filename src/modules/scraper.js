@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
+module.exports = (recipes, shared) => {
   const constantsShared = shared.constants
   const helpersShared = shared.helpers
-  const recipesShared = shared.recipes
+  const recipesShared = recipes
 
   return async () => {
     const dataMergerHelpers = helpersShared.dataMerger(shared)

@@ -41,6 +41,7 @@
   },
   "_moduleAliases": {
     "@modules": "./src/modules",
+    "@recipes": "./src/recipes",
     "@shared": "./src/_shared"
   }
 }

@@ -48,7 +48,7 @@ module.exports = (shared) => {
       // Search page
 
       const fetchedSearchPageData = await dataScraperHelpers(
-        urlEncoderHelpers(sourceUrl + '/search.cgi'),
+        sourceUrl + '/search.cgi',
         { search: '', sort: 'title' }
       )
       const searchPageReference = fetchedSearchPageData('body tr[bgcolor]')
@@ -63,13 +63,15 @@ module.exports = (shared) => {
 
         const searchPageSelector = fetchedSearchPageData(searchPage)
 
-        const name =
-          searchPageSelector.find('td:nth-child(1)').text().trim() || ''
-        const detailsPageUrl = urlEncoderHelpers(
+        const name = searchPageSelector.find('td:nth-child(1)').text().trim()
+        const fileName = searchPageSelector
+          .find('td:nth-child(1) a[href*="/m/"]')[0]
+          .attribs.href.split('/')
+          .pop()
+          .trim()
+        const detailsPageUrl =
           sourceUrl +
-            searchPageSelector.find('a[href*="/m/"]')[0].attribs.href.trim() ||
-            ''
-        )
+          searchPageSelector.find('a[href*="/m/"]')[0].attribs.href.trim()
 
         // Mission page
 
@@ -78,13 +80,11 @@ module.exports = (shared) => {
           'table[cellspacing][cellpadding]'
         ).first()
 
-        const gameIdentifier = gameIdentifierMapperHelpers(
-          missionPageSelector
-            .find('tr:contains("Game") td:nth-child(2)')
-            .text()
-            .match(/^(.*?)\([^)]+\)/)[1]
-            .trim() || ''
-        )
+        const gameIdentifier = missionPageSelector
+          .find('tr:contains("Game") td:nth-child(2)')
+          .text()
+          .match(/^(.*?)\([^)]+\)/)[1]
+          .trim()
         const authors = missionPageSelector
           .find('tr:contains("Author") td:nth-child(2)')
           .text()
@@ -94,42 +94,47 @@ module.exports = (shared) => {
             author
               .replace(/\(missions by this author\)|\(homepage\)/g, '')
               .trim()
-          ) || ['']
-
-        const lastReleaseDate = dateFormatterHelpers(
-          missionPageSelector
-            .find('tr:contains("Released") td:nth-child(2)')
-            .text()
-            .match(/\d{4}\.\d{2}\.\d{2}/)[0]
-            .replace(/\./g, '-')
-            .trim() || '2000-01-01'
-        )
-
-        const fileSize = sizeToBytesParserHelpers(
-          missionPageSelector
-            .find('tr:contains("Size") td:nth-child(2)')
-            .text()
-            .match(/^\s*([^()\s]+)/)[1]
-            .trim() || '0MB'
-        )
+          )
+        const lastReleaseDate = missionPageSelector
+          .find('tr:contains("Released") td:nth-child(2)')
+          .text()
+          .match(/\d{4}\.\d{2}\.\d{2}/)[0]
+          .replace(/\./g, '-')
+          .trim()
+        const fileSize = missionPageSelector
+          .find('tr:contains("Size") td:nth-child(2)')
+          .text()
+          .match(/^\s*([^()\s]+)/)[1]
+          .trim()
         const languages = missionPageSelector
           .find('tr:contains("Languages") td:nth-child(2)')
           .text()
           .split(' ')
-          .map((language) => languageMapperHelpers(language.trim())) || ['']
+          .map((language) => languageMapperHelpers(language.trim()))
+
+        // Download page
+
+        const fetchedDownloadPageData = await dataScraperHelpers(
+          sourceUrl + '/download.cgi',
+          { m: fileName, noredir: 1 }
+        )
+        const downloadPageSelector = fetchedDownloadPageData('body').first()
+
+        const fileUrl =
+          sourceUrl +
+          downloadPageSelector.find('a[href*="/dl/"]')[0].attribs.href.trim()
 
         const scrapedData = {
           authors,
-          detailsPageUrl,
-          fileSize,
-          gameIdentifier,
+          detailsPageUrl: urlEncoderHelpers(detailsPageUrl),
+          fileSize: sizeToBytesParserHelpers(fileSize),
+          fileUrl: urlEncoderHelpers(fileUrl),
+          gameIdentifier: gameIdentifierMapperHelpers(gameIdentifier),
           languages,
-          lastReleaseDate,
+          lastReleaseDate: dateFormatterHelpers(lastReleaseDate),
           name,
           sourceName
         }
-
-        console.log(scrapedData)
 
         structuredScrappedData = dataMapperHelpers(
           structuredScrappedData,

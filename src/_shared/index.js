@@ -25,6 +25,5 @@
 module.exports = {
   constants: require('./constants'),
   dependencies: require('./dependencies'),
-  helpers: require('./helpers'),
-  recipes: require('./recipes')
+  helpers: require('./helpers')
 }
