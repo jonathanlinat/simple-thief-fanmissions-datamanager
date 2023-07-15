@@ -24,6 +24,7 @@
 
 module.exports = {
   shadowDarkKeep: require('./shadowDarkKeep'),
+  theKeepOfMetalAndGold: require('./theKeepOfMetalAndGold'),
   thiefMissions: require('./thiefMissions'),
   thiefTheLastGlass: require('./thiefTheLastGlass')
 }

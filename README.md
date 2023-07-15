@@ -19,6 +19,7 @@ The goal of this scraper is to consolidate data on Fan Missions from multiple so
 ### Sources
 
 - Shadowdark Keep: [shadowdarkkeep.com](http://www.shadowdarkkeep.com)
+- The Keep of Metal and Gold: [keepofmetalandgold.com](http://www.keepofmetalandgold.com)
 - Cheap Thief Missions: [thiefmissions.com](https://www.thiefmissions.com)
 - Thief - The Last GLASS: [ttlg.de](https://www.ttlg.de)
 

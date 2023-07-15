@@ -38,11 +38,16 @@ module.exports = {
       recipeName: 'shadowDarkKeep',
       sourceName: 'Shadowdark Keep',
       sourceUrl: 'http://www.shadowdarkkeep.com'
+    },
+    {
+      recipeName: 'theKeepOfMetalAndGold',
+      sourceName: 'The Keep of Metal and Gold',
+      sourceUrl: 'http://www.keepofmetalandgold.com'
     }
   ],
   iterationLimiter: {
     isIterationLimiterEnabled: false,
-    maxIterationCount: 5
+    maxIterationCount: 10
   },
   languages: [
     {
@@ -94,6 +99,7 @@ module.exports = {
     {
       gameAcronym: 'tdp',
       termsList: [
+        '1',
         'Dark Project - Der Meisterdieb',
         'Thief 1 mit NewDark-Patch',
         'Thief 1'
@@ -101,11 +107,12 @@ module.exports = {
     },
     {
       gameAcronym: 'tg',
-      termsList: ['Thief Gold mit NewDark-Patch', 'Thief Gold']
+      termsList: ['G', 'Thief Gold mit NewDark-Patch', 'Thief Gold']
     },
     {
       gameAcronym: 'tma',
       termsList: [
+        '2',
         'Thief 2 mit NewDark-Patch',
         'Dark Project 2 - The Metal Age',
         'Thief 2'
