@@ -65,131 +65,170 @@ It features a diverse array of data pertaining to various missions from the foll
 - The Dark Mod
 - System Shock 2
 
-Each mission's dataset, uniquely identified by an ID and timestamp of entry into the database, includes:
+Each mission dataset is included and uniquely identified by an ID and a timestamp of creation, consisting of:
 
+- Mission name
+- File data, including name, size in bytes, and download URL
+- Source data, including name and URL
 - Authors' names
 - URL of the details page
-- File size of the mission
 - Supported languages
 - Date of the last release
-- Name of the mission
-- Source of data
 
-The exemplified output efficiently portrays the data scraper's prowess in consolidating multifarious mission information into a well-organized JSON document.
+This sample efficiently portrays the data scraper's prowess in consolidating vast and multifarious mission information into a well-organized and structured JSON document.
+
 
 ```json
 {
   "tma": [
     {
-      "_id": "96504b8e-3224-4da0-9e82-10be10a53cc5",
-      "created_at": "2023-07-14T04:39:31.135Z",
+      "_id": "8548dbfe-8022-472a-ae29-515db24e9f86",
+      "created_at": "2023-07-16T07:10:50.077Z",
       "data": {
+        "name": "Uncontest: Unholy Vivid Innocence",
+        "file": {
+          "name": "UNPC-UVIv1.3.zip",
+          "size": 12740198,
+          "url": "https://www.ttlg.de/download/download.php?site=3&file=UNPC-UVIv1.3.zip"
+        },
+        "source": {
+          "name": "Thief - The Last GLASS",
+          "url": "https://www.ttlg.de"
+        },
         "authors": [
-          "BlackRuin (Mark Roller)"
+          "Haplo (Ali Pouladi)"
         ],
-        "detailsPageUrl": "https://www.ttlg.de/index.php?fm-detail&id=929",
-        "fileSize": 2516582,
+        "detailsPageUrl": "https://www.ttlg.de/index.php?fm-detail&id=238",
         "languages": [
           "en"
         ],
-        "lastReleaseDate": "2001-09-27T00:00:00.000Z",
-        "name": "Paladine Manor",
-        "sourceName": "Thief - The Last GLASS"
+        "lastReleaseDate": "2010-02-13T00:00:00.000Z"
       }
     }
   ],
   "tdp": [
     {
-      "_id": "55f0f739-d81f-45df-9cd1-79a853fa0e6c",
-      "created_at": "2023-07-14T04:35:38.094Z",
+      "_id": "d515f69e-13ab-4b39-beac-40f45730e51a",
+      "created_at": "2023-07-16T06:57:46.910Z",
       "data": {
+        "name": "Curse of the Ancients",
+        "file": {
+          "name": "curse.zip",
+          "size": 3774874,
+          "url": "https://www.thiefmissions.com/download.cgi?m=curse"
+        },
+        "source": {
+          "name": "Cheap Thief Missions",
+          "url": "https://www.thiefmissions.com"
+        },
         "authors": [
-          "Jonquil"
+          "Kozmala"
         ],
-        "detailsPageUrl": "https://www.ttlg.de/index.php?fm-detail&id=1054",
-        "fileSize": 2936013,
+        "detailsPageUrl": "https://www.thiefmissions.com/m/curse",
         "languages": [
           "en"
         ],
-        "lastReleaseDate": "1999-12-02T00:00:00.000Z",
-        "name": "Inheritance",
-        "sourceName": "Thief - The Last GLASS"
+        "lastReleaseDate": "2000-07-24T00:00:00.000Z"
       }
     }
   ],
   "tg": [
     {
-      "_id": "f8130285-312e-4b77-8bb8-e239507bbbe7",
-      "created_at": "2023-07-14T04:39:40.202Z",
+      "_id": "557f4149-c634-4e69-812a-e9e7a90ca313",
+      "created_at": "2023-07-16T06:53:42.243Z",
       "data": {
+        "name": "Lost Among The Forsaken",
+        "file": {
+          "name": "TDP20AC_Forsaken.zip",
+          "size": 48234496,
+          "url": "http://www.keepofmetalandgold.com/missionst1/TDP20AC_Forsaken.zip"
+        },
+        "source": {
+          "name": "The Keep of Metal and Gold",
+          "url": "http://www.keepofmetalandgold.com"
+        },
         "authors": [
-          "darthsLair (Rod Peirson)"
+          "Drk"
         ],
-        "detailsPageUrl": "https://www.ttlg.de/index.php?fm-detail&id=316",
-        "fileSize": 4540334,
-        "languages": [
-          "en"
-        ],
-        "lastReleaseDate": "2008-10-06T00:00:00.000Z",
-        "name": "Phoenix Hath Risen, The",
-        "sourceName": "Thief - The Last GLASS"
+        "detailsPageUrl": "http://www.keepofmetalandgold.com/fmarchive.php",
+        "languages": [],
+        "lastReleaseDate": "2018-11-30T00:00:00.000Z"
       }
     }
   ],
   "tdm": [
     {
-      "_id": "463c6eb5-29da-430c-a49d-16a4a1c46a3e",
-      "created_at": "2023-07-14T04:30:52.378Z",
+      "_id": "228e0cce-f8a8-4f90-8a86-1d61a591b5d4",
+      "created_at": "2023-07-16T06:53:41.953Z",
       "data": {
+        "name": "Not An Ordinary Guest",
+        "file": {
+          "name": "naog_v1.1.pk4",
+          "size": 82837504,
+          "url": "http://www.shadowdarkkeep.com/missionsdm/naog_v1.1.pk4"
+        },
+        "source": {
+          "name": "Shadowdark Keep",
+          "url": "http://www.shadowdarkkeep.com"
+        },
         "authors": [
-          "LordSavage"
+          "Fieldmedic"
         ],
-        "detailsPageUrl": "https://www.ttlg.de/index.php?fm-detail&id=107",
-        "fileSize": 2118124,
-        "languages": [
-          "en"
-        ],
-        "lastReleaseDate": "2012-01-15T00:00:00.000Z",
-        "name": "Closemouthed Shadows",
-        "sourceName": "Thief - The Last GLASS"
+        "detailsPageUrl": "http://www.shadowdarkkeep.com/fmarchive.php",
+        "languages": [],
+        "lastReleaseDate": "2013-09-01T00:00:00.000Z"
       }
     }
   ],
   "tds": [
     {
-      "_id": "ccfc97a0-75f8-4bac-966d-a2b095c96593",
-      "created_at": "2023-07-14T04:44:16.021Z",
+      "_id": "a572c208-a62a-4bca-8d10-9cb808903d99",
+      "created_at": "2023-07-16T07:07:59.707Z",
       "data": {
+        "name": "Special Vintage",
+        "file": {
+          "name": "Special_Vintage.zip",
+          "size": 39321600,
+          "url": "https://www.ttlg.de/download/download.php?site=46&file=Special_Vintage.zip"
+        },
+        "source": {
+          "name": "Thief - The Last GLASS",
+          "url": "https://www.ttlg.de"
+        },
         "authors": [
-          "Cracked Gear"
+          "Gonchong (James D. Roberts)"
         ],
-        "detailsPageUrl": "https://www.thiefmissions.com/m/Silence",
-        "fileSize": 114504499,
+        "detailsPageUrl": "https://www.ttlg.de/index.php?fm-detail&id=590",
         "languages": [
           "en"
         ],
-        "lastReleaseDate": "2007-10-31T00:00:00.000Z",
-        "name": "Silence",
-        "sourceName": "Cheap Thief Missions"
+        "lastReleaseDate": "2005-10-20T00:00:00.000Z"
       }
     }
   ],
   "ss2": [
     {
-      "_id": "a522234a-adef-4d79-9fdd-44d940bde782",
-      "created_at": "2023-07-14T04:35:58.318Z",
+      "_id": "fa980566-f6ec-4816-b498-7f87de8f95e1",
+      "created_at": "2023-07-16T07:01:44.750Z",
       "data": {
+        "name": "Have a Nice Holiday!",
+        "file": {
+          "name": "SS2_Christine_UrlaubV2.zip",
+          "size": 140194611,
+          "url": "https://www.thiefmissions.com/download.cgi?m=HaveANiceHoliday"
+        },
+        "source": {
+          "name": "Cheap Thief Missions",
+          "url": "https://www.thiefmissions.com"
+        },
         "authors": [
           "Christine Schneider"
         ],
         "detailsPageUrl": "https://www.thiefmissions.com/m/HaveANiceHoliday",
-        "fileSize": 140194611,
         "languages": [
           "en"
         ],
-        "lastReleaseDate": "2008-10-31T00:00:00.000Z",
-        "name": "Have a Nice Holiday!",
-        "sourceName": "Cheap Thief Missions"
+        "lastReleaseDate": "2008-10-31T00:00:00.000Z"
       }
     }
   ]
