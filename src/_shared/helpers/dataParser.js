@@ -23,56 +23,50 @@
  */
 
 module.exports = (shared) => {
-  const dependenciesShared = shared.dependencies
   const helpersShared = shared.helpers
 
-  return (structuredScrappedData, scrapedData) => {
-    const dataMergerHelpers = helpersShared.dataMerger(shared)
-    const dataParserHelpers = helpersShared.dataParser(shared)
-    const dataValidatorHelpers = helpersShared.dataValidator(shared)
+  return (scrapedData) => {
+    const dateFormatterHelpers = helpersShared.dateFormatter(shared)
     const functionParamsValidator = helpersShared.functionParamsValidator()
-    const uuidDependencies = dependenciesShared.uuid
+    const gameIdentifierMapperHelpers =
+      helpersShared.gameIdentifierMapper(shared)
+    const sizeToBytesParserHelpers = helpersShared.sizeToBytesParser(shared)
+    const urlEncoderHelpers = helpersShared.urlEncoder(shared)
 
-    functionParamsValidator([structuredScrappedData, scrapedData])
-
-    const validatedData = dataValidatorHelpers(scrapedData)
-    const parsedData = dataParserHelpers(validatedData)
+    functionParamsValidator([scrapedData])
 
     const {
-      gameIdentifier,
-      missionName,
+      authors,
+      detailsPageUrl,
       fileName,
       fileSize,
       fileUrl,
+      gameIdentifier,
+      languages,
+      lastReleaseDate,
+      missionName,
       sourceName,
-      sourceUrl,
-      ...restOfparsedData
-    } = parsedData
+      sourceUrl
+    } = scrapedData
 
-    const structuredData = {
-      [gameIdentifier]: [
-        {
-          _id: uuidDependencies.v4(),
-          created_at: new Date(Date.now()).toISOString(),
-          data: {
-            name: missionName,
-            file: {
-              name: fileName,
-              size: fileSize,
-              url: fileUrl
-            },
-            source: {
-              name: sourceName,
-              url: sourceUrl
-            },
-            ...restOfparsedData
-          }
-        }
-      ]
+    const parsedData = {
+      authors: authors || [],
+      detailsPageUrl: detailsPageUrl ? urlEncoderHelpers(detailsPageUrl) : '',
+      fileName: fileName || '',
+      fileSize: fileSize ? sizeToBytesParserHelpers(fileSize) : 0,
+      fileUrl: fileUrl ? urlEncoderHelpers(fileUrl) : '',
+      gameIdentifier: gameIdentifier
+        ? gameIdentifierMapperHelpers(gameIdentifier)
+        : '',
+      languages: languages || [],
+      lastReleaseDate: lastReleaseDate
+        ? dateFormatterHelpers(lastReleaseDate)
+        : '',
+      missionName: missionName || '',
+      sourceName: sourceName || '',
+      sourceUrl: sourceUrl || ''
     }
 
-    const mappedData = dataMergerHelpers(structuredScrappedData, structuredData)
-
-    return mappedData
+    return parsedData
   }
 }

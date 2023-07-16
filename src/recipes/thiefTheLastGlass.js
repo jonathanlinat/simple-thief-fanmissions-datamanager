@@ -28,13 +28,8 @@ module.exports = (shared) => {
   return async (iterationLimiter, singleSource) => {
     const dataMapperHelpers = helpersShared.dataMapper(shared)
     const dataScraperHelpers = helpersShared.dataScraper(shared)
-    const dateFormatterHelpers = helpersShared.dateFormatter(shared)
     const functionParamsValidator = helpersShared.functionParamsValidator()
-    const gameIdentifierMapperHelpers =
-      helpersShared.gameIdentifierMapper(shared)
     const languageMapperHelpers = helpersShared.languageMapper(shared)
-    const sizeToBytesParserHelpers = helpersShared.sizeToBytesParser(shared)
-    const urlEncoderHelpers = helpersShared.urlEncoder(shared)
 
     functionParamsValidator([iterationLimiter, singleSource])
 
@@ -63,89 +58,103 @@ module.exports = (shared) => {
           break
         }
 
-        const searchPageSelector = fetchedSearchPageData(searchPage)
+        try {
+          const searchPageSelector = fetchedSearchPageData(searchPage)
 
-        const name = searchPageSelector
-          .find('a[href*="/index.php?fm-detail&id="]')
-          .text()
-          .split(' /')[0]
-          .replace(/\([^()]*\)/g, '')
-          .trim()
-        const detailsPageUrl = searchPageSelector
-          .find('a[href*="/index.php?fm-detail&id="]')[0]
-          .attribs.href.trim()
-
-        // Mission page
-
-        const fetchedMissionPageData = await dataScraperHelpers(detailsPageUrl)
-        const missionPageSelector = fetchedMissionPageData(
-          'body table[width][border]'
-        ).first()
-
-        const gameIdentifier = missionPageSelector
-          .find('table[style] tr:contains("Spiel:") td:nth-child(2)')
-          .text()
-          .trim()
-        const authors = missionPageSelector
-          .find('table[style] tr:contains("Autor:") td:nth-child(2)')
-          .text()
-          .trim()
-          .split(/&|\n/)
-          .map((author) => author.replace(/https?:\/\/\S+/gi, '').trim())
-        const lastReleaseDate = (
-          missionPageSelector
-            .find(
-              'table[style] tr:contains("Datum des letzten Updates:") td:nth-child(2)'
-            )
-            .text() ||
-          missionPageSelector
-            .find(
-              'table[style] tr:contains("Datum der Veröffentlichung:") td:nth-child(2)'
-            )
+          const missionName = searchPageSelector
+            .find('a[href*="/index.php?fm-detail&id="]')
             .text()
-        )
-          .match(/\d{4}-\d{2}-\d{2}/)[0]
-          .trim()
-        const fileSize = missionPageSelector
-          .find('table[style] tr:contains("Speichergröße:") td:nth-child(2)')
-          .text()
-          .trim()
-        const languages = missionPageSelector
-          .find(
-            'table[style] tr:contains("Vorhandene Sprachen:") td:nth-child(2)'
+            .split(/ \/ /g)[0]
+            .replace(/\([^()]*\)/g, '')
+            .trim()
+          const detailsPageUrl = searchPageSelector
+            .find('a[href*="/index.php?fm-detail&id="]')[0]
+            .attribs.href.trim()
+
+          // Mission page
+
+          const fetchedMissionPageData = await dataScraperHelpers(
+            detailsPageUrl
           )
-          .find('img')
-          .map((index, image) =>
-            languageMapperHelpers(
-              image.attribs.src.split('/').pop().split('.')[0].trim()
+          const missionPageSelector = fetchedMissionPageData(
+            'body table[width][border]'
+          ).first()
+
+          const gameIdentifier = missionPageSelector
+            .find('table[style] tr:contains("Spiel:") td:nth-child(2)')
+            .text()
+            .trim()
+          const authors = missionPageSelector
+            .find('table[style] tr:contains("Autor:") td:nth-child(2)')
+            .text()
+            .trim()
+            .split(/&|\n/)
+            .map((author) => author.replace(/https?:\/\/\S+/gi, '').trim())
+          const lastReleaseDate = (
+            missionPageSelector
+              .find(
+                'table[style] tr:contains("Datum des letzten Updates:") td:nth-child(2)'
+              )
+              .text() ||
+            missionPageSelector
+              .find(
+                'table[style] tr:contains("Datum der Veröffentlichung:") td:nth-child(2)'
+              )
+              .text()
+          )
+            .match(/\d{4}-\d{2}-\d{2}/)[0]
+            .trim()
+          const languages = missionPageSelector
+            .find(
+              'table[style] tr:contains("Vorhandene Sprachen:") td:nth-child(2)'
             )
-          )
-          .get()
-        const fileUrl =
-          sourceUrl +
-          missionPageSelector
+            .find('img')
+            .map((index, image) =>
+              languageMapperHelpers(
+                image.attribs.src.split(/\//g).pop().split(/\./g)[0].trim()
+              )
+            )
+            .get()
+          const fileName = missionPageSelector
             .find(
               'table[style] tr:contains("Dateien:") td:nth-child(2) a[href*="./download/download.php"]'
             )[0]
-            .attribs.href.replace('./', '/')
+            .attribs.href.split(/file=/g)[1]
             .trim()
+          const fileSize = missionPageSelector
+            .find('table[style] tr:contains("Speichergröße:") td:nth-child(2)')
+            .text()
+            .trim()
+          const fileUrl =
+            sourceUrl +
+            missionPageSelector
+              .find(
+                'table[style] tr:contains("Dateien:") td:nth-child(2) a[href*="./download/download.php"]'
+              )[0]
+              .attribs.href.replace(/\.\//g, '/')
+              .trim()
 
-        const scrapedData = {
-          authors,
-          detailsPageUrl: urlEncoderHelpers(detailsPageUrl),
-          fileSize: sizeToBytesParserHelpers(fileSize),
-          fileUrl: urlEncoderHelpers(fileUrl),
-          gameIdentifier: gameIdentifierMapperHelpers(gameIdentifier),
-          languages,
-          lastReleaseDate: dateFormatterHelpers(lastReleaseDate),
-          name,
-          sourceName
+          const scrapedData = {
+            authors,
+            detailsPageUrl,
+            fileName,
+            fileSize,
+            fileUrl,
+            gameIdentifier,
+            languages,
+            lastReleaseDate,
+            missionName,
+            sourceName,
+            sourceUrl
+          }
+
+          structuredScrappedData = dataMapperHelpers(
+            structuredScrappedData,
+            scrapedData
+          )
+        } catch (error) {
+          console.error(error)
         }
-
-        structuredScrappedData = dataMapperHelpers(
-          structuredScrappedData,
-          scrapedData
-        )
 
         isIterationLimiterEnabled && iterationCounter++
       }

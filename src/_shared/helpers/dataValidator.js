@@ -35,19 +35,21 @@ module.exports = (shared) => {
     const structuredSchema = joiDependencies.object({
       authors: joiDependencies
         .array()
-        .items(joiDependencies.string())
-        .required(),
-      detailsPageUrl: joiDependencies.string().uri().required(),
-      fileSize: joiDependencies.number().required(),
-      fileUrl: joiDependencies.string().required(),
-      gameIdentifier: joiDependencies.string().required(),
+        .items(joiDependencies.string().allow(''))
+        .sparse(),
+      detailsPageUrl: joiDependencies.string().allow(''),
+      fileName: joiDependencies.string().allow(''),
+      fileSize: joiDependencies.string().allow(''),
+      fileUrl: joiDependencies.string().allow(''),
+      gameIdentifier: joiDependencies.string().allow(''),
       languages: joiDependencies
         .array()
-        .items(joiDependencies.string())
-        .required(),
-      lastReleaseDate: joiDependencies.date().iso().required(),
-      name: joiDependencies.string().required(),
-      sourceName: joiDependencies.string().required()
+        .items(joiDependencies.string().allow(''))
+        .sparse(),
+      lastReleaseDate: joiDependencies.string().allow(''),
+      missionName: joiDependencies.string().allow(''),
+      sourceName: joiDependencies.string().allow(''),
+      sourceUrl: joiDependencies.string().allow('')
     })
 
     const { error } = structuredSchema.validate(scrapedData)

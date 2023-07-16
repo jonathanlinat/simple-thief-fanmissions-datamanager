@@ -28,12 +28,7 @@ module.exports = (shared) => {
   return async (iterationLimiter, singleSource) => {
     const dataMapperHelpers = helpersShared.dataMapper(shared)
     const dataScraperHelpers = helpersShared.dataScraper(shared)
-    const dateFormatterHelpers = helpersShared.dateFormatter(shared)
     const functionParamsValidator = helpersShared.functionParamsValidator()
-    const gameIdentifierMapperHelpers =
-      helpersShared.gameIdentifierMapper(shared)
-    const sizeToBytesParserHelpers = helpersShared.sizeToBytesParser(shared)
-    const urlEncoderHelpers = helpersShared.urlEncoder(shared)
 
     functionParamsValidator([iterationLimiter, singleSource])
 
@@ -61,48 +56,61 @@ module.exports = (shared) => {
           break
         }
 
-        const searchPageSelector = fetchedSearchPageData(searchPage)
+        try {
+          const searchPageSelector = fetchedSearchPageData(searchPage)
 
-        const name = searchPageSelector.find('td:nth-child(2)').text().trim()
-        const detailsPageUrl = sourceUrl + '/fmarchive.php'
-        const gameIdentifier = searchPageSelector
-          .find('td:nth-child(1)')
-          .text()
-          .trim()
-        const authors = searchPageSelector
-          .find('td:nth-child(3)')
-          .text()
-          .trim()
-          .split(',')
-          .map((author) => author.trim())
-        const lastReleaseDate = (
-          searchPageSelector.find('td:nth-child(5)').text() ||
-          searchPageSelector.find('td:nth-child(4)').text()
-        ).trim()
-        const fileSize =
-          searchPageSelector.find('td:nth-child(6)').text() + 'MB'
-        const languages = []
-        const fileUrl =
-          sourceUrl +
-          '/' +
-          searchPageSelector.find('td:nth-child(2) a')[0].attribs.href
+          const missionName = searchPageSelector
+            .find('td:nth-child(2)')
+            .text()
+            .trim()
+          const detailsPageUrl = sourceUrl + '/fmarchive.php'
+          const gameIdentifier = searchPageSelector
+            .find('td:nth-child(1)')
+            .text()
+            .trim()
+          const authors = searchPageSelector
+            .find('td:nth-child(3)')
+            .text()
+            .trim()
+            .split(/,/g)
+            .map((author) => author.trim())
+          const lastReleaseDate = (
+            searchPageSelector.find('td:nth-child(5)').text() ||
+            searchPageSelector.find('td:nth-child(4)').text()
+          ).trim()
+          const languages = []
+          const fileName = searchPageSelector
+            .find('td:nth-child(2) a')[0]
+            .attribs.href.split(/\//g)
+            .pop()
+          const fileSize =
+            searchPageSelector.find('td:nth-child(6)').text() + 'MB'
+          const fileUrl =
+            sourceUrl +
+            '/' +
+            searchPageSelector.find('td:nth-child(2) a')[0].attribs.href
 
-        const scrapedData = {
-          authors,
-          detailsPageUrl: urlEncoderHelpers(detailsPageUrl),
-          fileSize: sizeToBytesParserHelpers(fileSize),
-          fileUrl: urlEncoderHelpers(fileUrl),
-          gameIdentifier: gameIdentifierMapperHelpers(gameIdentifier),
-          languages,
-          lastReleaseDate: dateFormatterHelpers(lastReleaseDate),
-          name,
-          sourceName
+          const scrapedData = {
+            authors,
+            detailsPageUrl,
+            fileName,
+            fileSize,
+            fileUrl,
+            gameIdentifier,
+            languages,
+            lastReleaseDate,
+            missionName,
+            sourceName,
+            sourceUrl
+          }
+
+          structuredScrappedData = dataMapperHelpers(
+            structuredScrappedData,
+            scrapedData
+          )
+        } catch (error) {
+          console.error(error)
         }
-
-        structuredScrappedData = dataMapperHelpers(
-          structuredScrappedData,
-          scrapedData
-        )
 
         isIterationLimiterEnabled && iterationCounter++
       }

@@ -28,13 +28,8 @@ module.exports = (shared) => {
   return async (iterationLimiter, singleSource) => {
     const dataMapperHelpers = helpersShared.dataMapper(shared)
     const dataScraperHelpers = helpersShared.dataScraper(shared)
-    const dateFormatterHelpers = helpersShared.dateFormatter(shared)
     const functionParamsValidator = helpersShared.functionParamsValidator()
-    const gameIdentifierMapperHelpers =
-      helpersShared.gameIdentifierMapper(shared)
     const languageMapperHelpers = helpersShared.languageMapper(shared)
-    const sizeToBytesParserHelpers = helpersShared.sizeToBytesParser(shared)
-    const urlEncoderHelpers = helpersShared.urlEncoder(shared)
 
     functionParamsValidator([iterationLimiter, singleSource])
 
@@ -61,85 +56,86 @@ module.exports = (shared) => {
           break
         }
 
-        const searchPageSelector = fetchedSearchPageData(searchPage)
+        try {
+          const searchPageSelector = fetchedSearchPageData(searchPage)
 
-        const name = searchPageSelector.find('td:nth-child(1)').text().trim()
-        const fileName = searchPageSelector
-          .find('td:nth-child(1) a[href*="/m/"]')[0]
-          .attribs.href.split('/')
-          .pop()
-          .trim()
-        const detailsPageUrl =
-          sourceUrl +
-          searchPageSelector.find('a[href*="/m/"]')[0].attribs.href.trim()
+          const missionName = searchPageSelector
+            .find('td:nth-child(1)')
+            .text()
+            .trim()
+          const detailsPageUrl =
+            sourceUrl +
+            searchPageSelector.find('a[href*="/m/"]')[0].attribs.href.trim()
 
-        // Mission page
+          // Mission page
 
-        const fetchedMissionPageData = await dataScraperHelpers(detailsPageUrl)
-        const missionPageSelector = fetchedMissionPageData(
-          'body table[cellspacing][cellpadding]'
-        ).first()
-
-        const gameIdentifier = missionPageSelector
-          .find('tr:contains("Game") td:nth-child(2)')
-          .text()
-          .match(/^(.*?)\([^)]+\)/)[1]
-          .trim()
-        const authors = missionPageSelector
-          .find('tr:contains("Author") td:nth-child(2)')
-          .text()
-          .trim()
-          .split(',')
-          .map((author) =>
-            author
-              .replace(/\(missions by this author\)|\(homepage\)/g, '')
-              .trim()
+          const fetchedMissionPageData = await dataScraperHelpers(
+            detailsPageUrl
           )
-        const lastReleaseDate = missionPageSelector
-          .find('tr:contains("Released") td:nth-child(2)')
-          .text()
-          .match(/\d{4}\.\d{2}\.\d{2}/)[0]
-          .replace(/\./g, '-')
-          .trim()
-        const fileSize = missionPageSelector
-          .find('tr:contains("Size") td:nth-child(2)')
-          .text()
-          .match(/^\s*([^()\s]+)/)[1]
-          .trim()
-        const languages = missionPageSelector
-          .find('tr:contains("Languages") td:nth-child(2)')
-          .text()
-          .split(' ')
-          .map((language) => languageMapperHelpers(language.trim()))
+          const missionPageSelector = fetchedMissionPageData('body')
 
-        // Download page
+          const gameIdentifier = missionPageSelector
+            .find('tr:contains("Game") td:nth-child(2)')
+            .text()
+            .match(/^(.*?)\([^)]+\)/)[1]
+            .trim()
+          const authors = missionPageSelector
+            .find('tr:contains("Author") td:nth-child(2)')
+            .text()
+            .trim()
+            .split(/[/,]/g)
+            .map((author) =>
+              author
+                .replace(/\(missions by this author\)|\(homepage\)/g, '')
+                .trim()
+            )
+          const lastReleaseDate = missionPageSelector
+            .find('tr:contains("Released") td:nth-child(2)')
+            .text()
+            .match(/\d{4}\.\d{2}\.\d{2}/)[0]
+            .replace(/\./g, '-')
+            .trim()
+          const languages = missionPageSelector
+            .find('tr:contains("Languages") td:nth-child(2)')
+            .text()
+            .split(/\s/g)
+            .map((language) => languageMapperHelpers(language.trim()))
+          const fileName = missionPageSelector
+            .find('tr:contains("File") td:nth-child(2)')
+            .text()
+            .trim()
+          const fileSize = missionPageSelector
+            .find('tr:contains("Size") td:nth-child(2)')
+            .text()
+            .match(/^\s*([^()\s]+)/)[1]
+            .trim()
+          const fileUrl =
+            sourceUrl +
+            missionPageSelector
+              .find('a[href*="/download.cgi?m="]')[0]
+              .attribs.href.trim()
 
-        const fetchedDownloadPageData = await dataScraperHelpers(
-          sourceUrl + '/download.cgi',
-          { m: fileName, noredir: 1 }
-        )
-        const downloadPageSelector = fetchedDownloadPageData('body').first()
+          const scrapedData = {
+            authors,
+            detailsPageUrl,
+            fileName,
+            fileSize,
+            fileUrl,
+            gameIdentifier,
+            languages,
+            lastReleaseDate,
+            missionName,
+            sourceName,
+            sourceUrl
+          }
 
-        const fileUrl =
-          sourceUrl +
-          downloadPageSelector.find('a[href*="/dl/"]')[0].attribs.href.trim()
-
-        const scrapedData = {
-          authors,
-          detailsPageUrl: urlEncoderHelpers(detailsPageUrl),
-          fileSize: sizeToBytesParserHelpers(fileSize),
-          fileUrl: urlEncoderHelpers(fileUrl),
-          gameIdentifier: gameIdentifierMapperHelpers(gameIdentifier),
-          languages,
-          lastReleaseDate: dateFormatterHelpers(lastReleaseDate),
-          name,
-          sourceName
+          structuredScrappedData = dataMapperHelpers(
+            structuredScrappedData,
+            scrapedData
+          )
+        } catch (error) {
+          console.error(error)
         }
-
-        structuredScrappedData = dataMapperHelpers(
-          structuredScrappedData,
-          scrapedData
-        )
 
         isIterationLimiterEnabled && iterationCounter++
       }

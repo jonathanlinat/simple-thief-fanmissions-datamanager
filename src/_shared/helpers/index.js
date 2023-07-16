@@ -25,6 +25,7 @@
 module.exports = {
   dataMerger: require('./dataMerger'),
   dataMapper: require('./dataMapper'),
+  dataParser: require('./dataParser'),
   dataScraper: require('./dataScraper'),
   dataStringifier: require('./dataStringifier'),
   dataValidator: require('./dataValidator'),
