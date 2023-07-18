@@ -27,10 +27,11 @@ module.exports = (shared) => {
   const helpersShared = shared.helpers
 
   return (language) => {
-    const functionParamsValidator = helpersShared.functionParamsValidator()
+    const functionParamsValidatorHelpers =
+      helpersShared.functionParamsValidator()
     const languagesConstants = constantsShared.languages
 
-    functionParamsValidator([language])
+    functionParamsValidatorHelpers('languageMapper', [language])
 
     const selectedLanguage = languagesConstants.find(
       (selectedLanguagesConstant) =>

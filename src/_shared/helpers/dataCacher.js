@@ -22,6 +22,39 @@
  * SOFTWARE.
  */
 
-module.exports = (recipes, shared) => {
-  return () => {}
+module.exports = (shared) => {
+  const clientsShared = shared.clients
+  const constantsShared = shared.constants
+  const helpersShared = shared.helpers
+
+  return async (cacheKeyObject, callback) => {
+    const functionParamsValidatorHelpers =
+      helpersShared.functionParamsValidator()
+    const objectHasherHelpers = helpersShared.objectHasher(shared)
+    const redisClients = clientsShared.redis(shared)
+    const redisConstants = constantsShared.clients.redis
+
+    functionParamsValidatorHelpers('dataCacher', [cacheKeyObject, callback])
+
+    const { recipeName, cacheType, path, params } = cacheKeyObject
+
+    const hashedPathParams = objectHasherHelpers({ path, params })
+    const cacheKey = `${recipeName}:${cacheType}:${hashedPathParams}`
+
+    const cachedResponse = await redisClients().get(cacheKey)
+
+    if (cachedResponse !== null) {
+      return cachedResponse
+    }
+
+    const callbackResponse = await callback()
+
+    await redisClients().set(cacheKey, callbackResponse)
+
+    if (redisConstants.timeToLive !== 0) {
+      await redisClients().expire(cacheKey, redisConstants.timeToLive)
+    }
+
+    return callbackResponse
+  }
 }

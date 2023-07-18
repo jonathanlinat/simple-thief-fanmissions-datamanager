@@ -30,30 +30,36 @@ const shared = require('@shared')
 
 ;(async () => {
   const scraperModules = modules.scraper(recipes, shared)
-  const downloaderModules = modules.downloader(recipes, shared)
+  const clientsShared = shared.clients
+  const constantsShared = shared.constants
   const dependenciesShared = shared.dependencies
+  const helpersShared = shared.helpers
 
-  const fsDependencies = dependenciesShared.fs
-  const pathDependencies = dependenciesShared.path
+  const expressConstants = constantsShared.clients.express
+  const expressClients = clientsShared.express(shared)
+  const flattedDependencies = dependenciesShared.flatted
+  const generateTimestampHelpers = helpersShared.generateTimestamp()
 
-  try {
-    const scrapedData = await scraperModules()
-
-    fsDependencies.writeFile(
-      pathDependencies.resolve(__dirname, './output.json'),
-      scrapedData,
-      'utf8',
-      (err) => {
-        if (err) {
-          console.error('Error writing JSON file:', err)
-        } else {
-          console.log('JSON file has been written successfully.')
+  expressClients().get(
+    `/api/${expressConstants.apiVersion}/scrape`,
+    async (request, response) => {
+      const wrappedResponse = (data) => ({
+        scrape: {
+          processed_at: generateTimestampHelpers(),
+          data
         }
-      }
-    )
+      })
 
-    downloaderModules()
-  } catch (error) {
-    console.error(error)
-  }
+      try {
+        const scrapedData = await scraperModules()
+        const wrappedAndParsedResponse = wrappedResponse(
+          flattedDependencies.parse(scrapedData)
+        )
+
+        response.json(wrappedAndParsedResponse)
+      } catch (error) {
+        response.json(`Oh no! Something went wrong: "${error.message}"`)
+      }
+    }
+  )
 })()

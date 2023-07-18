@@ -23,6 +23,26 @@
  */
 
 module.exports = {
+  iterationLimiter: {
+    isIterationLimiterEnabled: false,
+    maxIterationCount: 4
+  },
+  fetchOptions: {
+    maxRetries: 3,
+    timeBetweenRetries: 10000
+  },
+  clients: {
+    express: {
+      apiVersion: 'v1',
+      port: 4000,
+      timeOut: 3600000
+    },
+    redis: {
+      host: 'memory',
+      port: 6379,
+      timeToLive: 21600000
+    }
+  },
   multipleSources: [
     {
       recipeName: 'thiefMissions',
@@ -45,10 +65,6 @@ module.exports = {
       sourceUrl: 'http://www.keepofmetalandgold.com'
     }
   ],
-  iterationLimiter: {
-    isIterationLimiterEnabled: false,
-    maxIterationCount: 10
-  },
   languages: [
     {
       langAcronym: 'cs',

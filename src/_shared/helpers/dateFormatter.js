@@ -26,9 +26,10 @@ module.exports = (shared) => {
   const helpersShared = shared.helpers
 
   return (date) => {
-    const functionParamsValidator = helpersShared.functionParamsValidator()
+    const functionParamsValidatorHelpers =
+      helpersShared.functionParamsValidator()
 
-    functionParamsValidator([date])
+    functionParamsValidatorHelpers('dateFormatter', [date])
 
     const formattedDate = new Date(date).toISOString()
 

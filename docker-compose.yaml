@@ -1,0 +1,24 @@
+version: "3"
+services:
+  server:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.dev
+    restart: always
+    ports:
+      - 6600:4000
+    volumes:
+      - ./:/usr/local/apps/server
+    links:
+      - memory
+    depends_on:
+      - memory
+  memory:
+    image: redis
+    restart: always
+    ports:
+      - 6601:6379
+    volumes:
+      - memory:/redis/data
+volumes:
+  memory:

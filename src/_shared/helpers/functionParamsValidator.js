@@ -23,11 +23,11 @@
  */
 
 module.exports = () => {
-  return (params) => {
-    params.forEach((param) => {
-      if (!param) {
+  return (functionName, params) => {
+    Object.entries(params).forEach(([key, value]) => {
+      if (!value) {
         throw new Error(
-          `Parameter is required and cannot be undefined neither empty`
+          `[${functionName}] Parameter "${key}" is required and cannot be "${value}"`
         )
       }
     })

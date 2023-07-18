@@ -23,6 +23,7 @@
  */
 
 module.exports = {
+  clients: require('./clients'),
   constants: require('./constants'),
   dependencies: require('./dependencies'),
   helpers: require('./helpers')

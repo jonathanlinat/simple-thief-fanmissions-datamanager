@@ -27,10 +27,11 @@ module.exports = (shared) => {
   const helpersShared = shared.helpers
 
   return (scrapedData) => {
-    const functionParamsValidator = helpersShared.functionParamsValidator()
+    const functionParamsValidatorHelpers =
+      helpersShared.functionParamsValidator()
     const joiDependencies = dependenciesShared.joi
 
-    functionParamsValidator([scrapedData])
+    functionParamsValidatorHelpers('dataValidator', [scrapedData])
 
     const structuredSchema = joiDependencies.object({
       authors: joiDependencies

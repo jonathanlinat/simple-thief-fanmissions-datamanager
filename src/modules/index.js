@@ -23,6 +23,5 @@
  */
 
 module.exports = {
-  downloader: require('./downloader'),
   scraper: require('./scraper')
 }

@@ -1,0 +1,7 @@
+FROM node:18-alpine
+
+WORKDIR /usr/local/apps/server
+
+RUN npm install -g pnpm
+
+CMD pnpm start:server

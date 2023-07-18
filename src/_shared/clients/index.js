@@ -23,18 +23,6 @@
  */
 
 module.exports = {
-  dataCacher: require('./dataCacher'),
-  dataMerger: require('./dataMerger'),
-  dataMapper: require('./dataMapper'),
-  dataParser: require('./dataParser'),
-  dataScraper: require('./dataScraper'),
-  dataValidator: require('./dataValidator'),
-  dateFormatter: require('./dateFormatter'),
-  functionParamsValidator: require('./functionParamsValidator'),
-  gameIdentifierMapper: require('./gameIdentifierMapper'),
-  generateTimestamp: require('./generateTimestamp'),
-  languageMapper: require('./languageMapper'),
-  objectHasher: require('./objectHasher'),
-  sizeToBytesParser: require('./sizeToBytesParser'),
-  urlEncoder: require('./urlEncoder')
+  express: require('./express'),
+  redis: require('./redis')
 }

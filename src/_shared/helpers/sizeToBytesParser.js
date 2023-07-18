@@ -26,9 +26,10 @@ module.exports = (shared) => {
   const helpersShared = shared.helpers
 
   return (size) => {
-    const functionParamsValidator = helpersShared.functionParamsValidator()
+    const functionParamsValidatorHelpers =
+      helpersShared.functionParamsValidator()
 
-    functionParamsValidator([size])
+    functionParamsValidatorHelpers('sizeToBytesParser', [size])
 
     const unitsMap = { KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3 }
 

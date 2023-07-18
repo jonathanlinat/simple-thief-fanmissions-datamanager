@@ -26,14 +26,19 @@ module.exports = (shared) => {
   const dependenciesShared = shared.dependencies
   const helpersShared = shared.helpers
 
-  return (structuredScrappedData, scrapedData) => {
+  return (structuredScrapedData, scrapedData) => {
     const dataMergerHelpers = helpersShared.dataMerger(shared)
     const dataParserHelpers = helpersShared.dataParser(shared)
     const dataValidatorHelpers = helpersShared.dataValidator(shared)
-    const functionParamsValidator = helpersShared.functionParamsValidator()
+    const functionParamsValidatorHelpers =
+      helpersShared.functionParamsValidator()
+    const generateTimestampHelpers = helpersShared.generateTimestamp()
     const uuidDependencies = dependenciesShared.uuid
 
-    functionParamsValidator([structuredScrappedData, scrapedData])
+    functionParamsValidatorHelpers('dataMapper', [
+      structuredScrapedData,
+      scrapedData
+    ])
 
     const validatedData = dataValidatorHelpers(scrapedData)
     const parsedData = dataParserHelpers(validatedData)
@@ -53,7 +58,7 @@ module.exports = (shared) => {
       [gameIdentifier]: [
         {
           _id: uuidDependencies.v4(),
-          created_at: new Date(Date.now()).toISOString(),
+          created_at: generateTimestampHelpers(),
           data: {
             name: missionName,
             file: {
@@ -71,7 +76,7 @@ module.exports = (shared) => {
       ]
     }
 
-    const mappedData = dataMergerHelpers(structuredScrappedData, structuredData)
+    const mappedData = dataMergerHelpers(structuredScrapedData, structuredData)
 
     return mappedData
   }

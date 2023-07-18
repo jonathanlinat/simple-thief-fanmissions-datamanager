@@ -23,31 +23,65 @@
  */
 
 module.exports = (shared) => {
+  const constantsShared = shared.constants
   const dependenciesShared = shared.dependencies
   const helpersShared = shared.helpers
 
-  return async (path, params) => {
+  return async (recipeName, path, params) => {
+    const fetchOptionsConstants = constantsShared.fetchOptions
     const cheerioDependencies = dependenciesShared.cheerio
-    const fetchDependencies = dependenciesShared.fetch
     const httpsDependencies = dependenciesShared.https
-    const functionParamsValidator = helpersShared.functionParamsValidator()
-    const urlEncoderHelpers = helpersShared.urlEncoder(shared)
+    const nodeFetchDependencies = dependenciesShared.nodeFetch
     const withQueryDependencies = dependenciesShared.withQuery
+    const dataCacher = helpersShared.dataCacher(shared)
+    const functionParamsValidatorHelpers =
+      helpersShared.functionParamsValidator()
+    const urlEncoderHelpers = helpersShared.urlEncoder(shared)
 
-    functionParamsValidator([path])
+    functionParamsValidatorHelpers('dataScraper', [recipeName, path])
+
+    const encodedPath = urlEncoderHelpers(path)
+    const fetchQuery = withQueryDependencies(encodedPath, params)
 
     const httpsAgent = new httpsDependencies.Agent({
       rejectUnauthorized: false
     })
     const fetchOptions = { agent: path.includes('https') && httpsAgent }
 
-    const fetchedData = await fetchDependencies(
-      withQueryDependencies(urlEncoderHelpers(path), params),
-      fetchOptions
-    )
-    const bodyOfFetchedData = await fetchedData.text()
-    const cachedData = cheerioDependencies.load(bodyOfFetchedData)
+    const cacheType = 'html'
+    const cacheKeyObject = { recipeName, cacheType, path, params }
 
-    return cachedData
+    const cachedData = await dataCacher(cacheKeyObject, async () => {
+      const fetchWithRetry = async (retries) => {
+        try {
+          const fetchData = await nodeFetchDependencies(
+            fetchQuery,
+            fetchOptions
+          )
+
+          if (!fetchData.ok) {
+            throw new Error(`HTTP status ${fetchData.status}`)
+          }
+
+          return fetchData.text()
+        } catch (error) {
+          if (retries === 0) {
+            throw new Error(error)
+          }
+
+          await new Promise((resolve) =>
+            setTimeout(resolve, fetchOptionsConstants.timeBetweenRetries)
+          )
+
+          return fetchWithRetry(retries - 1)
+        }
+      }
+
+      return await fetchWithRetry(fetchOptionsConstants.maxRetries)
+    })
+
+    const loadedData = cheerioDependencies.load(cachedData)
+
+    return loadedData
   }
 }

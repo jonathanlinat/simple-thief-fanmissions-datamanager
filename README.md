@@ -27,6 +27,7 @@ The goal of this scraper is to consolidate data on Fan Missions from multiple so
 
 - Node v18: [nodejs.org](https://nodejs.org/en/download/)
 - pnpm v7: `npm install -g pnpm@7`
+- Docker Engine: [docs.docker.com](https://docs.docker.com/engine/)
 
 ## First steps
 
@@ -46,10 +47,14 @@ pnpm install
 
 ### Specific commands
 
+> **Important**
+>
+> Docker must be installed and running.
+
 Run the script.
 
 ```bash
-pnpm run scrape
+pnpm run docker:start
 ```
 
 ## Sample

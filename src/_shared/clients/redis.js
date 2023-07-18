@@ -22,16 +22,41 @@
  * SOFTWARE.
  */
 
+let memory
+
 module.exports = (shared) => {
-  const helpersShared = shared.helpers
+  const constantsShared = shared.constants
+  const dependenciesShared = shared.dependencies
 
-  return (structuredData) => {
-    const functionParamsValidator = helpersShared.functionParamsValidator()
+  return () => {
+    if (!memory) {
+      const redisConstants = constantsShared.clients.redis
+      const RedisDependencies = dependenciesShared.ioRedis
 
-    functionParamsValidator([structuredData])
+      memory = new RedisDependencies({
+        host: redisConstants.host,
+        port: redisConstants.port
+      })
 
-    const stringifiedData = JSON.stringify(structuredData, null, 2)
+      memory.on('ready', () => {
+        console.log(
+          `[Memory] Successfully connected to host ${redisConstants.host} on port ${redisConstants.port}`
+        )
+      })
 
-    return stringifiedData
+      memory.on('error', (error) => {
+        throw new Error(
+          `[Memory] Ups! Something went wrong... ${error.message}`
+        )
+      })
+
+      memory.on('close', () => {
+        console.log(
+          `[Memory] Successfully disconnected from host ${redisConstants.host} on port ${redisConstants.port}`
+        )
+      })
+    }
+
+    return memory
   }
 }

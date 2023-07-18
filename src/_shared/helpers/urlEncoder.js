@@ -26,9 +26,10 @@ module.exports = (shared) => {
   const helpersShared = shared.helpers
 
   return (providedUrl) => {
-    const functionParamsValidator = helpersShared.functionParamsValidator()
+    const functionParamsValidatorHelpers =
+      helpersShared.functionParamsValidator()
 
-    functionParamsValidator([providedUrl])
+    functionParamsValidatorHelpers('urlEncoder', [providedUrl])
 
     const encodedUrl = encodeURI(providedUrl)
 

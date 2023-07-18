@@ -22,19 +22,28 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  dataCacher: require('./dataCacher'),
-  dataMerger: require('./dataMerger'),
-  dataMapper: require('./dataMapper'),
-  dataParser: require('./dataParser'),
-  dataScraper: require('./dataScraper'),
-  dataValidator: require('./dataValidator'),
-  dateFormatter: require('./dateFormatter'),
-  functionParamsValidator: require('./functionParamsValidator'),
-  gameIdentifierMapper: require('./gameIdentifierMapper'),
-  generateTimestamp: require('./generateTimestamp'),
-  languageMapper: require('./languageMapper'),
-  objectHasher: require('./objectHasher'),
-  sizeToBytesParser: require('./sizeToBytesParser'),
-  urlEncoder: require('./urlEncoder')
+let server
+
+module.exports = (shared) => {
+  const constantsShared = shared.constants
+  const dependenciesShared = shared.dependencies
+
+  return () => {
+    if (!server) {
+      const expressDependencies = dependenciesShared.express
+      const expressConstants = constantsShared.clients.express
+
+      server = expressDependencies()
+
+      const listeningServer = server.listen(expressConstants.port, () => {
+        console.log(
+          `[Server] Successfully mounted on port ${expressConstants.port}`
+        )
+      })
+
+      listeningServer.setTimeout(expressConstants.timeOut)
+    }
+
+    return server
+  }
 }

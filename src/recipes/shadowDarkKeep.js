@@ -28,20 +28,25 @@ module.exports = (shared) => {
   return async (iterationLimiter, singleSource) => {
     const dataMapperHelpers = helpersShared.dataMapper(shared)
     const dataScraperHelpers = helpersShared.dataScraper(shared)
-    const functionParamsValidator = helpersShared.functionParamsValidator()
+    const functionParamsValidatorHelpers =
+      helpersShared.functionParamsValidator()
 
-    functionParamsValidator([iterationLimiter, singleSource])
+    functionParamsValidatorHelpers('shadowDarkKeep', [
+      iterationLimiter,
+      singleSource
+    ])
 
-    const { sourceName, sourceUrl } = singleSource
+    const { recipeName, sourceName, sourceUrl } = singleSource
     const { isIterationLimiterEnabled, maxIterationCount } = iterationLimiter
 
     let iterationCounter = 0
-    let structuredScrappedData = {}
+    let structuredScrapedData = {}
 
     try {
       // Search page
 
       const fetchedSearchPageData = await dataScraperHelpers(
+        recipeName,
         sourceUrl + '/fmarchive.php'
       )
       const searchPageReference = fetchedSearchPageData(
@@ -104,8 +109,8 @@ module.exports = (shared) => {
             sourceUrl
           }
 
-          structuredScrappedData = dataMapperHelpers(
-            structuredScrappedData,
+          structuredScrapedData = dataMapperHelpers(
+            structuredScrapedData,
             scrapedData
           )
         } catch (error) {
@@ -115,7 +120,7 @@ module.exports = (shared) => {
         isIterationLimiterEnabled && iterationCounter++
       }
 
-      return structuredScrappedData
+      return structuredScrapedData
     } catch (error) {
       console.error(error)
     }

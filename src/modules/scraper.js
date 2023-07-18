@@ -25,37 +25,38 @@
 module.exports = (recipes, shared) => {
   const constantsShared = shared.constants
   const helpersShared = shared.helpers
+  const dependenciesShared = shared.dependencies
   const recipesShared = recipes
 
   return async () => {
-    const dataMergerHelpers = helpersShared.dataMerger(shared)
-    const dataStringifierHelpers = helpersShared.dataStringifier(shared)
     const iterationLimiterConstants = constantsShared.iterationLimiter
     const multipleSourcesConstants = constantsShared.multipleSources
+    const flattedDependencies = dependenciesShared.flatted
+    const dataMergerHelpers = helpersShared.dataMerger(shared)
 
-    let wholeStructuredScrappedData = {}
+    let wholestructuredScrapedData = {}
 
     const promises = multipleSourcesConstants.map(async (singleSource) => {
       const recipeName = singleSource.recipeName
-      const getStructuredScrappedData = recipesShared[recipeName](shared)
+      const getstructuredScrapedData = recipesShared[recipeName](shared)
 
-      const structuredScrappedData = await getStructuredScrappedData(
+      const structuredScrapedData = await getstructuredScrapedData(
         iterationLimiterConstants,
         singleSource
       )
 
-      wholeStructuredScrappedData = dataMergerHelpers(
-        wholeStructuredScrappedData,
-        structuredScrappedData
+      wholestructuredScrapedData = dataMergerHelpers(
+        wholestructuredScrapedData,
+        structuredScrapedData
       )
     })
 
     await Promise.all(promises)
 
-    const stringifiedWholeStructuredScrappedData = dataStringifierHelpers(
-      wholeStructuredScrappedData
+    const stringifiedWholestructuredScrapedData = flattedDependencies.stringify(
+      wholestructuredScrapedData
     )
 
-    return stringifiedWholeStructuredScrappedData
+    return stringifiedWholestructuredScrapedData
   }
 }

@@ -23,51 +23,20 @@
  */
 
 module.exports = (shared) => {
+  const dependenciesShared = shared.dependencies
   const helpersShared = shared.helpers
 
-  return (scrapedData) => {
-    const dateFormatterHelpers = helpersShared.dateFormatter(shared)
+  return (object) => {
+    const nodeObjectHashDependencies = dependenciesShared.nodeObjectHash
     const functionParamsValidatorHelpers =
       helpersShared.functionParamsValidator()
-    const gameIdentifierMapperHelpers =
-      helpersShared.gameIdentifierMapper(shared)
-    const sizeToBytesParserHelpers = helpersShared.sizeToBytesParser(shared)
-    const urlEncoderHelpers = helpersShared.urlEncoder(shared)
 
-    functionParamsValidatorHelpers('dataParser', [scrapedData])
+    functionParamsValidatorHelpers('objectHasher', [object])
 
-    const {
-      authors,
-      detailsPageUrl,
-      fileName,
-      fileSize,
-      fileUrl,
-      gameIdentifier,
-      languages,
-      lastReleaseDate,
-      missionName,
-      sourceName,
-      sourceUrl
-    } = scrapedData
+    const hasher = nodeObjectHashDependencies.hasher({ coerce: true })
 
-    const parsedData = {
-      authors: authors || [],
-      detailsPageUrl: detailsPageUrl ? urlEncoderHelpers(detailsPageUrl) : '',
-      fileName: fileName || '',
-      fileSize: fileSize ? sizeToBytesParserHelpers(fileSize) : 0,
-      fileUrl: fileUrl ? urlEncoderHelpers(fileUrl) : '',
-      gameIdentifier: gameIdentifier
-        ? gameIdentifierMapperHelpers(gameIdentifier)
-        : '',
-      languages: languages || [],
-      lastReleaseDate: lastReleaseDate
-        ? dateFormatterHelpers(lastReleaseDate)
-        : '',
-      missionName: missionName || '',
-      sourceName: sourceName || '',
-      sourceUrl: sourceUrl || ''
-    }
+    const hashedObject = hasher.hash(object)
 
-    return parsedData
+    return hashedObject
   }
 }
