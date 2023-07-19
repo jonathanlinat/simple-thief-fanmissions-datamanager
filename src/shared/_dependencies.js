@@ -22,33 +22,22 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
-  const helpersShared = shared.helpers
-
-  return (size) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
-
-    functionParamsValidatorHelpers('sizeToBytesParser', [size])
-
-    const unitsMap = { KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3 }
-
-    const matches = size.match(/^(\d+(?:\.\d+)?)\s*(\D+)$/)
-    if (!matches) {
-      throw new Error('Invalid size format')
-    }
-
-    const value = parseFloat(matches[1])
-    const unit = matches[2].toUpperCase().trim()
-
-    if (!(unit in unitsMap)) {
-      throw new Error('Unsupported unit')
-    }
-
-    const determinedSize = value * unitsMap[unit]
-    const floatedSize = parseFloat(determinedSize)
-    const parsedSize = Math.round(floatedSize)
-
-    return parsedSize
-  }
+module.exports = {
+  cheerio: require('cheerio'),
+  deepmerge: require('deepmerge'),
+  nodeFetch: (...args) =>
+    import('node-fetch').then(({ default: fetch }) => fetch(...args)),
+  express: require('express'),
+  flatted: require('flatted'),
+  fs: require('fs'),
+  htmlMinifier: require('html-minifier'),
+  https: require('https'),
+  joi: require('joi'),
+  jsDom: require('jsdom'),
+  nodeObjectHash: require('node-object-hash'),
+  path: require('path'),
+  ioRedis: require('ioredis'),
+  uuid: require('uuid'),
+  withQuery: require('with-query').default,
+  zlib: require('zlib')
 }

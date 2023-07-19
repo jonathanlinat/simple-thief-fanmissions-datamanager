@@ -22,17 +22,14 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
-  const helpersShared = shared.helpers
-
-  return (date) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
-
-    functionParamsValidatorHelpers('dateFormatter', [date])
-
-    const formattedDate = new Date(date).toISOString()
-
-    return formattedDate
-  }
+module.exports = {
+  dateFormatter: require('./_dateFormatter'),
+  functionParamsValidator: require('./_functionParamsValidator'),
+  gameIdentifierMapper: require('./_gameIdentifierMapper'),
+  generateTimestamp: require('./_generateTimestamp'),
+  htmlParser: require('./_htmlParser'),
+  languageMapper: require('./_languageMapper'),
+  objectHasher: require('./_objectHasher'),
+  sizeToBytesParser: require('./_sizeToBytesParser'),
+  urlEncoder: require('./_urlEncoder')
 }

@@ -26,15 +26,16 @@ module.exports = (shared) => {
   const helpersShared = shared.helpers
 
   return (scrapedData) => {
-    const dateFormatterHelpers = helpersShared.dateFormatter(shared)
+    const dateFormatterHelpers = helpersShared.utils.dateFormatter(shared)
     const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
+      helpersShared.utils.functionParamsValidator()
     const gameIdentifierMapperHelpers =
-      helpersShared.gameIdentifierMapper(shared)
-    const sizeToBytesParserHelpers = helpersShared.sizeToBytesParser(shared)
-    const urlEncoderHelpers = helpersShared.urlEncoder(shared)
+      helpersShared.utils.gameIdentifierMapper(shared)
+    const sizeToBytesParserHelpers =
+      helpersShared.utils.sizeToBytesParser(shared)
+    const urlEncoderHelpers = helpersShared.utils.urlEncoder(shared)
 
-    functionParamsValidatorHelpers('dataParser', [scrapedData])
+    functionParamsValidatorHelpers('parserDataHelpers', [scrapedData])
 
     const {
       authors,

@@ -27,21 +27,22 @@ module.exports = (shared) => {
   const helpersShared = shared.helpers
 
   return (structuredScrapedData, scrapedData) => {
-    const dataMergerHelpers = helpersShared.dataMerger(shared)
-    const dataParserHelpers = helpersShared.dataParser(shared)
-    const dataValidatorHelpers = helpersShared.dataValidator(shared)
     const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
-    const generateTimestampHelpers = helpersShared.generateTimestamp()
+      helpersShared.utils.functionParamsValidator()
+    const generateTimestampUtilsHelpers =
+      helpersShared.utils.generateTimestamp()
+    const mergerDataHelpers = helpersShared.data.merger(shared)
+    const parserDataHelpers = helpersShared.data.parser(shared)
     const uuidDependencies = dependenciesShared.uuid
+    const validatorDataHelpers = helpersShared.data.validator(shared)
 
-    functionParamsValidatorHelpers('dataMapper', [
+    functionParamsValidatorHelpers('mapperDataHelpersRecipes', [
       structuredScrapedData,
       scrapedData
     ])
 
-    const validatedData = dataValidatorHelpers(scrapedData)
-    const parsedData = dataParserHelpers(validatedData)
+    const validatedData = validatorDataHelpers(scrapedData)
+    const parsedData = parserDataHelpers(validatedData)
 
     const {
       gameIdentifier,
@@ -58,7 +59,7 @@ module.exports = (shared) => {
       [gameIdentifier]: [
         {
           _id: uuidDependencies.v4(),
-          created_at: generateTimestampHelpers(),
+          created_at: generateTimestampUtilsHelpers(),
           data: {
             name: missionName,
             file: {
@@ -76,7 +77,7 @@ module.exports = (shared) => {
       ]
     }
 
-    const mappedData = dataMergerHelpers(structuredScrapedData, structuredData)
+    const mappedData = mergerDataHelpers(structuredScrapedData, structuredData)
 
     return mappedData
   }

@@ -27,18 +27,22 @@ module.exports = (shared) => {
   const constantsShared = shared.constants
   const helpersShared = shared.helpers
 
-  return async (cacheKeyObject, callback) => {
+  return async (cacheOptions, callback) => {
     const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
-    const objectHasherHelpers = helpersShared.objectHasher(shared)
+      helpersShared.utils.functionParamsValidator()
+    const htmlParserHelpers = helpersShared.utils.htmlParser(shared)
+    const objectHasherHelpers = helpersShared.utils.objectHasher(shared)
     const redisClients = clientsShared.redis(shared)
     const redisConstants = constantsShared.clients.redis
 
-    functionParamsValidatorHelpers('dataCacher', [cacheKeyObject, callback])
+    functionParamsValidatorHelpers('cacherDataHelpersRecipes', [
+      cacheOptions,
+      callback
+    ])
 
-    const { recipeName, cacheType, path, params } = cacheKeyObject
+    const { recipeName, cacheType, cacheKeyObject } = cacheOptions
 
-    const hashedPathParams = objectHasherHelpers({ path, params })
+    const hashedPathParams = objectHasherHelpers(cacheKeyObject)
     const cacheKey = `${recipeName}:${cacheType}:${hashedPathParams}`
 
     const cachedResponse = await redisClients().get(cacheKey)
@@ -48,8 +52,9 @@ module.exports = (shared) => {
     }
 
     const callbackResponse = await callback()
+    const minifiedCallbackResponse = htmlParserHelpers(callbackResponse)
 
-    await redisClients().set(cacheKey, callbackResponse)
+    await redisClients().set(cacheKey, minifiedCallbackResponse)
 
     if (redisConstants.timeToLive !== 0) {
       await redisClients().expire(cacheKey, redisConstants.timeToLive)

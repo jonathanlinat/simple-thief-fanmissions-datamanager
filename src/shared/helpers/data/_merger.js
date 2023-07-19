@@ -22,9 +22,19 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  clients: require('./clients'),
-  constants: require('./constants'),
-  dependencies: require('./dependencies'),
-  helpers: require('./helpers')
+module.exports = (shared) => {
+  const dependenciesShared = shared.dependencies
+  const helpersShared = shared.helpers
+
+  return (wholeData, singleData) => {
+    const deepMergeDependencies = dependenciesShared.deepmerge
+    const functionParamsValidatorHelpers =
+      helpersShared.utils.functionParamsValidator()
+
+    functionParamsValidatorHelpers('mergerDataHelpers', [wholeData, singleData])
+
+    const mergedData = deepMergeDependencies(wholeData, singleData)
+
+    return mergedData
+  }
 }

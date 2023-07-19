@@ -22,19 +22,39 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  dataCacher: require('./dataCacher'),
-  dataMerger: require('./dataMerger'),
-  dataMapper: require('./dataMapper'),
-  dataParser: require('./dataParser'),
-  dataScraper: require('./dataScraper'),
-  dataValidator: require('./dataValidator'),
-  dateFormatter: require('./dateFormatter'),
-  functionParamsValidator: require('./functionParamsValidator'),
-  gameIdentifierMapper: require('./gameIdentifierMapper'),
-  generateTimestamp: require('./generateTimestamp'),
-  languageMapper: require('./languageMapper'),
-  objectHasher: require('./objectHasher'),
-  sizeToBytesParser: require('./sizeToBytesParser'),
-  urlEncoder: require('./urlEncoder')
+let memory
+
+module.exports = (shared) => {
+  const constantsShared = shared.constants
+  const dependenciesShared = shared.dependencies
+
+  return () => {
+    const redisConstants = constantsShared.clients.redis
+    const RedisDependencies = dependenciesShared.ioRedis
+
+    if (!memory) {
+      memory = new RedisDependencies({
+        host: redisConstants.host,
+        port: redisConstants.port
+      })
+
+      memory.on('ready', () => {
+        console.log(
+          `[Memory] Successfully connected to host ${redisConstants.host} on port ${redisConstants.port}`
+        )
+      })
+
+      memory.on('error', (error) => {
+        console.error('[Memory] Ups! Something went wrong...', error.message)
+      })
+
+      memory.on('close', () => {
+        console.log(
+          `[Memory] Successfully disconnected from host ${redisConstants.host} on port ${redisConstants.port}`
+        )
+      })
+    }
+
+    return memory
+  }
 }

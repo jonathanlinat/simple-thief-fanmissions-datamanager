@@ -22,21 +22,11 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
-  const dependenciesShared = shared.dependencies
-  const helpersShared = shared.helpers
-
-  return (object) => {
-    const nodeObjectHashDependencies = dependenciesShared.nodeObjectHash
-    const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
-
-    functionParamsValidatorHelpers('objectHasher', [object])
-
-    const hasher = nodeObjectHashDependencies.hasher({ coerce: true })
-
-    const hashedObject = hasher.hash(object)
-
-    return hashedObject
-  }
+module.exports = {
+  cacher: require('./_cacher'),
+  mapper: require('./_mapper'),
+  merger: require('./_merger'),
+  parser: require('./_parser'),
+  scraper: require('./_scraper'),
+  validator: require('./_validator')
 }

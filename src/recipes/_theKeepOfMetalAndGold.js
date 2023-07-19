@@ -26,12 +26,12 @@ module.exports = (shared) => {
   const helpersShared = shared.helpers
 
   return async (iterationLimiter, singleSource) => {
-    const dataMapperHelpers = helpersShared.dataMapper(shared)
-    const dataScraperHelpers = helpersShared.dataScraper(shared)
     const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
+      helpersShared.utils.functionParamsValidator()
+    const mapperDataHelpers = helpersShared.data.mapper(shared)
+    const scraperDataHelpers = helpersShared.data.scraper(shared)
 
-    functionParamsValidatorHelpers('theKeepOfMetalAndGold', [
+    functionParamsValidatorHelpers('theKeepOfMetalAndGoldRecipes', [
       iterationLimiter,
       singleSource
     ])
@@ -45,7 +45,7 @@ module.exports = (shared) => {
     try {
       // Search page
 
-      const fetchedSearchPageData = await dataScraperHelpers(
+      const fetchedSearchPageData = await scraperDataHelpers(
         recipeName,
         sourceUrl + '/fmarchive.php'
       )
@@ -68,9 +68,7 @@ module.exports = (shared) => {
             .find('td:nth-child(2)')
             .text()
             .trim()
-
           const detailsPageUrl = sourceUrl + '/fmarchive.php'
-
           const gameIdentifier = searchPageSelector
             .find('td:nth-child(1)')
             .text()
@@ -111,12 +109,12 @@ module.exports = (shared) => {
             sourceUrl
           }
 
-          structuredScrapedData = dataMapperHelpers(
+          structuredScrapedData = mapperDataHelpers(
             structuredScrapedData,
             scrapedData
           )
         } catch (error) {
-          console.error(error)
+          throw new Error(error)
         }
 
         isIterationLimiterEnabled && iterationCounter++
@@ -124,7 +122,10 @@ module.exports = (shared) => {
 
       return structuredScrapedData
     } catch (error) {
-      console.error(error)
+      console.error(
+        `[Recipe] (${recipeName}) Ups! Something went wrong:`,
+        error.message
+      )
     }
   }
 }

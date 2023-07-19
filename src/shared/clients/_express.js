@@ -22,26 +22,28 @@
  * SOFTWARE.
  */
 
+let server
+
 module.exports = (shared) => {
   const constantsShared = shared.constants
-  const helpersShared = shared.helpers
+  const dependenciesShared = shared.dependencies
 
-  return (language) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
-    const languagesConstants = constantsShared.languages
+  return () => {
+    const expressConstants = constantsShared.clients.express
+    const expressDependencies = dependenciesShared.express
 
-    functionParamsValidatorHelpers('languageMapper', [language])
+    if (!server) {
+      server = expressDependencies()
 
-    const selectedLanguage = languagesConstants.find(
-      (selectedLanguagesConstant) =>
-        selectedLanguagesConstant.termsList.includes(language)
-    )
+      const listeningServer = server.listen(expressConstants.port, () => {
+        console.log(
+          `[Server] Successfully mounted on port ${expressConstants.port}`
+        )
+      })
 
-    const mappedLanguage = selectedLanguage
-      ? selectedLanguage.langAcronym
-      : language
+      listeningServer.setTimeout(expressConstants.timeOut)
+    }
 
-    return mappedLanguage
+    return server
   }
 }

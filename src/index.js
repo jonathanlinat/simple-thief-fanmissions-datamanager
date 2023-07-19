@@ -29,36 +29,45 @@ const recipes = require('@recipes')
 const shared = require('@shared')
 
 ;(async () => {
-  const scraperModules = modules.scraper(recipes, shared)
   const clientsShared = shared.clients
   const constantsShared = shared.constants
   const dependenciesShared = shared.dependencies
   const helpersShared = shared.helpers
+  const scraperModules = modules.scraper(recipes, shared)
 
   const expressConstants = constantsShared.clients.express
   const expressClients = clientsShared.express(shared)
   const flattedDependencies = dependenciesShared.flatted
-  const generateTimestampHelpers = helpersShared.generateTimestamp()
+  const generateTimestampUtilsHelpers = helpersShared.utils.generateTimestamp()
 
   expressClients().get(
     `/api/${expressConstants.apiVersion}/scrape`,
     async (request, response) => {
       const wrappedResponse = (data) => ({
         scrape: {
-          processed_at: generateTimestampHelpers(),
+          processed_at: generateTimestampUtilsHelpers(),
           data
         }
       })
 
       try {
+        console.log('[Main] Proceeding to scrape...')
+
         const scrapedData = await scraperModules()
         const wrappedAndParsedResponse = wrappedResponse(
           flattedDependencies.parse(scrapedData)
         )
 
-        response.json(wrappedAndParsedResponse)
+        response.status(200).json(wrappedAndParsedResponse)
+
+        console.log('[Main] Process executed successfully!')
       } catch (error) {
-        response.json(`Oh no! Something went wrong: "${error.message}"`)
+        response.status(500).json({
+          message: '[Main] Ups! Something went wrong.',
+          error: error.message
+        })
+
+        console.error('[Main] Ups! Something went wrong:', error.message)
       }
     }
   )

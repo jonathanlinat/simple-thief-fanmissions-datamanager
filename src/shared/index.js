@@ -23,8 +23,8 @@
  */
 
 module.exports = {
-  shadowDarkKeep: require('./_shadowDarkKeep'),
-  theKeepOfMetalAndGold: require('./_theKeepOfMetalAndGold'),
-  thiefMissions: require('./_thiefMissions'),
-  thiefTheLastGlass: require('./_thiefTheLastGlass')
+  clients: require('./clients'),
+  constants: require('./_constants'),
+  dependencies: require('./_dependencies'),
+  helpers: require('./helpers')
 }

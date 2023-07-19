@@ -28,17 +28,17 @@ module.exports = (shared) => {
   const helpersShared = shared.helpers
 
   return async (recipeName, path, params) => {
-    const fetchOptionsConstants = constantsShared.fetchOptions
+    const cacherDataHelpers = helpersShared.data.cacher(shared)
     const cheerioDependencies = dependenciesShared.cheerio
+    const fetchOptionsConstants = constantsShared.fetchOptions
+    const functionParamsValidatorHelpers =
+      helpersShared.utils.functionParamsValidator()
     const httpsDependencies = dependenciesShared.https
     const nodeFetchDependencies = dependenciesShared.nodeFetch
+    const urlEncoderHelpers = helpersShared.utils.urlEncoder(shared)
     const withQueryDependencies = dependenciesShared.withQuery
-    const dataCacher = helpersShared.dataCacher(shared)
-    const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
-    const urlEncoderHelpers = helpersShared.urlEncoder(shared)
 
-    functionParamsValidatorHelpers('dataScraper', [recipeName, path])
+    functionParamsValidatorHelpers('scraperDataHelpers', [recipeName, path])
 
     const encodedPath = urlEncoderHelpers(path)
     const fetchQuery = withQueryDependencies(encodedPath, params)
@@ -49,9 +49,10 @@ module.exports = (shared) => {
     const fetchOptions = { agent: path.includes('https') && httpsAgent }
 
     const cacheType = 'html'
-    const cacheKeyObject = { recipeName, cacheType, path, params }
+    const cacheKeyObject = { path, params }
+    const cacheOptions = { recipeName, cacheType, cacheKeyObject }
 
-    const cachedData = await dataCacher(cacheKeyObject, async () => {
+    const cachedData = await cacherDataHelpers(cacheOptions, async () => {
       const fetchWithRetry = async (retries) => {
         try {
           const fetchData = await nodeFetchDependencies(
@@ -60,24 +61,38 @@ module.exports = (shared) => {
           )
 
           if (!fetchData.ok) {
-            throw new Error(`HTTP status ${fetchData.status}`)
+            console.error(
+              '[scraperDataHelpers] Ups! Something went wrong:',
+              `Resource "${cacheKeyObject}" couldn't be fetched after multiple retries.`
+            )
           }
 
-          return fetchData.text()
+          const extractedFetchedData = fetchData.text()
+
+          return extractedFetchedData
         } catch (error) {
           if (retries === 0) {
-            throw new Error(error)
+            console.error(
+              '[scraperDataHelpers] Ups! Something went wrong:',
+              error.message
+            )
           }
 
           await new Promise((resolve) =>
             setTimeout(resolve, fetchOptionsConstants.timeBetweenRetries)
           )
 
-          return fetchWithRetry(retries - 1)
+          const fetchedWithRetry = fetchWithRetry(retries - 1)
+
+          return fetchedWithRetry
         }
       }
 
-      return await fetchWithRetry(fetchOptionsConstants.maxRetries)
+      const retriedFetch = await fetchWithRetry(
+        fetchOptionsConstants.maxRetries
+      )
+
+      return retriedFetch
     })
 
     const loadedData = cheerioDependencies.load(cachedData)

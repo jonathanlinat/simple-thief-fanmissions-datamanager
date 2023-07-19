@@ -23,19 +23,6 @@
  */
 
 module.exports = {
-  cheerio: require('cheerio'),
-  deepmerge: require('deepmerge'),
-  nodeFetch: (...args) =>
-    import('node-fetch').then(({ default: fetch }) => fetch(...args)),
-  express: require('express'),
-  flatted: require('flatted'),
-  fs: require('fs'),
-  https: require('https'),
-  joi: require('joi'),
-  nodeObjectHash: require('node-object-hash'),
-  path: require('path'),
-  ioRedis: require('ioredis'),
-  uuid: require('uuid'),
-  withQuery: require('with-query').default,
-  zlib: require('zlib')
+  data: require('./data'),
+  utils: require('./utils')
 }

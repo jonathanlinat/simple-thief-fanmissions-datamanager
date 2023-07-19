@@ -22,7 +22,40 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  express: require('./express'),
-  redis: require('./redis')
+module.exports = (shared) => {
+  const helpersShared = shared.helpers
+
+  return (size) => {
+    const functionParamsValidatorHelpers =
+      helpersShared.utils.functionParamsValidator()
+
+    functionParamsValidatorHelpers('sizeToBytesParserUtilsHelpers', [size])
+
+    const unitsMap = { KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3 }
+
+    const matches = size.match(/^(\d+(?:\.\d+)?)\s*(\D+)$/)
+
+    if (!matches) {
+      console.error(
+        '[sizeToBytesParser] Ups! Something went wrong:',
+        'Invalid size format'
+      )
+    }
+
+    const value = parseFloat(matches[1])
+    const unit = matches[2].toUpperCase().trim()
+
+    if (!(unit in unitsMap)) {
+      console.error(
+        '[sizeToBytesParser] Ups! Something went wrong:',
+        'Unsupported unit'
+      )
+    }
+
+    const determinedSize = value * unitsMap[unit]
+    const floatedSize = parseFloat(determinedSize)
+    const parsedSize = Math.round(floatedSize)
+
+    return parsedSize
+  }
 }

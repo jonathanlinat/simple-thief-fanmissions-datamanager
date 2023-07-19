@@ -26,13 +26,13 @@ module.exports = (shared) => {
   const helpersShared = shared.helpers
 
   return async (iterationLimiter, singleSource) => {
-    const dataMapperHelpers = helpersShared.dataMapper(shared)
-    const dataScraperHelpers = helpersShared.dataScraper(shared)
     const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
-    const languageMapperHelpers = helpersShared.languageMapper(shared)
+      helpersShared.utils.functionParamsValidator()
+    const languageMapperHelpers = helpersShared.utils.languageMapper(shared)
+    const mapperDataHelpers = helpersShared.data.mapper(shared)
+    const scraperDataHelpers = helpersShared.data.scraper(shared)
 
-    functionParamsValidatorHelpers('thiefTheLastGlass', [
+    functionParamsValidatorHelpers('thiefTheLastGlassRecipes', [
       iterationLimiter,
       singleSource
     ])
@@ -46,7 +46,7 @@ module.exports = (shared) => {
     try {
       // Search page
 
-      const fetchedSearchPageData = await dataScraperHelpers(
+      const fetchedSearchPageData = await scraperDataHelpers(
         recipeName,
         sourceUrl + '/index.php?fm-download',
         { orderBy: 'title' }
@@ -69,7 +69,7 @@ module.exports = (shared) => {
           const missionName = searchPageSelector
             .find('a[href*="/index.php?fm-detail&id="]')
             .text()
-            .split(/ \/ /g)[0]
+            .split(/ \//g)[0]
             .replace(/\(v\d+(\.\d+)*\)/g, '')
             .trim()
           const detailsPageUrl = searchPageSelector
@@ -78,7 +78,7 @@ module.exports = (shared) => {
 
           // Mission page
 
-          const fetchedMissionPageData = await dataScraperHelpers(
+          const fetchedMissionPageData = await scraperDataHelpers(
             recipeName,
             detailsPageUrl
           )
@@ -127,23 +127,18 @@ module.exports = (shared) => {
             )[0]
             .attribs.href.split(/file=/g)[1]
             .trim()
-          const fileSize = fileName
-            ? missionPageSelector
-                .find(
-                  'table[style] tr:contains("Speichergröße:") td:nth-child(2)'
-                )
-                .text()
-                .trim()
-            : ''
-          const fileUrl = fileName
-            ? sourceUrl +
-              missionPageSelector
-                .find(
-                  'table[style] tr:contains("Dateien:") td:nth-child(2) a[href*="./download/download.php"]'
-                )[0]
-                .attribs.href.replace(/\.\//g, '/')
-                .trim()
-            : ''
+          const fileSize = missionPageSelector
+            .find('table[style] tr:contains("Speichergröße:") td:nth-child(2)')
+            .text()
+            .trim()
+          const fileUrl =
+            sourceUrl +
+            missionPageSelector
+              .find(
+                'table[style] tr:contains("Dateien:") td:nth-child(2) a[href*="./download/download.php"]'
+              )[0]
+              .attribs.href.replace(/\.\//g, '/')
+              .trim()
 
           const scrapedData = {
             authors,
@@ -159,12 +154,12 @@ module.exports = (shared) => {
             sourceUrl
           }
 
-          structuredScrapedData = dataMapperHelpers(
+          structuredScrapedData = mapperDataHelpers(
             structuredScrapedData,
             scrapedData
           )
         } catch (error) {
-          console.error(error)
+          throw new Error(error)
         }
 
         isIterationLimiterEnabled && iterationCounter++
@@ -172,7 +167,10 @@ module.exports = (shared) => {
 
       return structuredScrapedData
     } catch (error) {
-      console.error(error)
+      console.error(
+        `[Recipe] (${recipeName}) Ups! Something went wrong:`,
+        error.message
+      )
     }
   }
 }

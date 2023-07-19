@@ -26,13 +26,13 @@ module.exports = (shared) => {
   const helpersShared = shared.helpers
 
   return async (iterationLimiter, singleSource) => {
-    const dataMapperHelpers = helpersShared.dataMapper(shared)
-    const dataScraperHelpers = helpersShared.dataScraper(shared)
     const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
-    const languageMapperHelpers = helpersShared.languageMapper(shared)
+      helpersShared.utils.functionParamsValidator()
+    const languageMapperHelpers = helpersShared.utils.languageMapper(shared)
+    const mapperDataHelpers = helpersShared.data.mapper(shared)
+    const scraperDataHelpers = helpersShared.data.scraper(shared)
 
-    functionParamsValidatorHelpers('thiefMissions', [
+    functionParamsValidatorHelpers('thiefMissionsRecipes', [
       iterationLimiter,
       singleSource
     ])
@@ -46,7 +46,7 @@ module.exports = (shared) => {
     try {
       // Search page
 
-      const fetchedSearchPageData = await dataScraperHelpers(
+      const fetchedSearchPageData = await scraperDataHelpers(
         recipeName,
         sourceUrl + '/search.cgi',
         { search: '', sort: 'title' }
@@ -74,17 +74,11 @@ module.exports = (shared) => {
 
           // Mission page
 
-          const fetchedMissionPageData = await dataScraperHelpers(
+          const fetchedMissionPageData = await scraperDataHelpers(
             recipeName,
             detailsPageUrl
           )
           const missionPageSelector = fetchedMissionPageData('body')
-
-          const isFileUnavailable = Boolean(
-            missionPageSelector
-              .find('tr td.error:contains("File unavailable")')
-              .html()
-          )
 
           const gameIdentifier = missionPageSelector
             .find('tr:contains("Game") td:nth-child(2)')
@@ -112,25 +106,20 @@ module.exports = (shared) => {
             .text()
             .split(/\s/g)
             .map((language) => languageMapperHelpers(language.trim()))
-          const fileName = isFileUnavailable
-            ? ''
-            : missionPageSelector
-                .find('tr:contains("File") td:nth-child(2)')
-                .text()
-                .trim()
-          const fileSize = isFileUnavailable
-            ? ''
-            : missionPageSelector
-                .find('tr:contains("Size") td:nth-child(2)')
-                .text()
-                .match(/^\s*([^()\s]+)/)[1]
-                .trim()
-          const fileUrl = isFileUnavailable
-            ? ''
-            : sourceUrl +
-              missionPageSelector
-                .find('a[href*="/download.cgi?m="]')[0]
-                .attribs.href.trim()
+          const fileName = missionPageSelector
+            .find('tr:contains("File") td:nth-child(2)')
+            .text()
+            .trim()
+          const fileSize = missionPageSelector
+            .find('tr:contains("Size") td:nth-child(2)')
+            .text()
+            .match(/^\s*([^()\s]+)/)[1]
+            .trim()
+          const fileUrl =
+            sourceUrl +
+            missionPageSelector
+              .find('a[href*="/download.cgi?m="]')[0]
+              .attribs.href.trim()
 
           const scrapedData = {
             authors,
@@ -146,12 +135,12 @@ module.exports = (shared) => {
             sourceUrl
           }
 
-          structuredScrapedData = dataMapperHelpers(
+          structuredScrapedData = mapperDataHelpers(
             structuredScrapedData,
             scrapedData
           )
         } catch (error) {
-          console.error(error)
+          throw new Error(error)
         }
 
         isIterationLimiterEnabled && iterationCounter++
@@ -159,7 +148,10 @@ module.exports = (shared) => {
 
       return structuredScrapedData
     } catch (error) {
-      console.error(error)
+      console.error(
+        `[Recipe] (${recipeName}) Ups! Something went wrong:`,
+        error.message
+      )
     }
   }
 }

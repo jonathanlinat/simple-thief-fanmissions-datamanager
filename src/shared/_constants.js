@@ -25,7 +25,7 @@
 module.exports = {
   iterationLimiter: {
     isIterationLimiterEnabled: false,
-    maxIterationCount: 4
+    maxIterationCount: 200
   },
   fetchOptions: {
     maxRetries: 3,

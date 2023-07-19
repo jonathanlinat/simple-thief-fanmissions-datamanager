@@ -23,18 +23,25 @@
  */
 
 module.exports = (shared) => {
-  const dependenciesShared = shared.dependencies
+  const constantsShared = shared.constants
   const helpersShared = shared.helpers
 
-  return (wholeData, singleData) => {
-    const deepMergeDependencies = dependenciesShared.deepmerge
+  return (language) => {
     const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
+      helpersShared.utils.functionParamsValidator()
+    const languagesConstants = constantsShared.languages
 
-    functionParamsValidatorHelpers('dataMerger', [wholeData, singleData])
+    functionParamsValidatorHelpers('languageMapperUtilsHelpers', [language])
 
-    const mergedData = deepMergeDependencies(wholeData, singleData)
+    const selectedLanguage = languagesConstants.find(
+      (selectedLanguagesConstant) =>
+        selectedLanguagesConstant.termsList.includes(language)
+    )
 
-    return mergedData
+    const mappedLanguage = selectedLanguage
+      ? selectedLanguage.langAcronym
+      : language
+
+    return mappedLanguage
   }
 }

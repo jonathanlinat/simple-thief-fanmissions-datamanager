@@ -22,17 +22,41 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
+module.exports = (recipes, shared) => {
+  const constantsShared = shared.constants
+  const dependenciesShared = shared.dependencies
   const helpersShared = shared.helpers
+  const recipesShared = recipes
 
-  return (providedUrl) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
+  return async () => {
+    const flattedDependencies = dependenciesShared.flatted
+    const iterationLimiterConstants = constantsShared.iterationLimiter
+    const mergerDataHelpers = helpersShared.data.merger(shared)
+    const multipleSourcesConstants = constantsShared.multipleSources
 
-    functionParamsValidatorHelpers('urlEncoder', [providedUrl])
+    let wholestructuredScrapedData = {}
 
-    const encodedUrl = encodeURI(providedUrl)
+    const promises = multipleSourcesConstants.map(async (singleSource) => {
+      const recipeName = singleSource.recipeName
+      const getstructuredScrapedData = recipesShared[recipeName](shared)
 
-    return encodedUrl
+      const structuredScrapedData = await getstructuredScrapedData(
+        iterationLimiterConstants,
+        singleSource
+      )
+
+      wholestructuredScrapedData = mergerDataHelpers(
+        wholestructuredScrapedData,
+        structuredScrapedData
+      )
+    })
+
+    await Promise.all(promises)
+
+    const stringifiedWholestructuredScrapedData = flattedDependencies.stringify(
+      wholestructuredScrapedData
+    )
+
+    return stringifiedWholestructuredScrapedData
   }
 }

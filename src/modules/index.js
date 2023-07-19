@@ -23,5 +23,5 @@
  */
 
 module.exports = {
-  scraper: require('./scraper')
+  scraper: require('./_scraper')
 }

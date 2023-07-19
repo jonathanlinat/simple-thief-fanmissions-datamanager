@@ -23,42 +23,16 @@
  */
 
 module.exports = (shared) => {
-  const dependenciesShared = shared.dependencies
   const helpersShared = shared.helpers
 
-  return (scrapedData) => {
+  return (date) => {
     const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
-    const joiDependencies = dependenciesShared.joi
+      helpersShared.utils.functionParamsValidator()
 
-    functionParamsValidatorHelpers('dataValidator', [scrapedData])
+    functionParamsValidatorHelpers('dateFormatterUtilsHelpers', [date])
 
-    const structuredSchema = joiDependencies.object({
-      authors: joiDependencies
-        .array()
-        .items(joiDependencies.string().allow(''))
-        .sparse(),
-      detailsPageUrl: joiDependencies.string().allow(''),
-      fileName: joiDependencies.string().allow(''),
-      fileSize: joiDependencies.string().allow(''),
-      fileUrl: joiDependencies.string().allow(''),
-      gameIdentifier: joiDependencies.string().allow(''),
-      languages: joiDependencies
-        .array()
-        .items(joiDependencies.string().allow(''))
-        .sparse(),
-      lastReleaseDate: joiDependencies.string().allow(''),
-      missionName: joiDependencies.string().allow(''),
-      sourceName: joiDependencies.string().allow(''),
-      sourceUrl: joiDependencies.string().allow('')
-    })
+    const formattedDate = new Date(date).toISOString()
 
-    const { error } = structuredSchema.validate(scrapedData)
-
-    if (error) {
-      throw new Error(`Data validation failed: ${error.message}`)
-    }
-
-    return scrapedData
+    return formattedDate
   }
 }

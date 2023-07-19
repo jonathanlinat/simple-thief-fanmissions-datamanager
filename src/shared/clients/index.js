@@ -22,14 +22,7 @@
  * SOFTWARE.
  */
 
-module.exports = () => {
-  return (functionName, params) => {
-    Object.entries(params).forEach(([key, value]) => {
-      if (!value) {
-        throw new Error(
-          `[${functionName}] Parameter "${key}" is required and cannot be "${value}"`
-        )
-      }
-    })
-  }
+module.exports = {
+  express: require('./_express'),
+  redis: require('./_redis')
 }

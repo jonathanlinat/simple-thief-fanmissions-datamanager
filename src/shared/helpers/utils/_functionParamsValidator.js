@@ -22,25 +22,15 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
-  const constantsShared = shared.constants
-  const helpersShared = shared.helpers
-
-  return (gameIdentifier) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.functionParamsValidator()
-    const gameIdentifiersConstants = constantsShared.gameIdentifiers
-
-    functionParamsValidatorHelpers('gameIdentifierMapper', [gameIdentifier])
-
-    const selectedGameIdentifier = gameIdentifiersConstants.find(
-      (selectedConstant) => selectedConstant.termsList.includes(gameIdentifier)
-    )
-
-    const mappedGameIdentifier = selectedGameIdentifier
-      ? selectedGameIdentifier.gameAcronym
-      : gameIdentifier
-
-    return mappedGameIdentifier
+module.exports = () => {
+  return (functionName, params) => {
+    Object.entries(params).forEach(([key, value]) => {
+      if (!value) {
+        console.error(
+          `[${functionName}] Ups! Something went wrong:`,
+          `Parameter "${key}" is required and cannot be "${value}"`
+        )
+      }
+    })
   }
 }

@@ -22,28 +22,21 @@
  * SOFTWARE.
  */
 
-let server
-
 module.exports = (shared) => {
-  const constantsShared = shared.constants
   const dependenciesShared = shared.dependencies
+  const helpersShared = shared.helpers
 
-  return () => {
-    if (!server) {
-      const expressDependencies = dependenciesShared.express
-      const expressConstants = constantsShared.clients.express
+  return (object) => {
+    const functionParamsValidatorHelpers =
+      helpersShared.utils.functionParamsValidator()
+    const nodeObjectHashDependencies = dependenciesShared.nodeObjectHash
 
-      server = expressDependencies()
+    functionParamsValidatorHelpers('objectHasherUtilsHelpers', [object])
 
-      const listeningServer = server.listen(expressConstants.port, () => {
-        console.log(
-          `[Server] Successfully mounted on port ${expressConstants.port}`
-        )
-      })
+    const hasher = nodeObjectHashDependencies.hasher({ coerce: true })
 
-      listeningServer.setTimeout(expressConstants.timeOut)
-    }
+    const hashedObject = hasher.hash(object)
 
-    return server
+    return hashedObject
   }
 }

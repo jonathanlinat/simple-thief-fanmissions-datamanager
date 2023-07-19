@@ -22,41 +22,27 @@
  * SOFTWARE.
  */
 
-let memory
-
 module.exports = (shared) => {
   const constantsShared = shared.constants
-  const dependenciesShared = shared.dependencies
+  const helpersShared = shared.helpers
 
-  return () => {
-    if (!memory) {
-      const redisConstants = constantsShared.clients.redis
-      const RedisDependencies = dependenciesShared.ioRedis
+  return (gameIdentifier) => {
+    const functionParamsValidatorHelpers =
+      helpersShared.utils.functionParamsValidator()
+    const gameIdentifiersConstants = constantsShared.gameIdentifiers
 
-      memory = new RedisDependencies({
-        host: redisConstants.host,
-        port: redisConstants.port
-      })
+    functionParamsValidatorHelpers('gameIdentifierMapperUtilsHelpers', [
+      gameIdentifier
+    ])
 
-      memory.on('ready', () => {
-        console.log(
-          `[Memory] Successfully connected to host ${redisConstants.host} on port ${redisConstants.port}`
-        )
-      })
+    const selectedGameIdentifier = gameIdentifiersConstants.find(
+      (selectedConstant) => selectedConstant.termsList.includes(gameIdentifier)
+    )
 
-      memory.on('error', (error) => {
-        throw new Error(
-          `[Memory] Ups! Something went wrong... ${error.message}`
-        )
-      })
+    const mappedGameIdentifier = selectedGameIdentifier
+      ? selectedGameIdentifier.gameAcronym
+      : gameIdentifier
 
-      memory.on('close', () => {
-        console.log(
-          `[Memory] Successfully disconnected from host ${redisConstants.host} on port ${redisConstants.port}`
-        )
-      })
-    }
-
-    return memory
+    return mappedGameIdentifier
   }
 }
