@@ -25,7 +25,6 @@
 module.exports = (shared) => {
   const helpersShared = shared.helpers
 
-  const languageMapperHelpers = helpersShared.utils.languageMapper(shared)
   const mapperDataHelpers = helpersShared.data.mapper(shared)
   const scraperDataHelpers = helpersShared.data.scraper(shared)
 
@@ -44,11 +43,10 @@ module.exports = (shared) => {
 
     const fetchedSearchPageData = await scraperDataHelpers({
       recipeName,
-      path: sourceUrl + '/index.php?fm-download',
-      params: { orderBy: 'title' }
+      path: sourceUrl + '/fmarchive.php'
     })
     const searchPageReference = fetchedSearchPageData(
-      'body div[id="postList"] tr:not(:first-child)'
+      'body table[cellspacing] tr.arch'
     )
 
     for (const searchPage of searchPageReference) {
@@ -58,98 +56,47 @@ module.exports = (shared) => {
 
       const searchPageSelector = fetchedSearchPageData(searchPage)
 
-      const missionNameSelector = searchPageSelector.find(
-        'a[href*="/index.php?fm-detail&id="]'
-      )
+      const missionNameSelector = searchPageSelector.find('td:nth-child(2)')
       const missionName = missionNameSelector
-        ? missionNameSelector
-            .text()
-            .split(/ \//g)[0]
-            .replace(/\(v\d+(\.\d+)*\)/g, '')
-            .trim()
+        ? missionNameSelector.text().trim()
         : ''
 
-      const detailsPageUrlSelector = searchPageSelector.find(
-        'a[href*="/index.php?fm-detail&id="]'
-      )[0]
-      const detailsPageUrl = detailsPageUrlSelector
-        ? detailsPageUrlSelector.attribs.href.trim()
-        : ''
+      const detailsPageUrl = sourceUrl + '/fmarchive.php'
 
-      // Mission page
-
-      const fetchedMissionPageData = await scraperDataHelpers({
-        recipeName,
-        path: detailsPageUrl
-      })
-      const missionPageSelector = fetchedMissionPageData(
-        'body table[width][border]'
-      ).first()
-
-      const gameIdentifierSelector = missionPageSelector.find(
-        'table[style] tr:contains("Spiel:") td:nth-child(2)'
-      )
+      const gameIdentifierSelector = searchPageSelector.find('td:nth-child(1)')
       const gameIdentifier = gameIdentifierSelector
         ? gameIdentifierSelector.text().trim()
         : ''
 
-      const authorsSelector = missionPageSelector.find(
-        'table[style] tr:contains("Autor:") td:nth-child(2)'
-      )
+      const authorsSelector = searchPageSelector.find('td:nth-child(3)')
       const authors = authorsSelector
         ? authorsSelector
             .text()
             .trim()
-            .split(/&|\n/)
-            .map((author) => author.replace(/https?:\/\/\S+/gi, '').trim())
+            .split(/,/g)
+            .map((author) => author.trim())
         : []
 
       const lastReleaseDateSelector =
-        missionPageSelector
-          .find('table[style] tr:contains("Datum des letzten Updates:")')
-          .text() ||
-        missionPageSelector
-          .find('table[style] tr:contains("Datum der Veröffentlichung:")')
-          .text()
-
+        searchPageSelector.find('td:nth-child(5)').text() ||
+        searchPageSelector.find('td:nth-child(4)').text()
       const lastReleaseDate = lastReleaseDateSelector
-        ? lastReleaseDateSelector.match(/\d{4}-\d{2}-\d{2}/)[0].trim()
+        ? lastReleaseDateSelector.trim()
         : ''
 
-      const languagesSelector = missionPageSelector.find(
-        'table[style] tr:contains("Vorhandene Sprachen:") td:nth-child(2) img'
-      )
-      const languages = languagesSelector
-        ? languagesSelector
-            .map((index, image) =>
-              languageMapperHelpers({
-                language: image.attribs.src
-                  .split(/\//g)
-                  .pop()
-                  .split(/\./g)[0]
-                  .trim()
-              })
-            )
-            .get()
-        : []
+      const languages = []
 
-      const fileNameSelector = missionPageSelector.find(
-        'table[style] tr:contains("Dateien:") td:nth-child(2) a[href*="./download/download.php"]'
-      )[0]
+      const fileNameSelector = searchPageSelector.find('td:nth-child(2) a')[0]
       const fileName = fileNameSelector
-        ? fileNameSelector.attribs.href.split(/file=/g)[1].trim()
+        ? fileNameSelector.attribs.href.split(/\//g).pop()
         : ''
 
-      const fileSizeSelector = missionPageSelector.find(
-        'table[style] tr:contains("Speichergröße:") td:nth-child(2)'
-      )
-      const fileSize = fileSizeSelector ? fileSizeSelector.text().trim() : ''
+      const fileSizeSelector = searchPageSelector.find('td:nth-child(6)')
+      const fileSize = fileSizeSelector ? fileSizeSelector.text() + 'MB' : ''
 
-      const fileUrlSelector = missionPageSelector.find(
-        'table[style] tr:contains("Dateien:") td:nth-child(2) a[href*="./download/download.php"]'
-      )[0]
+      const fileUrlSelector = searchPageSelector.find('td:nth-child(2) a')[0]
       const fileUrl = fileUrlSelector
-        ? sourceUrl + fileUrlSelector.attribs.href.replace(/\.\//g, '/').trim()
+        ? sourceUrl + '/' + fileUrlSelector.attribs.href
         : ''
 
       const scrapedData = {

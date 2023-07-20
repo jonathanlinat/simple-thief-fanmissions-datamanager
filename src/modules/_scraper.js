@@ -28,35 +28,39 @@ module.exports = (recipes, shared) => {
   const helpersShared = shared.helpers
   const recipesShared = recipes
 
-  return async () => {
-    const flattedDependencies = dependenciesShared.flatted
-    const iterationLimiterConstants = constantsShared.iterationLimiter
-    const mergerDataHelpers = helpersShared.data.merger(shared)
-    const multipleSourcesConstants = constantsShared.multipleSources
+  const flattedDependencies = dependenciesShared.flatted
+  const iterationLimiterConstants = constantsShared.iterationLimiter
+  const mergerDataHelpers = helpersShared.data.merger(shared)
+  const multipleSourcesConstants = constantsShared.multipleSources
 
-    let wholestructuredScrapedData = {}
+  return async () => {
+    let wholeScrapedData = {}
 
     const promises = multipleSourcesConstants.map(async (singleSource) => {
-      const recipeName = singleSource.recipeName
+      const { disabled, recipeName } = singleSource
+
+      if (disabled) {
+        return
+      }
+
       const getstructuredScrapedData = recipesShared[recipeName](shared)
 
-      const structuredScrapedData = await getstructuredScrapedData(
-        iterationLimiterConstants,
+      const scrapedData = await getstructuredScrapedData({
+        iterationLimiter: iterationLimiterConstants,
         singleSource
-      )
+      })
 
-      wholestructuredScrapedData = mergerDataHelpers(
-        wholestructuredScrapedData,
-        structuredScrapedData
-      )
+      wholeScrapedData = mergerDataHelpers({
+        wholeScrapedData,
+        scrapedData
+      })
     })
 
     await Promise.all(promises)
 
-    const stringifiedWholestructuredScrapedData = flattedDependencies.stringify(
-      wholestructuredScrapedData
-    )
+    const stringifiedWholeScrapedData =
+      flattedDependencies.stringify(wholeScrapedData)
 
-    return stringifiedWholestructuredScrapedData
+    return stringifiedWholeScrapedData
   }
 }

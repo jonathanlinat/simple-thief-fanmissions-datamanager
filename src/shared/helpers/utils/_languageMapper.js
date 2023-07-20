@@ -24,23 +24,21 @@
 
 module.exports = (shared) => {
   const constantsShared = shared.constants
-  const helpersShared = shared.helpers
 
-  return (language) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.utils.functionParamsValidator()
-    const languagesConstants = constantsShared.languages
+  const languagesConstants = constantsShared.languages
 
-    functionParamsValidatorHelpers('languageMapperUtilsHelpers', [language])
+  return (args) => {
+    const { language } = args
 
-    const selectedLanguage = languagesConstants.find(
-      (selectedLanguagesConstant) =>
-        selectedLanguagesConstant.termsList.includes(language)
+    const selectedLanguage = languagesConstants.find((selectedConstant) =>
+      selectedConstant.termsList.includes(language)
     )
 
-    const mappedLanguage = selectedLanguage
-      ? selectedLanguage.langAcronym
-      : language
+    if (!selectedLanguage) {
+      return language
+    }
+
+    const mappedLanguage = selectedLanguage.acronym
 
     return mappedLanguage
   }

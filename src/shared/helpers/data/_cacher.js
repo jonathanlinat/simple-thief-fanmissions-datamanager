@@ -27,22 +27,19 @@ module.exports = (shared) => {
   const constantsShared = shared.constants
   const helpersShared = shared.helpers
 
-  return async (cacheOptions, callback) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.utils.functionParamsValidator()
-    const htmlParserHelpers = helpersShared.utils.htmlParser(shared)
-    const objectHasherHelpers = helpersShared.utils.objectHasher(shared)
-    const redisClients = clientsShared.redis(shared)
-    const redisConstants = constantsShared.clients.redis
+  const htmlParserHelpers = helpersShared.utils.htmlParser(shared)
+  const objectHasherHelpers = helpersShared.utils.objectHasher(shared)
+  const redisClients = clientsShared.redis(shared)
+  const redisConstants = constantsShared.clients.redis
 
-    functionParamsValidatorHelpers('cacherDataHelpersRecipes', [
-      cacheOptions,
-      callback
-    ])
+  return async (args) => {
+    const { cacheOptions, callback } = args
 
     const { recipeName, cacheType, cacheKeyObject } = cacheOptions
 
-    const hashedPathParams = objectHasherHelpers(cacheKeyObject)
+    const hashedPathParams = objectHasherHelpers({
+      object: cacheKeyObject
+    })
     const cacheKey = `${recipeName}:${cacheType}:${hashedPathParams}`
 
     const cachedResponse = await redisClients().get(cacheKey)
@@ -52,7 +49,9 @@ module.exports = (shared) => {
     }
 
     const callbackResponse = await callback()
-    const minifiedCallbackResponse = htmlParserHelpers(callbackResponse)
+    const minifiedCallbackResponse = htmlParserHelpers({
+      htmlContent: callbackResponse
+    })
 
     await redisClients().set(cacheKey, minifiedCallbackResponse)
 

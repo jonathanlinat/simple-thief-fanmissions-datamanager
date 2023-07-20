@@ -27,72 +27,69 @@ module.exports = (shared) => {
   const dependenciesShared = shared.dependencies
   const helpersShared = shared.helpers
 
-  return async (recipeName, path, params) => {
-    const cacherDataHelpers = helpersShared.data.cacher(shared)
-    const cheerioDependencies = dependenciesShared.cheerio
-    const fetchOptionsConstants = constantsShared.fetchOptions
-    const functionParamsValidatorHelpers =
-      helpersShared.utils.functionParamsValidator()
-    const httpsDependencies = dependenciesShared.https
-    const nodeFetchDependencies = dependenciesShared.nodeFetch
-    const urlEncoderHelpers = helpersShared.utils.urlEncoder(shared)
-    const withQueryDependencies = dependenciesShared.withQuery
+  const cacherDataHelpers = helpersShared.data.cacher(shared)
+  const cheerioDependencies = dependenciesShared.cheerio
+  const fetchOptionsConstants = constantsShared.fetchOptions
+  const httpsDependencies = dependenciesShared.https
+  const nodeFetchDependencies = dependenciesShared.nodeFetch
+  const urlEncoderHelpers = helpersShared.utils.urlEncoder()
+  const withQueryDependencies = dependenciesShared.withQuery
 
-    functionParamsValidatorHelpers('scraperDataHelpers', [recipeName, path])
+  return async (args) => {
+    const { recipeName, path, params } = args
 
-    const encodedPath = urlEncoderHelpers(path)
-    const fetchQuery = withQueryDependencies(encodedPath, params)
-
+    const encodedPath = urlEncoderHelpers({ url: path })
     const httpsAgent = new httpsDependencies.Agent({
       rejectUnauthorized: false
     })
+
+    const fetchQuery = withQueryDependencies(encodedPath, params)
     const fetchOptions = { agent: path.includes('https') && httpsAgent }
 
     const cacheType = 'html'
     const cacheKeyObject = { path, params }
     const cacheOptions = { recipeName, cacheType, cacheKeyObject }
 
-    const cachedData = await cacherDataHelpers(cacheOptions, async () => {
-      const fetchWithRetry = async (retries) => {
-        try {
-          const fetchData = await nodeFetchDependencies(
-            fetchQuery,
-            fetchOptions
-          )
-
-          if (!fetchData.ok) {
-            console.error(
-              '[scraperDataHelpers] Ups! Something went wrong:',
-              `Resource "${cacheKeyObject}" couldn't be fetched after multiple retries.`
+    const cachedData = await cacherDataHelpers({
+      cacheOptions,
+      callback: async () => {
+        const fetchWithRetry = async (retries) => {
+          try {
+            const fetchData = await nodeFetchDependencies(
+              fetchQuery,
+              fetchOptions
             )
-          }
 
-          const extractedFetchedData = fetchData.text()
+            if (!fetchData.ok) {
+              throw new Error(
+                `Resource "${cacheKeyObject}" couldn't be fetched after multiple retries.`
+              )
+            }
 
-          return extractedFetchedData
-        } catch (error) {
-          if (retries === 0) {
-            console.error(
-              '[scraperDataHelpers] Ups! Something went wrong:',
-              error.message
+            const extractedFetchedData = fetchData.text()
+
+            return extractedFetchedData
+          } catch (error) {
+            if (retries === 0) {
+              throw new Error(error.message)
+            }
+
+            await new Promise((resolve) =>
+              setTimeout(resolve, fetchOptionsConstants.timeBetweenRetries)
             )
+
+            const fetchedWithRetry = fetchWithRetry(retries - 1)
+
+            return fetchedWithRetry
           }
-
-          await new Promise((resolve) =>
-            setTimeout(resolve, fetchOptionsConstants.timeBetweenRetries)
-          )
-
-          const fetchedWithRetry = fetchWithRetry(retries - 1)
-
-          return fetchedWithRetry
         }
+
+        const retriedFetch = await fetchWithRetry(
+          fetchOptionsConstants.maxRetries
+        )
+
+        return retriedFetch
       }
-
-      const retriedFetch = await fetchWithRetry(
-        fetchOptionsConstants.maxRetries
-      )
-
-      return retriedFetch
     })
 
     const loadedData = cheerioDependencies.load(cachedData)

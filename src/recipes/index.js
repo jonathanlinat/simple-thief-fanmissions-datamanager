@@ -23,8 +23,7 @@
  */
 
 module.exports = {
-  shadowDarkKeep: require('./_shadowDarkKeep'),
-  theKeepOfMetalAndGold: require('./_theKeepOfMetalAndGold'),
+  shadowDarkKeepAndTheKeepOfMetalAndGold: require('./_shadowDarkKeepAndTheKeepOfMetalAndGold'),
   thiefMissions: require('./_thiefMissions'),
   thiefTheLastGlass: require('./_thiefTheLastGlass')
 }

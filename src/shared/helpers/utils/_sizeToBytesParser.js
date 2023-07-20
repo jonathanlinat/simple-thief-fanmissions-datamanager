@@ -22,34 +22,22 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
-  const helpersShared = shared.helpers
-
-  return (size) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.utils.functionParamsValidator()
-
-    functionParamsValidatorHelpers('sizeToBytesParserUtilsHelpers', [size])
-
-    const unitsMap = { KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3 }
+module.exports = () => {
+  return (args) => {
+    const { size } = args
 
     const matches = size.match(/^(\d+(?:\.\d+)?)\s*(\D+)$/)
+    const unitsMap = { KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3 }
 
     if (!matches) {
-      console.error(
-        '[sizeToBytesParser] Ups! Something went wrong:',
-        'Invalid size format'
-      )
+      return 0
     }
 
     const value = parseFloat(matches[1])
     const unit = matches[2].toUpperCase().trim()
 
     if (!(unit in unitsMap)) {
-      console.error(
-        '[sizeToBytesParser] Ups! Something went wrong:',
-        'Unsupported unit'
-      )
+      throw new Error('Unsupported unit')
     }
 
     const determinedSize = value * unitsMap[unit]

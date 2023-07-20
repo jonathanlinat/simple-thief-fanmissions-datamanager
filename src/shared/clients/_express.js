@@ -28,10 +28,10 @@ module.exports = (shared) => {
   const constantsShared = shared.constants
   const dependenciesShared = shared.dependencies
 
-  return () => {
-    const expressConstants = constantsShared.clients.express
-    const expressDependencies = dependenciesShared.express
+  const expressConstants = constantsShared.clients.express
+  const expressDependencies = dependenciesShared.express
 
+  return () => {
     if (!server) {
       server = expressDependencies()
 

@@ -24,24 +24,21 @@
 
 module.exports = (shared) => {
   const constantsShared = shared.constants
-  const helpersShared = shared.helpers
 
-  return (gameIdentifier) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.utils.functionParamsValidator()
-    const gameIdentifiersConstants = constantsShared.gameIdentifiers
+  const gameIdentifiersConstants = constantsShared.gameIdentifiers
 
-    functionParamsValidatorHelpers('gameIdentifierMapperUtilsHelpers', [
-      gameIdentifier
-    ])
+  return (args) => {
+    const { gameIdentifier } = args
 
     const selectedGameIdentifier = gameIdentifiersConstants.find(
       (selectedConstant) => selectedConstant.termsList.includes(gameIdentifier)
     )
 
-    const mappedGameIdentifier = selectedGameIdentifier
-      ? selectedGameIdentifier.gameAcronym
-      : gameIdentifier
+    if (!selectedGameIdentifier) {
+      return gameIdentifier
+    }
+
+    const mappedGameIdentifier = selectedGameIdentifier.acronym
 
     return mappedGameIdentifier
   }

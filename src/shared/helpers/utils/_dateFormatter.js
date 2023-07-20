@@ -22,14 +22,9 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
-  const helpersShared = shared.helpers
-
-  return (date) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.utils.functionParamsValidator()
-
-    functionParamsValidatorHelpers('dateFormatterUtilsHelpers', [date])
+module.exports = () => {
+  return (args) => {
+    const { date } = args
 
     const formattedDate = new Date(date).toISOString()
 

@@ -25,48 +25,36 @@
 module.exports = (shared) => {
   const helpersShared = shared.helpers
 
-  return (scrapedData) => {
-    const dateFormatterHelpers = helpersShared.utils.dateFormatter(shared)
-    const functionParamsValidatorHelpers =
-      helpersShared.utils.functionParamsValidator()
-    const gameIdentifierMapperHelpers =
-      helpersShared.utils.gameIdentifierMapper(shared)
-    const sizeToBytesParserHelpers =
-      helpersShared.utils.sizeToBytesParser(shared)
-    const urlEncoderHelpers = helpersShared.utils.urlEncoder(shared)
+  const dateFormatterHelpers = helpersShared.utils.dateFormatter()
+  const gameIdentifierMapperHelpers =
+    helpersShared.utils.gameIdentifierMapper(shared)
+  const languageMapperHelpers = helpersShared.utils.languageMapper(shared)
+  const sizeToBytesParserHelpers = helpersShared.utils.sizeToBytesParser()
+  const urlEncoderHelpers = helpersShared.utils.urlEncoder()
 
-    functionParamsValidatorHelpers('parserDataHelpers', [scrapedData])
+  return (args) => {
+    const { scrapedData } = args
 
     const {
-      authors,
       detailsPageUrl,
-      fileName,
       fileSize,
       fileUrl,
       gameIdentifier,
       languages,
       lastReleaseDate,
-      missionName,
-      sourceName,
-      sourceUrl
+      ...restOfScrapedData
     } = scrapedData
 
     const parsedData = {
-      authors: authors || [],
-      detailsPageUrl: detailsPageUrl ? urlEncoderHelpers(detailsPageUrl) : '',
-      fileName: fileName || '',
-      fileSize: fileSize ? sizeToBytesParserHelpers(fileSize) : 0,
-      fileUrl: fileUrl ? urlEncoderHelpers(fileUrl) : '',
-      gameIdentifier: gameIdentifier
-        ? gameIdentifierMapperHelpers(gameIdentifier)
-        : '',
-      languages: languages || [],
-      lastReleaseDate: lastReleaseDate
-        ? dateFormatterHelpers(lastReleaseDate)
-        : '',
-      missionName: missionName || '',
-      sourceName: sourceName || '',
-      sourceUrl: sourceUrl || ''
+      detailsPageUrl: urlEncoderHelpers({ url: detailsPageUrl }),
+      fileSize: sizeToBytesParserHelpers({ size: fileSize }),
+      fileUrl: urlEncoderHelpers({ url: fileUrl }),
+      gameIdentifier: gameIdentifierMapperHelpers({ gameIdentifier }),
+      languages: languages.map((language) =>
+        languageMapperHelpers({ language })
+      ),
+      lastReleaseDate: dateFormatterHelpers({ date: lastReleaseDate }),
+      ...restOfScrapedData
     }
 
     return parsedData

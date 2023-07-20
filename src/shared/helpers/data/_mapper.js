@@ -26,23 +26,19 @@ module.exports = (shared) => {
   const dependenciesShared = shared.dependencies
   const helpersShared = shared.helpers
 
-  return (structuredScrapedData, scrapedData) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.utils.functionParamsValidator()
-    const generateTimestampUtilsHelpers =
-      helpersShared.utils.generateTimestamp()
-    const mergerDataHelpers = helpersShared.data.merger(shared)
-    const parserDataHelpers = helpersShared.data.parser(shared)
-    const uuidDependencies = dependenciesShared.uuid
-    const validatorDataHelpers = helpersShared.data.validator(shared)
+  const generateTimestampUtilsHelpers = helpersShared.utils.generateTimestamp()
+  const mergerDataHelpers = helpersShared.data.merger(shared)
+  const parserDataHelpers = helpersShared.data.parser(shared)
+  const uuidDependencies = dependenciesShared.uuid
+  const validatorDataHelpers = helpersShared.data.validator(shared)
 
-    functionParamsValidatorHelpers('mapperDataHelpersRecipes', [
-      structuredScrapedData,
-      scrapedData
-    ])
+  return (args) => {
+    const { wholeScrapedData, scrapedData } = args
 
-    const validatedData = validatorDataHelpers(scrapedData)
-    const parsedData = parserDataHelpers(validatedData)
+    const validatedData = validatorDataHelpers({ scrapedData })
+    const parsedData = parserDataHelpers({
+      scrapedData: validatedData
+    })
 
     const {
       gameIdentifier,
@@ -52,7 +48,7 @@ module.exports = (shared) => {
       fileUrl,
       sourceName,
       sourceUrl,
-      ...restOfparsedData
+      ...restOfParsedData
     } = parsedData
 
     const structuredData = {
@@ -71,13 +67,16 @@ module.exports = (shared) => {
               name: sourceName,
               url: sourceUrl
             },
-            ...restOfparsedData
+            ...restOfParsedData
           }
         }
       ]
     }
 
-    const mappedData = mergerDataHelpers(structuredScrapedData, structuredData)
+    const mappedData = mergerDataHelpers({
+      wholeScrapedData,
+      scrapedData: structuredData
+    })
 
     return mappedData
   }

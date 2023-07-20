@@ -45,75 +45,79 @@ module.exports = {
   },
   multipleSources: [
     {
+      disabled: false,
       recipeName: 'thiefMissions',
       sourceName: 'Cheap Thief Missions',
       sourceUrl: 'https://www.thiefmissions.com'
     },
     {
+      disabled: false,
       recipeName: 'thiefTheLastGlass',
       sourceName: 'Thief - The Last GLASS',
       sourceUrl: 'https://www.ttlg.de'
     },
     {
-      recipeName: 'shadowDarkKeep',
+      disabled: false,
+      recipeName: 'shadowDarkKeepAndTheKeepOfMetalAndGold',
       sourceName: 'Shadowdark Keep',
       sourceUrl: 'http://www.shadowdarkkeep.com'
     },
     {
-      recipeName: 'theKeepOfMetalAndGold',
+      disabled: false,
+      recipeName: 'shadowDarkKeepAndTheKeepOfMetalAndGold',
       sourceName: 'The Keep of Metal and Gold',
       sourceUrl: 'http://www.keepofmetalandgold.com'
     }
   ],
   languages: [
     {
-      langAcronym: 'cs',
+      acronym: 'cs',
       termsList: ['Czech']
     },
     {
-      langAcronym: 'de',
+      acronym: 'de',
       termsList: ['g01', 'German']
     },
     {
-      langAcronym: 'en',
+      acronym: 'en',
       termsList: ['g02', 'English']
     },
     {
-      langAcronym: 'es',
+      acronym: 'es',
       termsList: ['Spanish']
     },
     {
-      langAcronym: 'fr',
+      acronym: 'fr',
       termsList: ['g03', 'French']
     },
     {
-      langAcronym: 'hu',
+      acronym: 'hu',
       termsList: ['Hungarian']
     },
     {
-      langAcronym: 'it',
+      acronym: 'it',
       termsList: ['g04', 'Italian']
     },
     {
-      langAcronym: 'jp',
+      acronym: 'jp',
       termsList: ['Japanese']
     },
     {
-      langAcronym: 'nl',
+      acronym: 'nl',
       termsList: ['Dutch']
     },
     {
-      langAcronym: 'pl',
+      acronym: 'pl',
       termsList: ['Polish']
     },
     {
-      langAcronym: 'ru',
+      acronym: 'ru',
       termsList: ['Russian']
     }
   ],
   gameIdentifiers: [
     {
-      gameAcronym: 'tdp',
+      acronym: 'tdp',
       termsList: [
         '1',
         'Dark Project - Der Meisterdieb',
@@ -122,11 +126,11 @@ module.exports = {
       ]
     },
     {
-      gameAcronym: 'tg',
+      acronym: 'tg',
       termsList: ['G', 'Thief Gold mit NewDark-Patch', 'Thief Gold']
     },
     {
-      gameAcronym: 'tma',
+      acronym: 'tma',
       termsList: [
         '2',
         'Thief 2 mit NewDark-Patch',
@@ -135,15 +139,15 @@ module.exports = {
       ]
     },
     {
-      gameAcronym: 'tds',
+      acronym: 'tds',
       termsList: ['3', 'Thief: Deadly Shadows', 'Thief 3']
     },
     {
-      gameAcronym: 'tdm',
+      acronym: 'tdm',
       termsList: ['D', 'The Dark Mod', 'Dark Mod']
     },
     {
-      gameAcronym: 'ss2',
+      acronym: 'ss2',
       termsList: ['Shock 2']
     }
   ]

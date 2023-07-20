@@ -24,7 +24,6 @@
 
 module.exports = {
   dateFormatter: require('./_dateFormatter'),
-  functionParamsValidator: require('./_functionParamsValidator'),
   gameIdentifierMapper: require('./_gameIdentifierMapper'),
   generateTimestamp: require('./_generateTimestamp'),
   htmlParser: require('./_htmlParser'),

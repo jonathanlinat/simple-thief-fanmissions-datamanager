@@ -24,44 +24,41 @@
 
 module.exports = (shared) => {
   const dependenciesShared = shared.dependencies
-  const helpersShared = shared.helpers
 
-  return (scrapedData) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.utils.functionParamsValidator()
-    const joiDependencies = dependenciesShared.joi
+  const joiDependencies = dependenciesShared.joi
 
-    functionParamsValidatorHelpers('validatorDataHelpers', [scrapedData])
+  return (args) => {
+    const { scrapedData } = args
 
     const structuredSchema = joiDependencies.object({
       authors: joiDependencies
         .array()
         .items(joiDependencies.string().allow(''))
-        .sparse(),
-      detailsPageUrl: joiDependencies.string().allow(''),
-      fileName: joiDependencies.string().allow(''),
-      fileSize: joiDependencies.string().allow(''),
-      fileUrl: joiDependencies.string().allow(''),
-      gameIdentifier: joiDependencies.string().allow(''),
+        .sparse()
+        .required(),
+      detailsPageUrl: joiDependencies.string().allow('').required(),
+      fileName: joiDependencies.string().allow('').required(),
+      fileSize: joiDependencies.string().allow('').required(),
+      fileUrl: joiDependencies.string().allow('').required(),
+      gameIdentifier: joiDependencies.string().allow('').required(),
       languages: joiDependencies
         .array()
         .items(joiDependencies.string().allow(''))
-        .sparse(),
-      lastReleaseDate: joiDependencies.string().allow(''),
-      missionName: joiDependencies.string().allow(''),
-      sourceName: joiDependencies.string().allow(''),
-      sourceUrl: joiDependencies.string().allow('')
+        .sparse()
+        .required(),
+      lastReleaseDate: joiDependencies.string().allow('').required(),
+      missionName: joiDependencies.string().allow('').required(),
+      sourceName: joiDependencies.string().allow('').required(),
+      sourceUrl: joiDependencies.string().allow('').required()
     })
 
-    const { error } = structuredSchema.validate(scrapedData)
+    const validatedData = structuredSchema.validate(scrapedData)
 
+    const { error, value: validatedDataValue } = validatedData
     if (error) {
-      console.error(
-        `[validatorDataHelpers] Pfft! Something went wrong:`,
-        error.message
-      )
+      throw new Error(error)
     }
 
-    return scrapedData
+    return validatedDataValue
   }
 }

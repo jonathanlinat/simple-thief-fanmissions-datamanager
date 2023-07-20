@@ -28,10 +28,10 @@ module.exports = (shared) => {
   const constantsShared = shared.constants
   const dependenciesShared = shared.dependencies
 
-  return () => {
-    const redisConstants = constantsShared.clients.redis
-    const RedisDependencies = dependenciesShared.ioRedis
+  const redisConstants = constantsShared.clients.redis
+  const RedisDependencies = dependenciesShared.ioRedis
 
+  return () => {
     if (!memory) {
       memory = new RedisDependencies({
         host: redisConstants.host,
@@ -41,16 +41,6 @@ module.exports = (shared) => {
       memory.on('ready', () => {
         console.log(
           `[Memory] Successfully connected to host ${redisConstants.host} on port ${redisConstants.port}`
-        )
-      })
-
-      memory.on('error', (error) => {
-        console.error('[Memory] Ups! Something went wrong...', error.message)
-      })
-
-      memory.on('close', () => {
-        console.log(
-          `[Memory] Successfully disconnected from host ${redisConstants.host} on port ${redisConstants.port}`
         )
       })
     }

@@ -24,17 +24,13 @@
 
 module.exports = (shared) => {
   const dependenciesShared = shared.dependencies
-  const helpersShared = shared.helpers
 
-  return (object) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.utils.functionParamsValidator()
-    const nodeObjectHashDependencies = dependenciesShared.nodeObjectHash
+  const nodeObjectHashDependencies = dependenciesShared.nodeObjectHash
 
-    functionParamsValidatorHelpers('objectHasherUtilsHelpers', [object])
+  return (args) => {
+    const { object } = args
 
     const hasher = nodeObjectHashDependencies.hasher({ coerce: true })
-
     const hashedObject = hasher.hash(object)
 
     return hashedObject

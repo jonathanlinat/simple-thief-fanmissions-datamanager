@@ -22,16 +22,11 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
-  const helpersShared = shared.helpers
+module.exports = () => {
+  return (args) => {
+    const { url } = args
 
-  return (providedUrl) => {
-    const functionParamsValidatorHelpers =
-      helpersShared.utils.functionParamsValidator()
-
-    functionParamsValidatorHelpers('urlEncoderUtilsHelpers', [providedUrl])
-
-    const encodedUrl = encodeURI(providedUrl)
+    const encodedUrl = encodeURI(url)
 
     return encodedUrl
   }

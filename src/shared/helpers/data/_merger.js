@@ -24,16 +24,13 @@
 
 module.exports = (shared) => {
   const dependenciesShared = shared.dependencies
-  const helpersShared = shared.helpers
 
-  return (wholeData, singleData) => {
-    const deepMergeDependencies = dependenciesShared.deepmerge
-    const functionParamsValidatorHelpers =
-      helpersShared.utils.functionParamsValidator()
+  const deepMergeDependencies = dependenciesShared.deepmerge
 
-    functionParamsValidatorHelpers('mergerDataHelpers', [wholeData, singleData])
+  return (args) => {
+    const { wholeScrapedData, scrapedData } = args
 
-    const mergedData = deepMergeDependencies(wholeData, singleData)
+    const mergedData = deepMergeDependencies(wholeScrapedData, scrapedData)
 
     return mergedData
   }
