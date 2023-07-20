@@ -27,21 +27,32 @@ let memory
 module.exports = (shared) => {
   const constantsShared = shared.constants
   const dependenciesShared = shared.dependencies
+  const helpersShared = shared.helpers
 
   const redisConstants = constantsShared.clients.redis
   const RedisDependencies = dependenciesShared.ioRedis
+  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared)
 
   return () => {
     if (!memory) {
-      memory = new RedisDependencies({
-        host: redisConstants.host,
-        port: redisConstants.port
+      const { host, port } = redisConstants
+
+      memory = new RedisDependencies({ host, port })
+
+      memory.on('connect', () => {
+        logMessageUtilsHelpers({
+          level: 'info',
+          identifier: 'Memory',
+          message: `Successfully connected to host ${host} on port ${port}`
+        })
       })
 
-      memory.on('ready', () => {
-        console.log(
-          `[Memory] Successfully connected to host ${redisConstants.host} on port ${redisConstants.port}`
-        )
+      memory.on('error', (error) => {
+        logMessageUtilsHelpers({
+          level: 'error',
+          identifier: 'Memory',
+          message: error.message
+        })
       })
     }
 

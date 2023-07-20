@@ -22,12 +22,6 @@
  * SOFTWARE.
  */
 
-module.exports = () => {
-  return (args) => {
-    const { date } = args
-
-    const formattedDate = new Date(date).toISOString()
-
-    return formattedDate
-  }
+module.exports = {
+  routeCallback: require('./_routeCallback')
 }

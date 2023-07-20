@@ -23,12 +23,6 @@
  */
 
 module.exports = {
-  dateFormatter: require('./_dateFormatter'),
-  gameIdentifierMapper: require('./_gameIdentifierMapper'),
   generateTimestamp: require('./_generateTimestamp'),
-  htmlParser: require('./_htmlParser'),
-  languageMapper: require('./_languageMapper'),
-  objectHasher: require('./_objectHasher'),
-  sizeToBytesParser: require('./_sizeToBytesParser'),
-  urlEncoder: require('./_urlEncoder')
+  logMessage: require('./_logMessage')
 }

@@ -22,12 +22,23 @@
  * SOFTWARE.
  */
 
-module.exports = () => {
+module.exports = (shared) => {
+  const dependenciesShared = shared.dependencies
+
+  const pinoDependencies = dependenciesShared.pino
+  const pinoprettyDependencies = dependenciesShared.pinoPretty
+
   return (args) => {
-    const { url } = args
+    const { level, identifier, message } = args
 
-    const encodedUrl = encodeURI(url)
+    const logger = pinoDependencies(
+      pinoprettyDependencies({
+        colorize: true
+      })
+    )
 
-    return encodedUrl
+    const loggedMessage = logger[level](`[${identifier}] ${message}`)
+
+    return loggedMessage
   }
 }

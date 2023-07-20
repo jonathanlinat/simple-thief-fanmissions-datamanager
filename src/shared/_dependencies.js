@@ -23,21 +23,8 @@
  */
 
 module.exports = {
-  cheerio: require('cheerio'),
-  deepmerge: require('deepmerge'),
-  nodeFetch: (...args) =>
-    import('node-fetch').then(({ default: fetch }) => fetch(...args)),
   express: require('express'),
-  flatted: require('flatted'),
-  fs: require('fs'),
-  htmlMinifier: require('html-minifier'),
-  https: require('https'),
-  joi: require('joi'),
-  jsDom: require('jsdom'),
-  nodeObjectHash: require('node-object-hash'),
-  path: require('path'),
   ioRedis: require('ioredis'),
-  uuid: require('uuid'),
-  withQuery: require('with-query').default,
-  zlib: require('zlib')
+  pino: require('pino'),
+  pinoPretty: require('pino-pretty')
 }

@@ -24,51 +24,29 @@
 
 require('module-alias/register')
 
-const modules = require('@modules')
-const recipes = require('@recipes')
 const shared = require('@shared')
 
 const clientsShared = shared.clients
 const constantsShared = shared.constants
-const dependenciesShared = shared.dependencies
 const helpersShared = shared.helpers
-const scraperModules = modules.scraper(recipes, shared)
 
-const expressConstants = constantsShared.clients.express
 const expressClients = clientsShared.express(shared)
-const flattedDependencies = dependenciesShared.flatted
-const generateTimestampUtilsHelpers = helpersShared.utils.generateTimestamp()
+const expressConstants = constantsShared.clients.express
+const routeCallbackApiHelpers = helpersShared.api.routeCallback(shared)
 
 ;(async () => {
-  expressClients().get(
-    `/api/${expressConstants.apiVersion}/scrape`,
-    async (request, response) => {
-      const wrappedResponse = (data) => ({
-        scrape: {
-          processed_at: generateTimestampUtilsHelpers(),
-          data
-        }
-      })
+  const { prefixRoute } = expressConstants
 
-      try {
-        console.log('[API] Proceeding to scrape...')
+  expressClients().get(prefixRoute + '/crawl', (request, response) => {
+    const route = 'crawl'
+    const callback = () => {}
 
-        const scrapedData = await scraperModules()
-        const wrappedAndParsedResponse = wrappedResponse(
-          flattedDependencies.parse(scrapedData)
-        )
+    const routeCallbackResponse = routeCallbackApiHelpers({
+      response,
+      route,
+      callback
+    })
 
-        response.status(200).json(wrappedAndParsedResponse)
-
-        console.log('[API] Process executed successfully!')
-      } catch (error) {
-        response.status(500).json({
-          message: 'Ups! Something went wrong',
-          error: error.message
-        })
-
-        console.error('[API] Ups! Something went wrong:', error)
-      }
-    }
-  )
+    return routeCallbackResponse
+  })
 })()

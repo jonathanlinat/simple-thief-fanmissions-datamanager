@@ -23,6 +23,6 @@
  */
 
 module.exports = {
-  data: require('./data'),
+  api: require('./api'),
   utils: require('./utils')
 }

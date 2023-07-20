@@ -25,38 +25,49 @@
 module.exports = (shared) => {
   const helpersShared = shared.helpers
 
-  const dateFormatterHelpers = helpersShared.utils.dateFormatter()
-  const gameIdentifierMapperHelpers =
-    helpersShared.utils.gameIdentifierMapper(shared)
-  const languageMapperHelpers = helpersShared.utils.languageMapper(shared)
-  const sizeToBytesParserHelpers = helpersShared.utils.sizeToBytesParser()
-  const urlEncoderHelpers = helpersShared.utils.urlEncoder()
+  const generateTimestampUtilsHelpers = helpersShared.utils.generateTimestamp()
+  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared)
 
-  return (args) => {
-    const { scrapedData } = args
+  return async (args) => {
+    const { response, route, callback } = args
 
-    const {
-      detailsPageUrl,
-      fileSize,
-      fileUrl,
-      gameIdentifier,
-      languages,
-      lastReleaseDate,
-      ...restOfScrapedData
-    } = scrapedData
+    const wrapResponse = (args) => {
+      const { route, data } = args
 
-    const parsedData = {
-      detailsPageUrl: urlEncoderHelpers({ url: detailsPageUrl }),
-      fileSize: sizeToBytesParserHelpers({ size: fileSize }),
-      fileUrl: urlEncoderHelpers({ url: fileUrl }),
-      gameIdentifier: gameIdentifierMapperHelpers({ gameIdentifier }),
-      languages: languages.map((language) =>
-        languageMapperHelpers({ language })
-      ),
-      lastReleaseDate: dateFormatterHelpers({ date: lastReleaseDate }),
-      ...restOfScrapedData
+      const wrappedResponse = {
+        [route]: {
+          processed_at: generateTimestampUtilsHelpers(),
+          data: data || null
+        }
+      }
+
+      return wrappedResponse
     }
 
-    return parsedData
+    try {
+      logMessageUtilsHelpers({
+        level: 'info',
+        identifier: 'API',
+        message: `(${route}) Proceeding...`
+      })
+
+      const data = await callback()
+
+      logMessageUtilsHelpers({
+        level: 'info',
+        identifier: 'API',
+        message: `(${route}) Process done successfully`
+      })
+      response.status(200).json(wrapResponse({ route, data }))
+    } catch (error) {
+      logMessageUtilsHelpers({
+        level: 'error',
+        identifier: 'API',
+        message: `(${route}) ${error.message}`
+      })
+      response
+        .status(500)
+        .json(wrapResponse({ route, data: { message: error.message, error } }))
+    }
   }
 }

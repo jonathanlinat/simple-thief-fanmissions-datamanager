@@ -27,21 +27,27 @@ let server
 module.exports = (shared) => {
   const constantsShared = shared.constants
   const dependenciesShared = shared.dependencies
+  const helpersShared = shared.helpers
 
   const expressConstants = constantsShared.clients.express
   const expressDependencies = dependenciesShared.express
+  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared)
 
   return () => {
     if (!server) {
+      const { port, timeOut } = expressConstants
+
       server = expressDependencies()
 
-      const listeningServer = server.listen(expressConstants.port, () => {
-        console.log(
-          `[Server] Successfully mounted on port ${expressConstants.port}`
-        )
+      const listeningServer = server.listen(port, () => {
+        logMessageUtilsHelpers({
+          level: 'info',
+          identifier: 'Server',
+          message: `Successfully mounted on port ${port}`
+        })
       })
 
-      listeningServer.setTimeout(expressConstants.timeOut)
+      listeningServer.setTimeout(timeOut)
     }
 
     return server
