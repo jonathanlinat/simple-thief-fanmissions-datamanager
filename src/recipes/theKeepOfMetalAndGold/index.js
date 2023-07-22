@@ -23,6 +23,5 @@
  */
 
 module.exports = {
-  routeCallback: require('./_routeCallback'),
-  wrappedResponse: require('./_wrappedResponse')
+  crawler: require('./_crawler')
 }

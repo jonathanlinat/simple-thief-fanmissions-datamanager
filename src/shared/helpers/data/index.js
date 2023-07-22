@@ -23,6 +23,6 @@
  */
 
 module.exports = {
-  routeCallback: require('./_routeCallback'),
-  wrappedResponse: require('./_wrappedResponse')
+  cacher: require('./cacher'),
+  fetcher: require('./_fetcher')
 }

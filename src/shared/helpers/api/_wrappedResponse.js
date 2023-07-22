@@ -22,7 +22,23 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  routeCallback: require('./_routeCallback'),
-  wrappedResponse: require('./_wrappedResponse')
+module.exports = (shared) => {
+  const helpersShared = shared.helpers
+
+  const generateTimestampUtilsHelpers = helpersShared.utils.generateTimestamp()
+
+  return (args) => {
+    const { identifier, route, status, data } = args
+
+    const wrappedResponse = {
+      [identifier.toLowerCase()]: {
+        processed_at: generateTimestampUtilsHelpers(),
+        route,
+        status,
+        data: data || null
+      }
+    }
+
+    return wrappedResponse
+  }
 }

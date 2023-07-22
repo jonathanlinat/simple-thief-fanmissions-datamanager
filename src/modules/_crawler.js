@@ -22,7 +22,27 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  routeCallback: require('./_routeCallback'),
-  wrappedResponse: require('./_wrappedResponse')
+module.exports = (shared, recipes) => {
+  const constantsShared = shared.constants
+
+  const multipleSourcesConstants = constantsShared.multipleSources
+
+  return async () => {
+    const crawlerResponse = []
+
+    const singleSource = async (singleSource) => {
+      const { recipeName } = singleSource
+
+      const recipeCrawler = recipes[recipeName].crawler(shared)
+      const recipeCrawlerResponse = await recipeCrawler({ singleSource })
+
+      if (recipeCrawlerResponse) {
+        crawlerResponse.push(recipeCrawlerResponse)
+      }
+    }
+
+    const promises = multipleSourcesConstants.map(singleSource)
+
+    await Promise.all(promises)
+  }
 }

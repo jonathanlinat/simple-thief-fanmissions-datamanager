@@ -22,40 +22,44 @@
  * SOFTWARE.
  */
 
-let clientInstance
-
 module.exports = (shared) => {
+  const clientsShared = shared.clients
   const constantsShared = shared.constants
-  const dependenciesShared = shared.dependencies
   const helpersShared = shared.helpers
 
+  const htmlParserHelpers = helpersShared.utils.htmlParser(shared)
+  const objectHasherHelpers = helpersShared.utils.objectHasher(shared)
+  const redisClients = clientsShared.redis(shared)
   const redisConstants = constantsShared.clients.redis
-  const RedisDependencies = dependenciesShared.ioRedis
-  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared)
+  const getCacherDataHelpers = helpersShared.data.cacher.get(shared)
 
-  return () => {
-    if (!clientInstance) {
-      const { host, port } = redisConstants
+  return async (args) => {
+    const { options, callback } = args
 
-      clientInstance = new RedisDependencies({ host, port })
+    const { timeToLive } = redisConstants
+    const { recipeName, cacheType, cacheKeyObject } = options
 
-      clientInstance.on('connect', () => {
-        logMessageUtilsHelpers({
-          level: 'info',
-          identifier: 'Memory',
-          message: `Successfully connected to host ${host} on port ${port}`
-        })
-      })
+    const hashedPathParams = objectHasherHelpers({
+      object: cacheKeyObject
+    })
+    const cacheKey = `${recipeName}:${cacheType}:${hashedPathParams}`
 
-      clientInstance.on('error', (error) => {
-        logMessageUtilsHelpers({
-          level: 'error',
-          identifier: 'Memory',
-          message: error.message
-        })
-      })
+    const cachedResponse = await getCacherDataHelpers({ cacheKey })
+
+    if (cachedResponse !== null) {
+      // Must be modified to use wrappedResponse
+      return cacheKey
     }
 
-    return clientInstance
+    const callbackResponse = await callback()
+    const minifiedCallbackResponse = htmlParserHelpers({
+      htmlContent: callbackResponse
+    })
+
+    await redisClients().set(cacheKey, minifiedCallbackResponse)
+
+    if (timeToLive !== 0) {
+      await redisClients().expire(cacheKey, timeToLive)
+    }
   }
 }

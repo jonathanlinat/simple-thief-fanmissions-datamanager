@@ -23,6 +23,8 @@
  */
 
 module.exports = {
-  routeCallback: require('./_routeCallback'),
-  wrappedResponse: require('./_wrappedResponse')
+  shadowdarkKeep: require('./shadowdarkKeep'),
+  theKeepOfMetalAndGold: require('./theKeepOfMetalAndGold'),
+  thiefMissions: require('./thiefMissions'),
+  thiefTheLastGlass: require('./thiefTheLastGlass')
 }

@@ -22,7 +22,12 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  routeCallback: require('./_routeCallback'),
-  wrappedResponse: require('./_wrappedResponse')
+module.exports = () => {
+  return (args) => {
+    const { url } = args
+
+    const encodedUrl = encodeURI(url)
+
+    return encodedUrl
+  }
 }

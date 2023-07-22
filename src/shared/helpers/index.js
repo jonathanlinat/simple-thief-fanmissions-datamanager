@@ -24,5 +24,6 @@
 
 module.exports = {
   api: require('./api'),
+  data: require('./data'),
   utils: require('./utils')
 }

@@ -24,7 +24,14 @@
 
 module.exports = {
   express: require('express'),
+  htmlMinifier: require('html-minifier'),
+  https: require('https'),
   ioRedis: require('ioredis'),
+  jsDom: require('jsdom'),
+  nodeFetch: (...args) =>
+    import('node-fetch').then(({ default: fetch }) => fetch(...args)),
+  nodeObjectHash: require('node-object-hash'),
   pino: require('pino'),
-  pinoPretty: require('pino-pretty')
+  pinoPretty: require('pino-pretty'),
+  withQuery: require('with-query').default
 }

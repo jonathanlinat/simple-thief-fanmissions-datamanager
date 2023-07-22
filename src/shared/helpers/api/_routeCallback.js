@@ -25,49 +25,48 @@
 module.exports = (shared) => {
   const helpersShared = shared.helpers
 
-  const generateTimestampUtilsHelpers = helpersShared.utils.generateTimestamp()
   const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared)
+  const wrappedResponseApiHelpers = helpersShared.api.wrappedResponse(shared)
 
   return async (args) => {
     const { response, route, callback } = args
 
-    const wrapResponse = (args) => {
-      const { route, data } = args
-
-      const wrappedResponse = {
-        [route]: {
-          processed_at: generateTimestampUtilsHelpers(),
-          data: data || null
-        }
-      }
-
-      return wrappedResponse
-    }
+    const identifier = 'API'
 
     try {
       logMessageUtilsHelpers({
         level: 'info',
-        identifier: 'API',
-        message: `(${route}) Proceeding...`
+        identifier,
+        message: `(${route}) Process started...`
       })
 
       const data = await callback()
 
+      const wrappedResponse = wrappedResponseApiHelpers({
+        identifier,
+        route,
+        data
+      })
+
       logMessageUtilsHelpers({
         level: 'info',
-        identifier: 'API',
-        message: `(${route}) Process done successfully`
+        identifier,
+        message: `(${route}) Process successfully executed `
       })
-      response.status(200).json(wrapResponse({ route, data }))
+      response.status(200).json(wrappedResponse)
     } catch (error) {
+      const wrappedResponse = wrappedResponseApiHelpers({
+        identifier,
+        route,
+        data: { message: error.message }
+      })
+
       logMessageUtilsHelpers({
         level: 'error',
-        identifier: 'API',
+        identifier,
         message: `(${route}) ${error.message}`
       })
-      response
-        .status(500)
-        .json(wrapResponse({ route, data: { message: error.message, error } }))
+      response.status(500).json(wrappedResponse)
     }
   }
 }

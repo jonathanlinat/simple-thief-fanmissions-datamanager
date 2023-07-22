@@ -22,7 +22,17 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  routeCallback: require('./_routeCallback'),
-  wrappedResponse: require('./_wrappedResponse')
+module.exports = (shared) => {
+  const dependenciesShared = shared.dependencies
+
+  const nodeObjectHashDependencies = dependenciesShared.nodeObjectHash
+
+  return (args) => {
+    const { object } = args
+
+    const hasher = nodeObjectHashDependencies.hasher({ coerce: true })
+    const hashedObject = hasher.hash(object)
+
+    return hashedObject
+  }
 }

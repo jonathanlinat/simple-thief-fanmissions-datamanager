@@ -22,7 +22,16 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  routeCallback: require('./_routeCallback'),
-  wrappedResponse: require('./_wrappedResponse')
+module.exports = (shared) => {
+  const clientsShared = shared.clients
+
+  const redisClients = clientsShared.redis(shared)
+
+  return async (args) => {
+    const { cacheKey } = args
+
+    const getCacherResponse = await redisClients().get(cacheKey)
+
+    return getCacherResponse
+  }
 }

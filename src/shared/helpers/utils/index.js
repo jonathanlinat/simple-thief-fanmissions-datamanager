@@ -24,5 +24,8 @@
 
 module.exports = {
   generateTimestamp: require('./_generateTimestamp'),
-  logMessage: require('./_logMessage')
+  htmlParser: require('./_htmlParser'),
+  logMessage: require('./_logMessage'),
+  objectHasher: require('./_objectHasher'),
+  urlEncoder: require('./_urlEncoder')
 }

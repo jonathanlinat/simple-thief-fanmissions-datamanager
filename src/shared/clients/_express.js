@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-let server
+let clientInstance
 
 module.exports = (shared) => {
   const constantsShared = shared.constants
@@ -34,12 +34,12 @@ module.exports = (shared) => {
   const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared)
 
   return () => {
-    if (!server) {
+    if (!clientInstance) {
       const { port, timeOut } = expressConstants
 
-      server = expressDependencies()
+      clientInstance = expressDependencies()
 
-      const listeningServer = server.listen(port, () => {
+      const listeningServer = clientInstance.listen(port, () => {
         logMessageUtilsHelpers({
           level: 'info',
           identifier: 'Server',
@@ -50,6 +50,6 @@ module.exports = (shared) => {
       listeningServer.setTimeout(timeOut)
     }
 
-    return server
+    return clientInstance
   }
 }

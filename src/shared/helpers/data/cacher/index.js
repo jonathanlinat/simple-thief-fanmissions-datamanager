@@ -23,6 +23,6 @@
  */
 
 module.exports = {
-  routeCallback: require('./_routeCallback'),
-  wrappedResponse: require('./_wrappedResponse')
+  get: require('./_get'),
+  set: require('./_set')
 }

@@ -34,5 +34,27 @@ module.exports = {
       port: 6379,
       timeToLive: 21600000
     }
-  }
+  },
+  multipleSources: [
+    {
+      recipeName: 'thiefMissions',
+      sourceName: 'Cheap Thief Missions',
+      sourceUrl: 'https://www.thiefmissions.com'
+    },
+    {
+      recipeName: 'thiefTheLastGlass',
+      sourceName: 'Thief - The Last GLASS',
+      sourceUrl: 'https://www.ttlg.de'
+    },
+    {
+      recipeName: 'shadowdarkKeep',
+      sourceName: 'Shadowdark Keep',
+      sourceUrl: 'http://www.shadowdarkkeep.com'
+    },
+    {
+      recipeName: 'theKeepOfMetalAndGold',
+      sourceName: 'The Keep of Metal and Gold',
+      sourceUrl: 'http://www.keepofmetalandgold.com'
+    }
+  ]
 }
