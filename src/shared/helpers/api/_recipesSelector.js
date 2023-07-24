@@ -22,27 +22,32 @@
  * SOFTWARE.
  */
 
-module.exports = (shared, recipes) => {
+module.exports = (shared, options) => {
   const constantsShared = shared.constants
 
   const multipleSourcesConstants = constantsShared.multipleSources
 
-  return async () => {
-    const crawlerResponse = []
+  return async (args) => {
+    const { recipes } = options
+    const { module } = args
+
+    const recipesSelectorResponse = []
 
     const singleSource = async (singleSource) => {
       const { recipeName } = singleSource
 
-      const recipeCrawler = recipes[recipeName].crawler(shared)
-      const recipeCrawlerResponse = await recipeCrawler({ singleSource })
+      const selectedRecipe = recipes[recipeName][module](shared)
+      const selectedRecipeResponse = await selectedRecipe({ singleSource })
 
-      if (recipeCrawlerResponse) {
-        crawlerResponse.push(recipeCrawlerResponse)
+      if (selectedRecipeResponse) {
+        recipesSelectorResponse.push(selectedRecipeResponse)
       }
     }
 
     const promises = multipleSourcesConstants.map(singleSource)
 
     await Promise.all(promises)
+
+    return recipesSelectorResponse
   }
 }

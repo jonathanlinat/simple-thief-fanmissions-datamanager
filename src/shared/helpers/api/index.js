@@ -23,6 +23,8 @@
  */
 
 module.exports = {
-  routeCallback: require('./_routeCallback'),
-  wrappedResponse: require('./_wrappedResponse')
+  controllerHandler: require('./_controllerHandler'),
+  errorHandler: require('./_errorHandler'),
+  recipesSelector: require('./_recipesSelector'),
+  responseWrapper: require('./_responseWrapper')
 }

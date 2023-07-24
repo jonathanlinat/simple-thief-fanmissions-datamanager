@@ -22,51 +22,24 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
+module.exports = (shared, options) => {
   const helpersShared = shared.helpers
 
-  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared)
-  const wrappedResponseApiHelpers = helpersShared.api.wrappedResponse(shared)
+  const generateTimestampUtilsHelpers = helpersShared.utils.generateTimestamp()
 
-  return async (args) => {
-    const { response, route, callback } = args
+  return (args) => {
+    const { identifier } = options
+    const { route, status, data } = args
 
-    const identifier = 'API'
-
-    try {
-      logMessageUtilsHelpers({
-        level: 'info',
-        identifier,
-        message: `(${route}) Process started...`
-      })
-
-      const data = await callback()
-
-      const wrappedResponse = wrappedResponseApiHelpers({
-        identifier,
+    const responseWrapper = {
+      [identifier.toLowerCase()]: {
+        processed_at: generateTimestampUtilsHelpers(),
         route,
-        data
-      })
-
-      logMessageUtilsHelpers({
-        level: 'info',
-        identifier,
-        message: `(${route}) Process successfully executed `
-      })
-      response.status(200).json(wrappedResponse)
-    } catch (error) {
-      const wrappedResponse = wrappedResponseApiHelpers({
-        identifier,
-        route,
-        data: { message: error.message }
-      })
-
-      logMessageUtilsHelpers({
-        level: 'error',
-        identifier,
-        message: `(${route}) ${error.message}`
-      })
-      response.status(500).json(wrappedResponse)
+        status,
+        data: data || null
+      }
     }
+
+    return responseWrapper
   }
 }

@@ -31,12 +31,14 @@ module.exports = (shared) => {
     const { singleSource } = args
 
     const { recipeName, sourceUrl } = singleSource
-    const cacheType = 'html'
 
-    await fetcherDataHelpers({
+    const fetcherResponse = await fetcherDataHelpers({
       recipeName,
-      cacheType,
+      cacheType: 'html',
+      pageType: 'fanMissionListingPage',
       path: sourceUrl + '/fmarchive.php'
     })
+
+    return fetcherResponse
   }
 }

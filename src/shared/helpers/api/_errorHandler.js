@@ -22,6 +22,27 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  crawler: require('./_crawler')
+module.exports = (shared) => {
+  const helpersShared = shared.helpers
+
+  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared)
+  const responseWrapperApiHelpers = helpersShared.api.responseWrapper(shared, {
+    identifier: 'API'
+  })
+
+  return (error, request, response, next) => {
+    const route = request.path
+
+    const responseWrapper = responseWrapperApiHelpers({
+      route,
+      data: { message: error.message }
+    })
+
+    logMessageUtilsHelpers({
+      level: 'error',
+      message: `(${route}) ${error.message}`
+    })
+
+    return response.status(500).json(responseWrapper)
+  }
 }

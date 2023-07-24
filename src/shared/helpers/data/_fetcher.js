@@ -46,59 +46,18 @@ module.exports = (shared) => {
     const cacheKeyObject = { path, params }
     const cacheOptions = { recipeName, cacheType, cacheKeyObject }
     const cacheCallback = async () => {
-      await nodeFetchDependencies(fetchQuery, fetchOptions)
+      const fetchedData = await nodeFetchDependencies(fetchQuery, fetchOptions)
+
+      const fetchedDataContent = fetchedData.text()
+
+      return fetchedDataContent
     }
 
-    await setCacherDataHelpers({
-      options: cacheOptions,
+    const fetcherResponse = await setCacherDataHelpers({
+      cacheOptions,
       callback: cacheCallback
     })
 
-    /*
-      1.  Create a custom Error class to pass more precise details
-
-      2.  TBD: Add try...catch where needed and use the custom Error class to better handle messages
-
-      3.  Use the wrappedResponse API helper to return an object with the status of the execution of the module, recipe, helper:
-
-          const internalResponseDetails = {
-            cacher: {
-              status: "OK",
-              processed_at: "2023-07-22T03:05:00.642Z",
-              data: {
-                cacheKey: "shadowdarkKeep:html:12d0493b828e09e34cd5a861c4f5abe1967775c8c8cf86b1489c1940d31827ce"
-              }
-            },
-            fetcher: {
-              status: "OK",
-              processed_at: "2023-07-22T03:05:00.642Z",
-              data: {}
-            },
-            recipe: {
-              status: "OK",
-              processed_at: "2023-07-22T03:05:00.642Z",
-              data: {}
-            },
-            crawler: {
-              status: "OK",
-              processed_at: "2023-07-22T03:05:00.642Z",
-              data: {}
-            }
-          }
-
-      4.  Think about the structure of the JSOn document that needs to be created and cached in Redis,
-          which represents the cached keys and will be used to scrape the data in the future
-
-      5.  Create a subroute to crawl only a specific website and add the optional query param to select a specific game
-
-      6.  Modify the current crawl route to request authentication
-
-      7.  Create an authenticated route to flush the Redis DB
-
-      8.  Think about how to handle failed crawls:
-          - a console message must be sent
-          - the loop must not be broke
-          - the main response must give the list of failed crawled sources
-    */
+    return fetcherResponse
   }
 }

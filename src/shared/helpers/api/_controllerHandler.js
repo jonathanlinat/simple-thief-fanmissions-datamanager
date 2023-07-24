@@ -22,23 +22,16 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
-  const helpersShared = shared.helpers
-
-  const generateTimestampUtilsHelpers = helpersShared.utils.generateTimestamp()
-
+module.exports = () => {
   return (args) => {
-    const { identifier, route, status, data } = args
+    const { controller } = args
 
-    const wrappedResponse = {
-      [identifier.toLowerCase()]: {
-        processed_at: generateTimestampUtilsHelpers(),
-        route,
-        status,
-        data: data || null
+    return async (request, response, next) => {
+      try {
+        await controller(request, response)
+      } catch (error) {
+        return next(error)
       }
     }
-
-    return wrappedResponse
   }
 }

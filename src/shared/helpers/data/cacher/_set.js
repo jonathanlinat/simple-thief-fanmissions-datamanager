@@ -34,21 +34,20 @@ module.exports = (shared) => {
   const getCacherDataHelpers = helpersShared.data.cacher.get(shared)
 
   return async (args) => {
-    const { options, callback } = args
+    const { cacheOptions, callback } = args
 
     const { timeToLive } = redisConstants
-    const { recipeName, cacheType, cacheKeyObject } = options
+    const { recipeName, cacheType, cacheKeyObject } = cacheOptions
 
     const hashedPathParams = objectHasherHelpers({
       object: cacheKeyObject
     })
-    const cacheKey = `${recipeName}:${cacheType}:${hashedPathParams}`
+    const cacheKey = `${cacheType}:${recipeName}:${hashedPathParams}`
 
     const cachedResponse = await getCacherDataHelpers({ cacheKey })
 
     if (cachedResponse !== null) {
-      // Must be modified to use wrappedResponse
-      return cacheKey
+      return
     }
 
     const callbackResponse = await callback()
