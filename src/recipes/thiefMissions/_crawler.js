@@ -22,6 +22,85 @@
  * SOFTWARE.
  */
 
-module.exports = () => {
-  return async () => {}
+module.exports = (shared) => {
+  const helpersShared = shared.helpers
+
+  const crawlerResponseWrapperUtilsHelpers =
+    helpersShared.utils.crawlerResponseWrapper(shared)
+  const fetcherDataHelpers = helpersShared.data.fetcher(shared)
+
+  return async (args) => {
+    const { singleSource } = args
+
+    const { recipeName, sourceUrl } = singleSource
+
+    let crawlerResponse = {}
+
+    const fanMissionListingPageFetcherOptions = {
+      recipeName,
+      documentType: 'html',
+      pageType: 'fanMissionListingPage',
+      path: sourceUrl + '/search.cgi',
+      params: { search: '', sort: 'title' }
+    }
+    const fetchedFanMissionListingPage = await fetcherDataHelpers(
+      fanMissionListingPageFetcherOptions
+    )
+    const {
+      status: fanMissionListingPageStatus,
+      response: fanMissionListingPageResponse,
+      hash: fanMissionListingPageHash
+    } = fetchedFanMissionListingPage
+
+    crawlerResponse = crawlerResponseWrapperUtilsHelpers({
+      wholeObject: crawlerResponse,
+      status: fanMissionListingPageStatus,
+      fetcherOptions: fanMissionListingPageFetcherOptions,
+      hash: fanMissionListingPageHash
+    })
+
+    if (fanMissionListingPageStatus === 'empty_document') {
+      return crawlerResponse
+    }
+
+    const fanMissionListingPageSelector =
+      fanMissionListingPageResponse('body tr[bgcolor]')
+    for (const selectedFanMission of fanMissionListingPageSelector) {
+      const fanMissionSelector =
+        fanMissionListingPageResponse(selectedFanMission)
+
+      const fanMissionDetailPageUrlSelector =
+        fanMissionSelector.find('a[href*="/m/"]')[0]
+      const fanMissionDetailPageUrl =
+        sourceUrl + fanMissionDetailPageUrlSelector.attribs.href.trim()
+
+      const fanMissionDetailPageFetcherOptions = {
+        recipeName,
+        documentType: 'html',
+        pageType: 'fanMissionDetailPage',
+        path: fanMissionDetailPageUrl,
+        params: {}
+      }
+      const fetchedFanMissionDetailPage = await fetcherDataHelpers(
+        fanMissionDetailPageFetcherOptions
+      )
+      const {
+        status: fanMissionDetailPageStatus,
+        hash: fanMissionDetailPageHash
+      } = fetchedFanMissionDetailPage
+
+      crawlerResponse = crawlerResponseWrapperUtilsHelpers({
+        wholeObject: crawlerResponse,
+        status: fanMissionDetailPageStatus,
+        fetcherOptions: fanMissionDetailPageFetcherOptions,
+        hash: fanMissionDetailPageHash
+      })
+
+      if (fanMissionDetailPageStatus === 'empty_document') {
+        return crawlerResponse
+      }
+    }
+
+    return crawlerResponse
+  }
 }

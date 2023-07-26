@@ -22,12 +22,16 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
+module.exports = (shared, options) => {
   const helpersShared = shared.helpers
 
-  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared)
+  const { identifier } = options
+
+  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared, {
+    identifier
+  })
   const responseWrapperApiHelpers = helpersShared.api.responseWrapper(shared, {
-    identifier: 'API'
+    identifier
   })
 
   return (error, request, response, next) => {

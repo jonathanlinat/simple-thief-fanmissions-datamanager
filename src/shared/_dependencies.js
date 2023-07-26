@@ -23,6 +23,8 @@
  */
 
 module.exports = {
+  cheerio: require('cheerio'),
+  deepmerge: require('deepmerge'),
   express: require('express'),
   htmlMinifier: require('html-minifier'),
   https: require('https'),

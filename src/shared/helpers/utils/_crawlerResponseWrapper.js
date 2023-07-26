@@ -22,32 +22,21 @@
  * SOFTWARE.
  */
 
-module.exports = (shared, options) => {
-  const constantsShared = shared.constants
+module.exports = (shared) => {
+  const helpersShared = shared.helpers
 
-  const multipleSourcesConstants = constantsShared.multipleSources
+  const deepMergerUtilsHelpers = helpersShared.utils.deepMerger(shared)
 
-  return async (args) => {
-    const { recipes } = options
-    const { module } = args
+  return (args) => {
+    const { wholeObject, status, fetcherOptions, hash } = args
 
-    const recipesSelectorResponse = []
-
-    const singleSource = async (singleSource) => {
-      const { recipeName } = singleSource
-
-      const selectedRecipe = recipes[recipeName][module](shared)
-      const selectedRecipeResponse = await selectedRecipe({ singleSource })
-
-      if (selectedRecipeResponse) {
-        recipesSelectorResponse.push(selectedRecipeResponse)
+    const crawlerResponse = deepMergerUtilsHelpers({
+      wholeObject,
+      individualObject: {
+        [status]: [{ ...fetcherOptions, hash }]
       }
-    }
+    })
 
-    const promises = multipleSourcesConstants.map(singleSource)
-
-    await Promise.all(promises)
-
-    return recipesSelectorResponse
+    return crawlerResponse
   }
 }

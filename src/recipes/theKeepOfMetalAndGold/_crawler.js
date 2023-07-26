@@ -22,6 +22,46 @@
  * SOFTWARE.
  */
 
-module.exports = () => {
-  return async () => {}
+module.exports = (shared) => {
+  const helpersShared = shared.helpers
+
+  const crawlerResponseWrapperUtilsHelpers =
+    helpersShared.utils.crawlerResponseWrapper(shared)
+  const fetcherDataHelpers = helpersShared.data.fetcher(shared)
+
+  return async (args) => {
+    const { singleSource } = args
+
+    const { recipeName, sourceUrl } = singleSource
+
+    let crawlerResponse = {}
+
+    const fanMissionListingPageFetcherOptions = {
+      recipeName,
+      documentType: 'html',
+      pageType: 'fanMissionListingPage',
+      path: sourceUrl + '/fmarchive.php',
+      params: {}
+    }
+    const fetchedFanMissionListingPage = await fetcherDataHelpers(
+      fanMissionListingPageFetcherOptions
+    )
+    const {
+      status: fanMissionListingPageStatus,
+      hash: fanMissionListingPageHash
+    } = fetchedFanMissionListingPage
+
+    crawlerResponse = crawlerResponseWrapperUtilsHelpers({
+      wholeObject: crawlerResponse,
+      status: fanMissionListingPageStatus,
+      fetcherOptions: fanMissionListingPageFetcherOptions,
+      hash: fanMissionListingPageHash
+    })
+
+    if (fanMissionListingPageStatus === 'empty_document') {
+      return crawlerResponse
+    }
+
+    return crawlerResponse
+  }
 }

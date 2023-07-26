@@ -22,12 +22,16 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  crawlerResponseWrapper: require('./_crawlerResponseWrapper'),
-  deepMerger: require('./_deepMerger'),
-  generateTimestamp: require('./_generateTimestamp'),
-  htmlParser: require('./_htmlParser'),
-  logMessage: require('./_logMessage'),
-  objectHasher: require('./_objectHasher'),
-  urlEncoder: require('./_urlEncoder')
+module.exports = (shared) => {
+  const dependenciesShared = shared.dependencies
+
+  const deepMergeDependencies = dependenciesShared.deepmerge
+
+  return (args) => {
+    const { wholeObject, individualObject } = args
+
+    const mergedObject = deepMergeDependencies(wholeObject, individualObject)
+
+    return mergedObject
+  }
 }

@@ -25,10 +25,11 @@
 module.exports = (shared, options) => {
   const helpersShared = shared.helpers
 
+  const { identifier } = options
+
   const generateTimestampUtilsHelpers = helpersShared.utils.generateTimestamp()
 
   return (args) => {
-    const { identifier } = options
     const { route, status, data } = args
 
     const responseWrapper = {

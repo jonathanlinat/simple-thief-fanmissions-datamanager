@@ -27,7 +27,12 @@ module.exports = (shared) => {
   const constantsShared = shared.constants
   const helpersShared = shared.helpers
 
+  const identifier = 'Cacher'
+
   const htmlParserHelpers = helpersShared.utils.htmlParser(shared)
+  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared, {
+    identifier
+  })
   const objectHasherHelpers = helpersShared.utils.objectHasher(shared)
   const redisClients = clientsShared.redis(shared)
   const redisConstants = constantsShared.clients.redis
@@ -37,28 +42,80 @@ module.exports = (shared) => {
     const { cacheOptions, callback } = args
 
     const { timeToLive } = redisConstants
-    const { recipeName, cacheType, cacheKeyObject } = cacheOptions
+    const {
+      recipeName,
+      documentType,
+      pageType,
+      documentReference,
+      cacheKeyObject
+    } = cacheOptions
 
-    const hashedPathParams = objectHasherHelpers({
+    const uppercasedDocumentType = documentType.toUpperCase()
+
+    const hash = objectHasherHelpers({
       object: cacheKeyObject
     })
-    const cacheKey = `${cacheType}:${recipeName}:${hashedPathParams}`
+    const cacheKey = `${recipeName}:${pageType}:${documentType}:${hash}`
 
     const cachedResponse = await getCacherDataHelpers({ cacheKey })
 
     if (cachedResponse !== null) {
-      return
+      logMessageUtilsHelpers({
+        level: 'info',
+        message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' is already cached (${hash})`
+      })
+
+      const setCacherResponse = {
+        status: 'already_cached',
+        response: cachedResponse,
+        hash
+      }
+
+      return setCacherResponse
     }
+
+    logMessageUtilsHelpers({
+      level: 'info',
+      message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' is not cached`
+    })
+
+    logMessageUtilsHelpers({
+      level: 'info',
+      message: `(${recipeName}) Caching ${uppercasedDocumentType} document '${documentReference}'...`
+    })
 
     const callbackResponse = await callback()
     const minifiedCallbackResponse = htmlParserHelpers({
       htmlContent: callbackResponse
     })
 
+    if (minifiedCallbackResponse === null) {
+      const setCacherResponse = {
+        status: 'empty_document',
+        response: minifiedCallbackResponse,
+        hash: null
+      }
+
+      return setCacherResponse
+    }
+
     await redisClients().set(cacheKey, minifiedCallbackResponse)
 
     if (timeToLive !== 0) {
       await redisClients().expire(cacheKey, timeToLive)
     }
+
+    logMessageUtilsHelpers({
+      level: 'info',
+      message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' cached successfully (${hash})`
+    })
+
+    const setCacherResponse = {
+      status: 'recently_cached',
+      response: minifiedCallbackResponse,
+      hash
+    }
+
+    return setCacherResponse
   }
 }

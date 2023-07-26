@@ -35,6 +35,10 @@ module.exports = {
       timeToLive: 21600000
     }
   },
+  fetcher: {
+    maxRetries: 3,
+    retryDelay: 5000
+  },
   multipleSources: [
     {
       recipeName: 'thiefMissions',

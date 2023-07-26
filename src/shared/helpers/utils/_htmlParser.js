@@ -35,6 +35,13 @@ module.exports = (shared) => {
 
     try {
       const htmlContentToDom = new jsDomDependencies.JSDOM(htmlContent)
+      const isHtmlContentEmpty =
+        htmlContentToDom.window.document.body.innerHTML.trim() === ''
+
+      if (isHtmlContentEmpty) {
+        return null
+      }
+
       const domToHtmlContent = htmlContentToDom.serialize()
       parsedHtml = htmlMinifierDependencies.minify(domToHtmlContent, {
         collapseWhitespace: true,

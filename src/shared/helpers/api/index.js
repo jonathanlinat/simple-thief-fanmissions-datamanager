@@ -25,6 +25,6 @@
 module.exports = {
   controllerHandler: require('./_controllerHandler'),
   errorHandler: require('./_errorHandler'),
-  recipesSelector: require('./_recipesSelector'),
+  recipeSelector: require('./_recipeSelector'),
   responseWrapper: require('./_responseWrapper')
 }

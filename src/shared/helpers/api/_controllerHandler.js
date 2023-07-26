@@ -22,13 +22,33 @@
  * SOFTWARE.
  */
 
-module.exports = () => {
+module.exports = (shared, options) => {
+  const helpersShared = shared.helpers
+
+  const { identifier } = options
+
+  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared, {
+    identifier
+  })
+
   return (args) => {
     const { controller } = args
 
     return async (request, response, next) => {
+      const route = request.path
+
       try {
+        logMessageUtilsHelpers({
+          level: 'info',
+          message: `(${route}) Proceeding...`
+        })
+
         await controller(request, response)
+
+        logMessageUtilsHelpers({
+          level: 'info',
+          message: `(${route}) Process done successfully`
+        })
       } catch (error) {
         return next(error)
       }

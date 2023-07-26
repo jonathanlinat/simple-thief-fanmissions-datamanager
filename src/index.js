@@ -31,30 +31,38 @@ const clientsShared = shared.clients
 const constantsShared = shared.constants
 const helpersShared = shared.helpers
 
+const identifier = 'API'
+
 const expressClients = clientsShared.express(shared)
 const expressConstants = constantsShared.clients.express
-const controllerHandlerApiHelpers = helpersShared.api.controllerHandler()
-const errorHandlerApiHelpers = helpersShared.api.errorHandler(shared)
-const recipesSelectorApiHelpers = helpersShared.api.recipesSelector(shared, {
+const controllerHandlerApiHelpers = helpersShared.api.controllerHandler(
+  shared,
+  { identifier }
+)
+const errorHandlerApiHelpers = helpersShared.api.errorHandler(shared, {
+  identifier
+})
+const recipeSelectorApiHelpers = helpersShared.api.recipeSelector(shared, {
   recipes
 })
 const responseWrapperApiHelpers = helpersShared.api.responseWrapper(shared, {
-  identifier: 'API'
+  identifier
 })
 
 ;(async () => {
   const { prefixRoute } = expressConstants
 
   expressClients().get(
-    `${prefixRoute}/crawl`,
+    `${prefixRoute}/crawl/:recipeName?`,
     controllerHandlerApiHelpers({
       controller: async (request, response) => {
         const route = request.path
+        const recipeName = request.params.recipeName
 
-        const controllerResponse = await recipesSelectorApiHelpers({
-          module: 'crawler'
+        const controllerResponse = await recipeSelectorApiHelpers({
+          module: 'crawler',
+          recipeName
         })
-
         const responseWrapper = responseWrapperApiHelpers({
           route,
           data: controllerResponse

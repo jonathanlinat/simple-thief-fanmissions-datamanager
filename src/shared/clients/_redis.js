@@ -29,9 +29,13 @@ module.exports = (shared) => {
   const dependenciesShared = shared.dependencies
   const helpersShared = shared.helpers
 
+  const identifier = 'Memory'
+
   const redisConstants = constantsShared.clients.redis
   const RedisDependencies = dependenciesShared.ioRedis
-  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared)
+  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared, {
+    identifier
+  })
 
   return () => {
     if (!clientInstance) {
@@ -42,7 +46,6 @@ module.exports = (shared) => {
       clientInstance.on('connect', () => {
         logMessageUtilsHelpers({
           level: 'info',
-          identifier: 'Memory',
           message: `Successfully connected to host ${host} on port ${port}`
         })
       })
@@ -50,7 +53,6 @@ module.exports = (shared) => {
       clientInstance.on('error', (error) => {
         logMessageUtilsHelpers({
           level: 'error',
-          identifier: 'Memory',
           message: error.message
         })
       })

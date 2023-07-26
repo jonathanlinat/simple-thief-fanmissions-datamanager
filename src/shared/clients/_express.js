@@ -29,9 +29,13 @@ module.exports = (shared) => {
   const dependenciesShared = shared.dependencies
   const helpersShared = shared.helpers
 
+  const identifier = 'Server'
+
   const expressConstants = constantsShared.clients.express
   const expressDependencies = dependenciesShared.express
-  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared)
+  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared, {
+    identifier
+  })
 
   return () => {
     if (!clientInstance) {
@@ -42,7 +46,6 @@ module.exports = (shared) => {
       const listeningServer = clientInstance.listen(port, () => {
         logMessageUtilsHelpers({
           level: 'info',
-          identifier: 'Server',
           message: `Successfully mounted on port ${port}`
         })
       })

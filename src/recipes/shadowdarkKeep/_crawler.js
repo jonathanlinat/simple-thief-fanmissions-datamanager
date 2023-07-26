@@ -25,6 +25,8 @@
 module.exports = (shared) => {
   const helpersShared = shared.helpers
 
+  const crawlerResponseWrapperUtilsHelpers =
+    helpersShared.utils.crawlerResponseWrapper(shared)
   const fetcherDataHelpers = helpersShared.data.fetcher(shared)
 
   return async (args) => {
@@ -32,13 +34,34 @@ module.exports = (shared) => {
 
     const { recipeName, sourceUrl } = singleSource
 
-    const fetcherResponse = await fetcherDataHelpers({
+    let crawlerResponse = {}
+
+    const fanMissionListingPageFetcherOptions = {
       recipeName,
-      cacheType: 'html',
+      documentType: 'html',
       pageType: 'fanMissionListingPage',
-      path: sourceUrl + '/fmarchive.php'
+      path: sourceUrl + '/fmarchive.php',
+      params: {}
+    }
+    const fetchedFanMissionListingPage = await fetcherDataHelpers(
+      fanMissionListingPageFetcherOptions
+    )
+    const {
+      status: fanMissionListingPageStatus,
+      hash: fanMissionListingPageHash
+    } = fetchedFanMissionListingPage
+
+    crawlerResponse = crawlerResponseWrapperUtilsHelpers({
+      wholeObject: crawlerResponse,
+      status: fanMissionListingPageStatus,
+      fetcherOptions: fanMissionListingPageFetcherOptions,
+      hash: fanMissionListingPageHash
     })
 
-    return fetcherResponse
+    if (fanMissionListingPageStatus === 'empty_document') {
+      return crawlerResponse
+    }
+
+    return crawlerResponse
   }
 }
