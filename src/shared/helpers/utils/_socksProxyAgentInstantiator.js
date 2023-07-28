@@ -22,14 +22,28 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  concurrencyLimiter: require('./_concurrentyLimiter'),
-  crawlerResponseWrapper: require('./_crawlerResponseWrapper'),
-  deepMerger: require('./_deepMerger'),
-  generateTimestamp: require('./_generateTimestamp'),
-  htmlParser: require('./_htmlParser'),
-  messageLogger: require('./_messageLogger'),
-  objectHasher: require('./_objectHasher'),
-  socksProxyAgentInstantiator: require('./_socksProxyAgentInstantiator'),
-  urlEncoder: require('./_urlEncoder')
+let socksProxyAgentInstance
+
+module.exports = (shared) => {
+  const constantsShared = shared.constants
+  const dependenciesShared = shared.dependencies
+
+  const fetcherConstants = constantsShared.fetcher
+  const { SocksProxyAgent: SocksProxyAgentDependencies } =
+    dependenciesShared.socksProxyAgent
+
+  return () => {
+    if (!socksProxyAgentInstance) {
+      const { tor } = fetcherConstants
+      const { protocol, host, port } = tor
+
+      const socksProxyAgentInstanceUrl = `${protocol}://${host}:${port}`
+
+      socksProxyAgentInstance = new SocksProxyAgentDependencies(
+        socksProxyAgentInstanceUrl
+      )
+    }
+
+    return socksProxyAgentInstance
+  }
 }

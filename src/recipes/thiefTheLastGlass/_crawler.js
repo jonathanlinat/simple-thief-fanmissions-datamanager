@@ -23,8 +23,12 @@
  */
 
 module.exports = (shared) => {
+  const constantsShared = shared.constants
   const helpersShared = shared.helpers
 
+  const concurrencyLimiterUtilsHelpers =
+    helpersShared.utils.concurrencyLimiter(shared)
+  const crawlerConstants = constantsShared.crawler
   const crawlerResponseWrapperUtilsHelpers =
     helpersShared.utils.crawlerResponseWrapper(shared)
   const fetcherDataHelpers = helpersShared.data.fetcher(shared)
@@ -33,6 +37,7 @@ module.exports = (shared) => {
     const { singleSource } = args
 
     const { recipeName, sourceUrl } = singleSource
+    const { inconclusiveResponses } = crawlerConstants
 
     let crawlerResponse = {}
 
@@ -59,14 +64,15 @@ module.exports = (shared) => {
       hash: fanMissionListingPageHash
     })
 
-    if (fanMissionListingPageStatus === 'empty_document') {
+    if (inconclusiveResponses.includes(fanMissionListingPageStatus)) {
       return crawlerResponse
     }
 
     const fanMissionListingPageSelector = fanMissionListingPageResponse(
       'body div[id="postList"] tr:not(:first-child)'
     )
-    for (const selectedFanMission of fanMissionListingPageSelector) {
+
+    const fanMissionDetailsPageFetcher = async (selectedFanMission) => {
       const fanMissionSelector =
         fanMissionListingPageResponse(selectedFanMission)
 
@@ -97,11 +103,17 @@ module.exports = (shared) => {
         fetcherOptions: fanMissionDetailPageFetcherOptions,
         hash: fanMissionDetailPageHash
       })
-
-      if (fanMissionDetailPageStatus === 'empty_document') {
-        return crawlerResponse
-      }
     }
+
+    const promises = Array.from(fanMissionListingPageSelector).map(
+      (selectedFanMission) =>
+        concurrencyLimiterUtilsHelpers({
+          promiseCallback: () =>
+            fanMissionDetailsPageFetcher(selectedFanMission)
+        })
+    )
+
+    await Promise.all(promises)
 
     return crawlerResponse
   }

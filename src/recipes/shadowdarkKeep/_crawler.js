@@ -23,8 +23,10 @@
  */
 
 module.exports = (shared) => {
+  const constantsShared = shared.constants
   const helpersShared = shared.helpers
 
+  const crawlerConstants = constantsShared.crawler
   const crawlerResponseWrapperUtilsHelpers =
     helpersShared.utils.crawlerResponseWrapper(shared)
   const fetcherDataHelpers = helpersShared.data.fetcher(shared)
@@ -33,6 +35,7 @@ module.exports = (shared) => {
     const { singleSource } = args
 
     const { recipeName, sourceUrl } = singleSource
+    const { inconclusiveResponses } = crawlerConstants
 
     let crawlerResponse = {}
 
@@ -58,7 +61,7 @@ module.exports = (shared) => {
       hash: fanMissionListingPageHash
     })
 
-    if (fanMissionListingPageStatus === 'empty_document') {
+    if (inconclusiveResponses.includes(fanMissionListingPageStatus)) {
       return crawlerResponse
     }
 

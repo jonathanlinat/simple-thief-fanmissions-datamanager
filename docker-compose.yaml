@@ -10,9 +10,14 @@ services:
     volumes:
       - ./:/usr/local/apps/server
     links:
+      - proxy
       - memory
     depends_on:
+      - proxy
       - memory
+  proxy:
+    image: dockage/tor-privoxy
+    restart: always
   memory:
     image: redis
     restart: always

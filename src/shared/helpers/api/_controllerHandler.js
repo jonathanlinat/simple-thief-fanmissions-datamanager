@@ -27,7 +27,7 @@ module.exports = (shared, options) => {
 
   const { identifier } = options
 
-  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared, {
+  const messageLoggerUtilsHelpers = helpersShared.utils.messageLogger(shared, {
     identifier
   })
 
@@ -38,14 +38,14 @@ module.exports = (shared, options) => {
       const route = request.path
 
       try {
-        logMessageUtilsHelpers({
+        messageLoggerUtilsHelpers({
           level: 'info',
           message: `(${route}) Proceeding...`
         })
 
         await controller(request, response)
 
-        logMessageUtilsHelpers({
+        messageLoggerUtilsHelpers({
           level: 'info',
           message: `(${route}) Process done successfully`
         })

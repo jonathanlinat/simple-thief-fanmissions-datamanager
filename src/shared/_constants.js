@@ -37,7 +37,16 @@ module.exports = {
   },
   fetcher: {
     maxRetries: 3,
-    retryDelay: 5000
+    retryDelay: 5000,
+    concurrencyLimit: 6,
+    tor: {
+      protocol: 'socks5h',
+      host: 'proxy',
+      port: 9050
+    }
+  },
+  crawler: {
+    inconclusiveResponses: ['empty_document', 'unfetchable_document']
   },
   multipleSources: [
     {
@@ -45,11 +54,11 @@ module.exports = {
       sourceName: 'Cheap Thief Missions',
       sourceUrl: 'https://www.thiefmissions.com'
     },
-    {
+    /* {
       recipeName: 'thiefTheLastGlass',
       sourceName: 'Thief - The Last GLASS',
       sourceUrl: 'https://www.ttlg.de'
-    },
+    }, */
     {
       recipeName: 'shadowdarkKeep',
       sourceName: 'Shadowdark Keep',

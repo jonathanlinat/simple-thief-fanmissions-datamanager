@@ -27,7 +27,7 @@ module.exports = (shared, options) => {
 
   const { identifier } = options
 
-  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared, {
+  const messageLoggerUtilsHelpers = helpersShared.utils.messageLogger(shared, {
     identifier
   })
   const responseWrapperApiHelpers = helpersShared.api.responseWrapper(shared, {
@@ -42,10 +42,12 @@ module.exports = (shared, options) => {
       data: { message: error.message }
     })
 
-    logMessageUtilsHelpers({
+    messageLoggerUtilsHelpers({
       level: 'error',
       message: `(${route}) ${error.message}`
     })
+
+    console.log(error)
 
     return response.status(500).json(responseWrapper)
   }

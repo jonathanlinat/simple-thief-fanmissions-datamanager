@@ -23,6 +23,7 @@
  */
 
 module.exports = {
+  bottleneck: require('bottleneck'),
   cheerio: require('cheerio'),
   deepmerge: require('deepmerge'),
   express: require('express'),
@@ -33,6 +34,7 @@ module.exports = {
   nodeFetch: (...args) =>
     import('node-fetch').then(({ default: fetch }) => fetch(...args)),
   nodeObjectHash: require('node-object-hash'),
+  socksProxyAgent: require('socks-proxy-agent'),
   pino: require('pino'),
   pinoPretty: require('pino-pretty'),
   withQuery: require('with-query').default

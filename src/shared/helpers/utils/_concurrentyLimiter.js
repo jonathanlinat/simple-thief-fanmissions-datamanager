@@ -22,14 +22,31 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  concurrencyLimiter: require('./_concurrentyLimiter'),
-  crawlerResponseWrapper: require('./_crawlerResponseWrapper'),
-  deepMerger: require('./_deepMerger'),
-  generateTimestamp: require('./_generateTimestamp'),
-  htmlParser: require('./_htmlParser'),
-  messageLogger: require('./_messageLogger'),
-  objectHasher: require('./_objectHasher'),
-  socksProxyAgentInstantiator: require('./_socksProxyAgentInstantiator'),
-  urlEncoder: require('./_urlEncoder')
+let concurrencyLimiterInstance
+
+module.exports = (shared) => {
+  const constantsShared = shared.constants
+  const dependenciesShared = shared.dependencies
+
+  const BottleneckDependencies = dependenciesShared.bottleneck
+  const fetcherConstants = constantsShared.fetcher
+
+  return (args) => {
+    const { promiseCallback } = args
+
+    if (!concurrencyLimiterInstance) {
+      const { concurrencyLimit } = fetcherConstants
+
+      const concurrencyLimiterOptions = { maxConcurrent: concurrencyLimit }
+
+      concurrencyLimiterInstance = new BottleneckDependencies(
+        concurrencyLimiterOptions
+      )
+    }
+
+    const concurrentyLimiterResponse =
+      concurrencyLimiterInstance.schedule(promiseCallback)
+
+    return concurrentyLimiterResponse
+  }
 }

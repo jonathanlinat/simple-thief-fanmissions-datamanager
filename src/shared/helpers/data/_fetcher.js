@@ -30,16 +30,20 @@ module.exports = (shared) => {
   const identifier = 'Fetcher'
 
   const cheerioDependencies = dependenciesShared.cheerio
+  const crawlerConstants = constantsShared.crawler
   const fetcherConstants = constantsShared.fetcher
   const httpsDependencies = dependenciesShared.https
-  const logMessageUtilsHelpers = helpersShared.utils.logMessage(shared, {
+  const messageLoggerUtilsHelpers = helpersShared.utils.messageLogger(shared, {
     identifier
   })
   const nodeFetchDependencies = dependenciesShared.nodeFetch
   const setCacherDataHelpers = helpersShared.data.cacher.set(shared)
+  const socksProxyAgentInstantiatorUtilsHelpers =
+    helpersShared.utils.socksProxyAgentInstantiator(shared)
   const urlEncoderHelpers = helpersShared.utils.urlEncoder()
   const withQueryDependencies = dependenciesShared.withQuery
 
+  const { inconclusiveResponses } = crawlerConstants
   const { maxRetries, retryDelay } = fetcherConstants
 
   const fetchData = async (args) => {
@@ -54,47 +58,51 @@ module.exports = (shared) => {
     const uppercasedDocumentType = documentType.toUpperCase()
 
     try {
-      logMessageUtilsHelpers({
+      messageLoggerUtilsHelpers({
         level: 'info',
         message: `(${recipeName}) Fetching ${uppercasedDocumentType} document '${documentReference}'...`
       })
 
-      const fetchedData = await nodeFetchDependencies(
-        documentReference,
-        fetchOptions
-      )
+      const fetchedData = await nodeFetchDependencies(documentReference, {
+        ...fetchOptions,
+        agent: socksProxyAgentInstantiatorUtilsHelpers
+      })
       const fetchedDataContent = await fetchedData.text()
 
-      logMessageUtilsHelpers({
+      messageLoggerUtilsHelpers({
         level: 'info',
-        message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' fetched successfully`
+        message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' (${fetchedDataContent.length} bytes) fetched successfully`
       })
 
       return fetchedDataContent
     } catch (error) {
       if (retryCount >= maxRetries) {
-        return logMessageUtilsHelpers({
+        messageLoggerUtilsHelpers({
           level: 'error',
           message: `(${recipeName}) Despite ${maxRetries} attempts, fetching ${uppercasedDocumentType} document '${documentReference}' remained unsuccessful`
         })
+
+        return null
       }
 
-      logMessageUtilsHelpers({
+      const increasedRetryCount = retryCount + 1
+
+      messageLoggerUtilsHelpers({
         level: 'info',
-        message: `(${recipeName}) Retrying (${
-          retryCount + 1
-        } of ${maxRetries}) to fetch ${uppercasedDocumentType} document '${documentReference}'...`
+        message: `(${recipeName}) Retrying (${increasedRetryCount} of ${maxRetries}) to fetch ${uppercasedDocumentType} document '${documentReference}'...`
       })
 
       await new Promise((resolve) => setTimeout(resolve, retryDelay))
 
-      return fetchData({
+      const fetchedData = await fetchData({
         documentType,
         documentReference,
         fetchOptions,
         recipeName,
-        retryCount: retryCount + 1
+        retryCount: increasedRetryCount
       })
+
+      return fetchedData
     }
   }
 
@@ -136,15 +144,23 @@ module.exports = (shared) => {
       callback: cacheCallback
     })
 
-    const { response, ...restOfCachedData } = cachedData
+    const {
+      response: cachedDataResponse,
+      status: cachedDataStatus,
+      ...restOfCachedData
+    } = cachedData
 
-    if (response === null) {
+    if (inconclusiveResponses.includes(cachedDataStatus)) {
       return cachedData
     }
 
-    const loadedResponse = cheerioDependencies.load(response)
+    const loadedResponse = cheerioDependencies.load(cachedDataResponse)
 
-    const fetcherResponse = { response: loadedResponse, ...restOfCachedData }
+    const fetcherResponse = {
+      response: loadedResponse,
+      status: cachedDataStatus,
+      ...restOfCachedData
+    }
 
     return fetcherResponse
   }
