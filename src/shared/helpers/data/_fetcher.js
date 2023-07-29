@@ -32,7 +32,8 @@ module.exports = (shared) => {
   const cheerioDependencies = dependenciesShared.cheerio
   const crawlerConstants = constantsShared.crawler
   const fetcherConstants = constantsShared.fetcher
-  const httpsDependencies = dependenciesShared.https
+  const httpsAgentInstantiatorUtilsHelpers =
+    helpersShared.utils.httpsAgentInstantiator(shared)
   const messageLoggerUtilsHelpers = helpersShared.utils.messageLogger(shared, {
     identifier
   })
@@ -41,6 +42,7 @@ module.exports = (shared) => {
   const socksProxyAgentInstantiatorUtilsHelpers =
     helpersShared.utils.socksProxyAgentInstantiator(shared)
   const urlEncoderHelpers = helpersShared.utils.urlEncoder()
+  const UserAgentsDependencies = dependenciesShared.userAgents
   const withQueryDependencies = dependenciesShared.withQuery
 
   const { inconclusiveResponses } = crawlerConstants
@@ -63,15 +65,16 @@ module.exports = (shared) => {
         message: `(${recipeName}) Fetching ${uppercasedDocumentType} document '${documentReference}'...`
       })
 
-      const fetchedData = await nodeFetchDependencies(documentReference, {
-        ...fetchOptions,
-        agent: socksProxyAgentInstantiatorUtilsHelpers
-      })
+      const fetchedData = await nodeFetchDependencies(
+        documentReference,
+        fetchOptions
+      )
       const fetchedDataContent = await fetchedData.text()
+      const fetchedDataContentSize = fetchedDataContent.length
 
       messageLoggerUtilsHelpers({
         level: 'info',
-        message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' (${fetchedDataContent.length} bytes) fetched successfully`
+        message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' (${fetchedDataContentSize} bytes) fetched successfully`
       })
 
       return fetchedDataContent
@@ -107,15 +110,22 @@ module.exports = (shared) => {
   }
 
   return async (args) => {
-    const { recipeName, documentType, pageType, path, params } = args
+    const { recipeName, fetcherAgent, documentType, pageType, path, params } =
+      args
 
     const encodedPath = urlEncoderHelpers({ url: path })
-    const httpsAgent = new httpsDependencies.Agent({
-      rejectUnauthorized: false
-    })
-
     const documentReference = withQueryDependencies(encodedPath, params)
-    const fetchOptions = { agent: path.includes('https') && httpsAgent }
+
+    const fetcherAgentsList = {
+      https: httpsAgentInstantiatorUtilsHelpers,
+      socks: socksProxyAgentInstantiatorUtilsHelpers
+    }
+    const fetchOptions = {
+      agent: fetcherAgentsList[fetcherAgent],
+      headers: {
+        'User-Agent': new UserAgentsDependencies().toString()
+      }
+    }
 
     const cacheKeyObject = { path, params }
     const cacheOptions = {

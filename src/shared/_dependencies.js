@@ -37,5 +37,6 @@ module.exports = {
   socksProxyAgent: require('socks-proxy-agent'),
   pino: require('pino'),
   pinoPretty: require('pino-pretty'),
+  userAgents: require('user-agents'),
   withQuery: require('with-query').default
 }

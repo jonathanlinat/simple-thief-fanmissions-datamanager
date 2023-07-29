@@ -36,13 +36,14 @@ module.exports = (shared) => {
   return async (args) => {
     const { singleSource } = args
 
-    const { recipeName, sourceUrl } = singleSource
+    const { recipeName, fetcherAgent, sourceUrl } = singleSource
     const { inconclusiveResponses } = crawlerConstants
 
     let crawlerResponse = {}
 
     const fanMissionListingPageFetcherOptions = {
       recipeName,
+      fetcherAgent,
       documentType: 'html',
       pageType: 'fanMissionListingPage',
       path: sourceUrl + '/index.php?fm-download',
@@ -72,44 +73,47 @@ module.exports = (shared) => {
       'body div[id="postList"] tr:not(:first-child)'
     )
 
-    const fanMissionDetailsPageFetcher = async (selectedFanMission) => {
+    const fanMissionDetailPageFetcher = async (selectedFanMission) => {
       const fanMissionSelector =
         fanMissionListingPageResponse(selectedFanMission)
 
       const fanMissionDetailPageUrlSelector = fanMissionSelector.find(
         'a[href*="/index.php?fm-detail&id="]'
       )[0]
-      const fanMissionDetailPageUrl =
-        fanMissionDetailPageUrlSelector.attribs.href.trim()
 
-      const fanMissionDetailPageFetcherOptions = {
-        recipeName,
-        documentType: 'html',
-        pageType: 'fanMissionDetailPage',
-        path: fanMissionDetailPageUrl,
-        params: {}
+      if (fanMissionDetailPageUrlSelector) {
+        const fanMissionDetailPageUrl =
+          fanMissionDetailPageUrlSelector.attribs.href.trim()
+
+        const fanMissionDetailPageFetcherOptions = {
+          recipeName,
+          fetcherAgent,
+          documentType: 'html',
+          pageType: 'fanMissionDetailPage',
+          path: fanMissionDetailPageUrl,
+          params: {}
+        }
+        const fetchedFanMissionDetailPage = await fetcherDataHelpers(
+          fanMissionDetailPageFetcherOptions
+        )
+        const {
+          status: fanMissionDetailPageStatus,
+          hash: fanMissionDetailPageHash
+        } = fetchedFanMissionDetailPage
+
+        crawlerResponse = crawlerResponseWrapperUtilsHelpers({
+          wholeObject: crawlerResponse,
+          status: fanMissionDetailPageStatus,
+          fetcherOptions: fanMissionDetailPageFetcherOptions,
+          hash: fanMissionDetailPageHash
+        })
       }
-      const fetchedFanMissionDetailPage = await fetcherDataHelpers(
-        fanMissionDetailPageFetcherOptions
-      )
-      const {
-        status: fanMissionDetailPageStatus,
-        hash: fanMissionDetailPageHash
-      } = fetchedFanMissionDetailPage
-
-      crawlerResponse = crawlerResponseWrapperUtilsHelpers({
-        wholeObject: crawlerResponse,
-        status: fanMissionDetailPageStatus,
-        fetcherOptions: fanMissionDetailPageFetcherOptions,
-        hash: fanMissionDetailPageHash
-      })
     }
 
     const promises = Array.from(fanMissionListingPageSelector).map(
       (selectedFanMission) =>
         concurrencyLimiterUtilsHelpers({
-          promiseCallback: () =>
-            fanMissionDetailsPageFetcher(selectedFanMission)
+          promiseCallback: () => fanMissionDetailPageFetcher(selectedFanMission)
         })
     )
 

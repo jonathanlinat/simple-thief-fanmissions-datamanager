@@ -28,6 +28,7 @@ module.exports = {
   deepMerger: require('./_deepMerger'),
   generateTimestamp: require('./_generateTimestamp'),
   htmlParser: require('./_htmlParser'),
+  httpsAgentInstantiator: require('./_httpsAgentInstantiator'),
   messageLogger: require('./_messageLogger'),
   objectHasher: require('./_objectHasher'),
   socksProxyAgentInstantiator: require('./_socksProxyAgentInstantiator'),

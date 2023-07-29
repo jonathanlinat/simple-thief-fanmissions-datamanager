@@ -41,77 +41,79 @@ module.exports = (shared) => {
 
     let crawlerResponse = {}
 
-    const fanMissionListingPageFetcherOptions = {
+    const fanMissionHomePageFetcherOptions = {
       recipeName,
       fetcherAgent,
       documentType: 'html',
-      pageType: 'fanMissionListingPage',
-      path: sourceUrl + '/search.cgi',
-      params: { search: '', sort: 'title' }
+      pageType: 'fanMissionHomePage',
+      path: sourceUrl + '/index.html',
+      params: {}
     }
-    const fetchedFanMissionListingPage = await fetcherDataHelpers(
-      fanMissionListingPageFetcherOptions
+    const fetchedFanMissionHomePage = await fetcherDataHelpers(
+      fanMissionHomePageFetcherOptions
     )
     const {
-      status: fanMissionListingPageStatus,
-      response: fanMissionListingPageResponse,
-      hash: fanMissionListingPageHash
-    } = fetchedFanMissionListingPage
+      status: fanMissionHomePageStatus,
+      response: fanMissionHomePageResponse,
+      hash: fanMissionHomePageHash
+    } = fetchedFanMissionHomePage
 
     crawlerResponse = crawlerResponseWrapperUtilsHelpers({
       wholeObject: crawlerResponse,
-      status: fanMissionListingPageStatus,
-      fetcherOptions: fanMissionListingPageFetcherOptions,
-      hash: fanMissionListingPageHash
+      status: fanMissionHomePageStatus,
+      fetcherOptions: fanMissionHomePageFetcherOptions,
+      hash: fanMissionHomePageHash
     })
 
-    if (inconclusiveResponses.includes(fanMissionListingPageStatus)) {
+    if (inconclusiveResponses.includes(fanMissionHomePageStatus)) {
       return crawlerResponse
     }
 
-    const fanMissionListingPageSelector =
-      fanMissionListingPageResponse('body tr[bgcolor]')
+    const fanMissionHomePageSelector = fanMissionHomePageResponse(
+      'body div[id="mainnav"] div[class="mainnavmissions"]'
+    )
 
-    const fanMissionDetailPageFetcher = async (selectedFanMission) => {
-      const fanMissionSelector =
-        fanMissionListingPageResponse(selectedFanMission)
+    const fanMissionListingPageFetcher = async (selectedFanMission) => {
+      const fanMissionSelector = fanMissionHomePageResponse(selectedFanMission)
 
-      const fanMissionDetailPageUrlSelector =
-        fanMissionSelector.find('a[href*="/m/"]')[0]
+      const fanMissionListingPageUrlSelector = fanMissionSelector.find(
+        'a[href*="missions.html"]'
+      )[0]
 
-      if (fanMissionDetailPageUrlSelector) {
-        const fanMissionDetailPageUrl =
-          sourceUrl + fanMissionDetailPageUrlSelector.attribs.href.trim()
+      if (fanMissionListingPageUrlSelector) {
+        const fanMissionListingPageUrl =
+          fanMissionListingPageUrlSelector.attribs.href.trim()
 
-        const fanMissionDetailPageFetcherOptions = {
+        const fanMissionListingPageFetcherOptions = {
           recipeName,
           fetcherAgent,
           documentType: 'html',
-          pageType: 'fanMissionDetailPage',
-          path: fanMissionDetailPageUrl,
+          pageType: 'fanMissionListingPage',
+          path: sourceUrl + '/' + fanMissionListingPageUrl,
           params: {}
         }
-        const fetchedFanMissionDetailPage = await fetcherDataHelpers(
-          fanMissionDetailPageFetcherOptions
+        const fetchedFanMissionListingPage = await fetcherDataHelpers(
+          fanMissionListingPageFetcherOptions
         )
         const {
-          status: fanMissionDetailPageStatus,
-          hash: fanMissionDetailPageHash
-        } = fetchedFanMissionDetailPage
+          status: fanMissionListingPageStatus,
+          hash: fanMissionListingPageHash
+        } = fetchedFanMissionListingPage
 
         crawlerResponse = crawlerResponseWrapperUtilsHelpers({
           wholeObject: crawlerResponse,
-          status: fanMissionDetailPageStatus,
-          fetcherOptions: fanMissionDetailPageFetcherOptions,
-          hash: fanMissionDetailPageHash
+          status: fanMissionListingPageStatus,
+          fetcherOptions: fanMissionListingPageFetcherOptions,
+          hash: fanMissionListingPageHash
         })
       }
     }
 
-    const promises = Array.from(fanMissionListingPageSelector).map(
+    const promises = Array.from(fanMissionHomePageSelector).map(
       (selectedFanMission) =>
         concurrencyLimiterUtilsHelpers({
-          promiseCallback: () => fanMissionDetailPageFetcher(selectedFanMission)
+          promiseCallback: () =>
+            fanMissionListingPageFetcher(selectedFanMission)
         })
     )
 

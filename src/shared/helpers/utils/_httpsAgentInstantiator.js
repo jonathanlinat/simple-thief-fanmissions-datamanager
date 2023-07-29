@@ -22,10 +22,22 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  shadowdarkKeep: require('./shadowdarkKeep'),
-  taffersParadise: require('./taffersParadise'),
-  theKeepOfMetalAndGold: require('./theKeepOfMetalAndGold'),
-  thiefMissions: require('./thiefMissions'),
-  thiefTheLastGlass: require('./thiefTheLastGlass')
+let httpsAgentInstance
+
+module.exports = (shared) => {
+  const dependenciesShared = shared.dependencies
+
+  const httpsDependencies = dependenciesShared.https
+
+  return () => {
+    if (!httpsAgentInstance) {
+      const instanceOptions = {
+        rejectUnauthorized: false
+      }
+
+      httpsAgentInstance = new httpsDependencies.Agent(instanceOptions)
+    }
+
+    return httpsAgentInstance
+  }
 }

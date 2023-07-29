@@ -52,22 +52,32 @@ module.exports = {
     {
       recipeName: 'thiefMissions',
       sourceName: 'Cheap Thief Missions',
-      sourceUrl: 'https://www.thiefmissions.com'
+      sourceUrl: 'https://www.thiefmissions.com',
+      fetcherAgent: 'socks'
     },
-    /* {
+    {
       recipeName: 'thiefTheLastGlass',
       sourceName: 'Thief - The Last GLASS',
-      sourceUrl: 'https://www.ttlg.de'
-    }, */
+      sourceUrl: 'https://www.ttlg.de',
+      fetcherAgent: 'socks'
+    },
+    {
+      recipeName: 'taffersParadise',
+      sourceName: 'Taffers Paradise',
+      sourceUrl: 'https://www.taffersparadise.co.uk',
+      fetcherAgent: 'https'
+    },
     {
       recipeName: 'shadowdarkKeep',
       sourceName: 'Shadowdark Keep',
-      sourceUrl: 'http://www.shadowdarkkeep.com'
+      sourceUrl: 'http://www.shadowdarkkeep.com',
+      fetcherAgent: 'socks'
     },
     {
       recipeName: 'theKeepOfMetalAndGold',
       sourceName: 'The Keep of Metal and Gold',
-      sourceUrl: 'http://www.keepofmetalandgold.com'
+      sourceUrl: 'http://www.keepofmetalandgold.com',
+      fetcherAgent: 'socks'
     }
   ]
 }

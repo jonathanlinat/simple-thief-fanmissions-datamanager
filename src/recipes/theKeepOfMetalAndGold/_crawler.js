@@ -34,13 +34,14 @@ module.exports = (shared) => {
   return async (args) => {
     const { singleSource } = args
 
-    const { recipeName, sourceUrl } = singleSource
+    const { recipeName, fetcherAgent, sourceUrl } = singleSource
     const { inconclusiveResponses } = crawlerConstants
 
     let crawlerResponse = {}
 
     const fanMissionListingPageFetcherOptions = {
       recipeName,
+      fetcherAgent,
       documentType: 'html',
       pageType: 'fanMissionListingPage',
       path: sourceUrl + '/fmarchive.php',

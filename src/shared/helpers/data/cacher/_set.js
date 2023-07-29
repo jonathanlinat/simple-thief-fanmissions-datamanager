@@ -60,9 +60,11 @@ module.exports = (shared) => {
     const cachedResponse = await getCacherDataHelpers({ cacheKey })
 
     if (cachedResponse !== null) {
+      const cachedResponseSize = cachedResponse.length
+
       messageLoggerUtilsHelpers({
         level: 'info',
-        message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' (${cachedResponse.length} bytes) is already cached (${hash})`
+        message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' (${cachedResponseSize} bytes) is already cached (${hash})`
       })
 
       const alreadyCachedResponse = {
@@ -110,6 +112,8 @@ module.exports = (shared) => {
       return emptyDocumentResponse
     }
 
+    const minifiedCallbackResponseSize = minifiedCallbackResponse.length
+
     await redisClients().set(cacheKey, minifiedCallbackResponse)
 
     if (timeToLive !== 0) {
@@ -118,7 +122,7 @@ module.exports = (shared) => {
 
     messageLoggerUtilsHelpers({
       level: 'info',
-      message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' (${minifiedCallbackResponse.length} bytes) cached successfully (${hash})`
+      message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' (${minifiedCallbackResponseSize} bytes) cached successfully (${hash})`
     })
 
     const recentlyCachedResponse = {
