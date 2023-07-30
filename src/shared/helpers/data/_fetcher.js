@@ -50,8 +50,8 @@ module.exports = (shared) => {
 
   const fetchData = async (args) => {
     const {
-      documentType,
       documentReference,
+      documentType,
       fetchOptions,
       recipeName,
       retryCount
@@ -98,8 +98,8 @@ module.exports = (shared) => {
       await new Promise((resolve) => setTimeout(resolve, retryDelay))
 
       const fetchedData = await fetchData({
-        documentType,
         documentReference,
+        documentType,
         fetchOptions,
         recipeName,
         retryCount: increasedRetryCount
@@ -129,18 +129,18 @@ module.exports = (shared) => {
 
     const cacheKeyObject = { path, params }
     const cacheOptions = {
-      recipeName,
+      cacheKeyObject,
+      documentReference,
       documentType,
       pageType,
-      documentReference,
-      cacheKeyObject
+      recipeName
     }
     const cacheCallback = async () => {
       const retryCount = 0
 
       const fetchedData = await fetchData({
-        documentType,
         documentReference,
+        documentType,
         fetchOptions,
         recipeName,
         retryCount

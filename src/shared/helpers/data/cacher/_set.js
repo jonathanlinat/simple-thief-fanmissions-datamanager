@@ -43,11 +43,11 @@ module.exports = (shared) => {
 
     const { timeToLive } = redisConstants
     const {
-      recipeName,
+      cacheKeyObject,
+      documentReference,
       documentType,
       pageType,
-      documentReference,
-      cacheKeyObject
+      recipeName
     } = cacheOptions
 
     const uppercasedDocumentType = documentType.toUpperCase()

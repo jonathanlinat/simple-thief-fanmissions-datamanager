@@ -50,15 +50,9 @@ module.exports = {
   },
   multipleSources: [
     {
-      recipeName: 'thiefMissions',
-      sourceName: 'Cheap Thief Missions',
-      sourceUrl: 'https://www.thiefmissions.com',
-      fetcherAgent: 'socks'
-    },
-    {
-      recipeName: 'thiefTheLastGlass',
-      sourceName: 'Thief - The Last GLASS',
-      sourceUrl: 'https://www.ttlg.de',
+      recipeName: 'shadowdarkKeep',
+      sourceName: 'Shadowdark Keep',
+      sourceUrl: 'http://www.shadowdarkkeep.com',
       fetcherAgent: 'socks'
     },
     {
@@ -68,15 +62,27 @@ module.exports = {
       fetcherAgent: 'https'
     },
     {
-      recipeName: 'shadowdarkKeep',
-      sourceName: 'Shadowdark Keep',
-      sourceUrl: 'http://www.shadowdarkkeep.com',
-      fetcherAgent: 'socks'
-    },
-    {
       recipeName: 'theKeepOfMetalAndGold',
       sourceName: 'The Keep of Metal and Gold',
       sourceUrl: 'http://www.keepofmetalandgold.com',
+      fetcherAgent: 'socks'
+    },
+    {
+      recipeName: 'thiefGuild',
+      sourceName: 'Thief Guild',
+      sourceUrl: 'https://www.thiefguild.com',
+      fetcherAgent: 'socks'
+    },
+    {
+      recipeName: 'thiefMissions',
+      sourceName: 'Cheap Thief Missions',
+      sourceUrl: 'https://www.thiefmissions.com',
+      fetcherAgent: 'socks'
+    },
+    {
+      recipeName: 'thiefTheLastGlass',
+      sourceName: 'Thief - The Last GLASS',
+      sourceUrl: 'https://www.ttlg.de',
       fetcherAgent: 'socks'
     }
   ]
