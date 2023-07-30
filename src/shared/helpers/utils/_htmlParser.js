@@ -31,7 +31,7 @@ module.exports = (shared) => {
   return (args) => {
     const { htmlContent } = args
 
-    let parsedHtml
+    let htmlParserResponse
 
     try {
       const jsDomVirtualConsole = new jsDomDependencies.VirtualConsole()
@@ -46,7 +46,7 @@ module.exports = (shared) => {
       }
 
       const domToHtmlContent = htmlContentToDom.serialize()
-      parsedHtml = htmlMinifierDependencies.minify(domToHtmlContent, {
+      htmlParserResponse = htmlMinifierDependencies.minify(domToHtmlContent, {
         collapseWhitespace: true,
         minifyCSS: true,
         minifyJS: true,
@@ -56,9 +56,11 @@ module.exports = (shared) => {
         removeOptionalTags: true
       })
     } catch (error) {
-      return htmlContent
+      htmlParserResponse = htmlContent
+
+      return htmlParserResponse
     }
 
-    return parsedHtml
+    return htmlParserResponse
   }
 }

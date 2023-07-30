@@ -42,6 +42,7 @@ const controllerHandlerApiHelpers = helpersShared.api.controllerHandler(
 const errorHandlerApiHelpers = helpersShared.api.errorHandler(shared, {
   identifier
 })
+const flushCacherDataHelpers = helpersShared.data.cacher.flush(shared)
 const recipeSelectorApiHelpers = helpersShared.api.recipeSelector(shared, {
   recipes
 })
@@ -52,12 +53,15 @@ const responseWrapperApiHelpers = helpersShared.api.responseWrapper(shared, {
 ;(async () => {
   const { prefixRoute } = expressConstants
 
+  expressClients().use(errorHandlerApiHelpers)
+
   expressClients().get(
     `${prefixRoute}/crawl/:recipeName?`,
     controllerHandlerApiHelpers({
       controller: async (request, response) => {
-        const route = request.path
-        const recipeName = request.params.recipeName
+        const { path: route } = request
+        const { query: queryParams } = request
+        const { recipeName } = queryParams
 
         const controllerResponse = await recipeSelectorApiHelpers({
           module: 'crawler',
@@ -65,6 +69,7 @@ const responseWrapperApiHelpers = helpersShared.api.responseWrapper(shared, {
         })
         const responseWrapper = responseWrapperApiHelpers({
           route,
+          queryParams,
           data: controllerResponse
         })
 
@@ -73,5 +78,23 @@ const responseWrapperApiHelpers = helpersShared.api.responseWrapper(shared, {
     })
   )
 
-  expressClients().use(errorHandlerApiHelpers)
+  expressClients().get(
+    `${prefixRoute}/cache/flush/:recipeName?`,
+    controllerHandlerApiHelpers({
+      controller: async (request, response) => {
+        const { path: route } = request
+        const { query: queryParams } = request
+        const { recipeName } = queryParams
+
+        const controllerResponse = await flushCacherDataHelpers({ recipeName })
+        const responseWrapper = responseWrapperApiHelpers({
+          route,
+          queryParams,
+          data: controllerResponse
+        })
+
+        return response.status(200).json(responseWrapper)
+      }
+    })
+  )
 })()

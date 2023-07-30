@@ -32,7 +32,7 @@ module.exports = (shared) => {
   const identifier = 'Memory'
 
   const redisConstants = constantsShared.clients.redis
-  const RedisDependencies = dependenciesShared.ioRedis
+  const RedisDependencies = dependenciesShared.ioredis
   const messageLoggerUtilsHelpers = helpersShared.utils.messageLogger(shared, {
     identifier
   })

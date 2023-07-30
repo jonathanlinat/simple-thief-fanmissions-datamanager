@@ -30,13 +30,13 @@ module.exports = (shared) => {
   return (args) => {
     const { wholeObject, status, fetcherOptions, hash } = args
 
-    const crawlerResponse = deepMergerUtilsHelpers({
+    const crawlerResponseWrapperResponse = deepMergerUtilsHelpers({
       wholeObject,
       individualObject: {
         [status]: [{ ...fetcherOptions, hash }]
       }
     })
 
-    return crawlerResponse
+    return crawlerResponseWrapperResponse
   }
 }

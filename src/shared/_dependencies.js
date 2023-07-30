@@ -25,11 +25,14 @@
 module.exports = {
   bottleneck: require('bottleneck'),
   cheerio: require('cheerio'),
-  deepmerge: require('deepmerge'),
+  cors: require('cors'),
+  deepMerge: require('deepmerge'),
+  errorHandler: require('errorhandler'),
   express: require('express'),
+  helmet: require('helmet'),
   htmlMinifier: require('html-minifier'),
   https: require('https'),
-  ioRedis: require('ioredis'),
+  ioredis: require('ioredis'),
   jsDom: require('jsdom'),
   nodeFetch: (...args) =>
     import('node-fetch').then(({ default: fetch }) => fetch(...args)),

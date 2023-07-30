@@ -31,8 +31,8 @@ module.exports = (shared) => {
     const { object } = args
 
     const hasher = nodeObjectHashDependencies.hasher({ coerce: true })
-    const hashedObject = hasher.hash(object)
+    const objectHasherResponse = hasher.hash(object)
 
-    return hashedObject
+    return objectHasherResponse
   }
 }

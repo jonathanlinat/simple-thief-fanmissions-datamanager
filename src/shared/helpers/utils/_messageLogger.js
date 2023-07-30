@@ -35,10 +35,10 @@ module.exports = (shared, options) => {
 
     const logger = pinoDependencies(pinoprettyDependencies({ colorize: true }))
 
-    const loggedMessage = logger[level](
+    const messageLoggerResponse = logger[level](
       `[${identifier}] ${error ? new Error(error) : message}`
     )
 
-    return loggedMessage
+    return messageLoggerResponse
   }
 }

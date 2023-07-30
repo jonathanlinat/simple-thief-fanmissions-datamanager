@@ -23,6 +23,7 @@
  */
 
 module.exports = {
+  flush: require('./_flush'),
   get: require('./_get'),
   set: require('./_set')
 }

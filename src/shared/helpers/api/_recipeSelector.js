@@ -53,9 +53,11 @@ module.exports = (shared, options) => {
     let sourcesToProcess = multipleSourcesConstants
 
     if (specificRecipeName) {
-      const filteredSources = multipleSourcesConstants.filter(
-        (source) => source.recipeName === specificRecipeName
-      )
+      const filteredSources = multipleSourcesConstants.filter((source) => {
+        const { recipeName } = source
+
+        return recipeName === specificRecipeName
+      })
 
       if (filteredSources.length === 0) {
         throw new Error(

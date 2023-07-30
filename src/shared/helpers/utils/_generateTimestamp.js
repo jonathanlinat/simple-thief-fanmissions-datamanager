@@ -24,8 +24,8 @@
 
 module.exports = () => {
   return () => {
-    const generatedTimestamp = new Date(Date.now()).toISOString()
+    const generateTimestampResponse = new Date(Date.now()).toISOString()
 
-    return generatedTimestamp
+    return generateTimestampResponse
   }
 }

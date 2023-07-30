@@ -41,6 +41,8 @@ module.exports = (shared) => {
   return async (args) => {
     const { cacheOptions, callback } = args
 
+    let setCacherResponse = {}
+
     const { timeToLive } = redisConstants
     const {
       cacheKeyObject,
@@ -55,7 +57,7 @@ module.exports = (shared) => {
     const hash = objectHasherHelpers({
       object: cacheKeyObject
     })
-    const cacheKey = `${recipeName}:${pageType}:${documentType}:${hash}`
+    const cacheKey = `${recipeName}:${documentType}:${pageType}:${hash}`
 
     const cachedResponse = await getCacherDataHelpers({ cacheKey })
 
@@ -67,13 +69,13 @@ module.exports = (shared) => {
         message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' (${cachedResponseSize} bytes) is already cached (${hash})`
       })
 
-      const alreadyCachedResponse = {
+      setCacherResponse = {
         status: 'already_cached',
         response: cachedResponse,
         hash
       }
 
-      return alreadyCachedResponse
+      return setCacherResponse
     }
 
     messageLoggerUtilsHelpers({
@@ -89,13 +91,13 @@ module.exports = (shared) => {
     const callbackResponse = await callback()
 
     if (callbackResponse === null) {
-      const unfetchableDocumentResponse = {
+      setCacherResponse = {
         status: 'unfetchable_document',
         response: null,
         hash: null
       }
 
-      return unfetchableDocumentResponse
+      return setCacherResponse
     }
 
     const minifiedCallbackResponse = htmlParserHelpers({
@@ -103,13 +105,13 @@ module.exports = (shared) => {
     })
 
     if (minifiedCallbackResponse === null) {
-      const emptyDocumentResponse = {
+      setCacherResponse = {
         status: 'empty_document',
         response: null,
         hash: null
       }
 
-      return emptyDocumentResponse
+      return setCacherResponse
     }
 
     const minifiedCallbackResponseSize = minifiedCallbackResponse.length
@@ -125,12 +127,12 @@ module.exports = (shared) => {
       message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' (${minifiedCallbackResponseSize} bytes) cached successfully (${hash})`
     })
 
-    const recentlyCachedResponse = {
+    setCacherResponse = {
       status: 'recently_cached',
       response: minifiedCallbackResponse,
       hash
     }
 
-    return recentlyCachedResponse
+    return setCacherResponse
   }
 }

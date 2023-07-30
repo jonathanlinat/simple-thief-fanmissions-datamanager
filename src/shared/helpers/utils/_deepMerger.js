@@ -25,13 +25,16 @@
 module.exports = (shared) => {
   const dependenciesShared = shared.dependencies
 
-  const deepMergeDependencies = dependenciesShared.deepmerge
+  const deepMergeDependencies = dependenciesShared.deepMerge
 
   return (args) => {
     const { wholeObject, individualObject } = args
 
-    const mergedObject = deepMergeDependencies(wholeObject, individualObject)
+    const deepMergerResponse = deepMergeDependencies(
+      wholeObject,
+      individualObject
+    )
 
-    return mergedObject
+    return deepMergerResponse
   }
 }

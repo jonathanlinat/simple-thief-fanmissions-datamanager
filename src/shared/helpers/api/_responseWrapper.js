@@ -30,17 +30,18 @@ module.exports = (shared, options) => {
   const generateTimestampUtilsHelpers = helpersShared.utils.generateTimestamp()
 
   return (args) => {
-    const { route, status, data } = args
+    const { route, queryParams, status, data } = args
 
-    const responseWrapper = {
+    const responseWrapperResponse = {
       [identifier.toLowerCase()]: {
         processed_at: generateTimestampUtilsHelpers(),
         route,
+        queryParams,
         status,
         data: data || null
       }
     }
 
-    return responseWrapper
+    return responseWrapperResponse
   }
 }

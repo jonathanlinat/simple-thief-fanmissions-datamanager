@@ -35,16 +35,18 @@ module.exports = (shared, options) => {
   })
 
   return (error, request, response, next) => {
-    const route = request.path
+    const { path: route } = request
+
+    const { message } = error
 
     const responseWrapper = responseWrapperApiHelpers({
       route,
-      data: { message: error.message }
+      data: { message }
     })
 
     messageLoggerUtilsHelpers({
       level: 'error',
-      message: `(${route}) ${error.message}`
+      message: `(${route}) ${message}`
     })
 
     console.log(error)

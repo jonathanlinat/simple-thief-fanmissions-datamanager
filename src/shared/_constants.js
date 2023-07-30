@@ -32,7 +32,7 @@ module.exports = {
     redis: {
       host: 'memory',
       port: 6379,
-      timeToLive: 21600000
+      timeToLive: 0
     }
   },
   fetcher: {
@@ -84,12 +84,12 @@ module.exports = {
       sourceName: 'Thief: The Circle',
       sourceUrl: 'http://www.thief-thecircle.com',
       fetcherAgent: 'socks'
-    },
-    {
+    }
+    /*     {
       recipeName: 'thiefTheLastGlass',
       sourceName: 'Thief - The Last GLASS',
       sourceUrl: 'https://www.ttlg.de',
       fetcherAgent: 'socks'
-    }
+    } */
   ]
 }

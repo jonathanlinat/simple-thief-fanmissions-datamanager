@@ -32,10 +32,10 @@ module.exports = (shared) => {
     const { url } = args
 
     const parsedUrl = urlDependencies.parse(url)
-    const parsedQueryParams = {
+    const queryParamsParserResponse = {
       ...queryStringDependencies.parse(parsedUrl.query)
     }
 
-    return parsedQueryParams
+    return queryParamsParserResponse
   }
 }

@@ -26,8 +26,8 @@ module.exports = () => {
   return (args) => {
     const { url } = args
 
-    const encodedUrl = encodeURI(url)
+    const urlEncoderResponse = encodeURI(url)
 
-    return encodedUrl
+    return urlEncoderResponse
   }
 }

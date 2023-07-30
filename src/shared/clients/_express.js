@@ -31,8 +31,11 @@ module.exports = (shared) => {
 
   const identifier = 'Server'
 
+  const corsDependencies = dependenciesShared.cors
+  const errorHandlerDependencies = dependenciesShared.errorHandler
   const expressConstants = constantsShared.clients.express
   const expressDependencies = dependenciesShared.express
+  const helmetDependencies = dependenciesShared.helmet
   const messageLoggerUtilsHelpers = helpersShared.utils.messageLogger(shared, {
     identifier
   })
@@ -42,6 +45,10 @@ module.exports = (shared) => {
       const { port, timeOut } = expressConstants
 
       clientInstance = expressDependencies()
+
+      clientInstance.use(corsDependencies())
+      clientInstance.use(helmetDependencies())
+      clientInstance.use(errorHandlerDependencies())
 
       const listeningServer = clientInstance.listen(port, () => {
         messageLoggerUtilsHelpers({

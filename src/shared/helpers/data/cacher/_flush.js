@@ -22,36 +22,61 @@
  * SOFTWARE.
  */
 
-module.exports = (shared, options) => {
+module.exports = (shared) => {
+  const clientsShared = shared.clients
   const helpersShared = shared.helpers
 
-  const { identifier } = options
+  const identifier = 'Cacher'
 
   const messageLoggerUtilsHelpers = helpersShared.utils.messageLogger(shared, {
     identifier
   })
+  const redisClients = clientsShared.redis(shared)
 
-  return (args) => {
-    const { controller } = args
+  return async (args) => {
+    const { recipeName } = args
 
-    return async (request, response, next) => {
-      const { path: route } = request
+    let flushCacherResponse = ''
 
-      try {
-        messageLoggerUtilsHelpers({
-          level: 'info',
-          message: `(${route}) Proceeding...`
-        })
+    if (!recipeName) {
+      await redisClients().flushall()
 
-        await controller(request, response)
+      messageLoggerUtilsHelpers({
+        level: 'info',
+        message: `All cache keys flushed successfully`
+      })
 
-        messageLoggerUtilsHelpers({
-          level: 'info',
-          message: `(${route}) Process done successfully`
-        })
-      } catch (error) {
-        return next(error)
-      }
+      flushCacherResponse = 'All cache keys flushed successfully'
+
+      return flushCacherResponse
     }
+
+    let cursor = '0'
+    const pattern = `${recipeName}:*`
+
+    const pipeline = redisClients().pipeline()
+
+    do {
+      const clientResponse = await redisClients().scan(cursor, 'MATCH', pattern)
+      cursor = clientResponse[0]
+      const cacheKeys = clientResponse[1]
+
+      if (cacheKeys.length > 0) {
+        cacheKeys.forEach((key) => {
+          pipeline.del(key)
+        })
+      }
+    } while (cursor !== '0')
+
+    await pipeline.exec()
+
+    messageLoggerUtilsHelpers({
+      level: 'info',
+      message: `(${recipeName}) All related cache keys flushed successfully`
+    })
+
+    flushCacherResponse = `All cache keys related to recipe name '${recipeName}' flushed successfully`
+
+    return flushCacherResponse
   }
 }

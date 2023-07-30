@@ -23,10 +23,8 @@
  */
 
 module.exports = (shared) => {
-  const constantsShared = shared.constants
   const helpersShared = shared.helpers
 
-  const crawlerConstants = constantsShared.crawler
   const crawlerResponseWrapperUtilsHelpers =
     helpersShared.utils.crawlerResponseWrapper(shared)
   const fetcherDataHelpers = helpersShared.data.fetcher(shared)
@@ -35,7 +33,6 @@ module.exports = (shared) => {
     const { singleSource } = args
 
     const { recipeName, fetcherAgent, sourceUrl } = singleSource
-    const { inconclusiveResponses } = crawlerConstants
 
     let crawlerResponse = {}
 
@@ -61,10 +58,6 @@ module.exports = (shared) => {
       fetcherOptions: fanMissionListingPageFetcherOptions,
       hash: fanMissionListingPageHash
     })
-
-    if (inconclusiveResponses.includes(fanMissionListingPageStatus)) {
-      return crawlerResponse
-    }
 
     return crawlerResponse
   }
