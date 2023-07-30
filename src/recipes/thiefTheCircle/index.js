@@ -22,43 +22,6 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
-  const dependenciesShared = shared.dependencies
-
-  const htmlMinifierDependencies = dependenciesShared.htmlMinifier
-  const jsDomDependencies = dependenciesShared.jsDom
-
-  return (args) => {
-    const { htmlContent } = args
-
-    let parsedHtml
-
-    try {
-      const jsDomVirtualConsole = new jsDomDependencies.VirtualConsole()
-      const htmlContentToDom = new jsDomDependencies.JSDOM(htmlContent, {
-        virtualConsole: jsDomVirtualConsole
-      })
-      const isHtmlContentEmpty =
-        htmlContentToDom.window.document.body.innerHTML.trim() === ''
-
-      if (isHtmlContentEmpty) {
-        return null
-      }
-
-      const domToHtmlContent = htmlContentToDom.serialize()
-      parsedHtml = htmlMinifierDependencies.minify(domToHtmlContent, {
-        collapseWhitespace: true,
-        minifyCSS: true,
-        minifyJS: true,
-        removeAttributeQuotes: true,
-        removeComments: true,
-        removeEmptyAttributes: true,
-        removeOptionalTags: true
-      })
-    } catch (error) {
-      return htmlContent
-    }
-
-    return parsedHtml
-  }
+module.exports = {
+  crawler: require('./_crawler')
 }

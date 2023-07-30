@@ -34,9 +34,11 @@ module.exports = {
   nodeFetch: (...args) =>
     import('node-fetch').then(({ default: fetch }) => fetch(...args)),
   nodeObjectHash: require('node-object-hash'),
+  queryString: require('querystring'),
   socksProxyAgent: require('socks-proxy-agent'),
   pino: require('pino'),
   pinoPretty: require('pino-pretty'),
+  url: require('url'),
   userAgents: require('user-agents'),
   withQuery: require('with-query').default
 }

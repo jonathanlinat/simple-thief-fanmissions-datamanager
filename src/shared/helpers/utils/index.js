@@ -31,6 +31,7 @@ module.exports = {
   httpsAgentInstantiator: require('./_httpsAgentInstantiator'),
   messageLogger: require('./_messageLogger'),
   objectHasher: require('./_objectHasher'),
+  queryParamsParser: require('./_queryParamsParser'),
   socksProxyAgentInstantiator: require('./_socksProxyAgentInstantiator'),
   urlEncoder: require('./_urlEncoder')
 }

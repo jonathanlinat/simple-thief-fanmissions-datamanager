@@ -28,5 +28,6 @@ module.exports = {
   theKeepOfMetalAndGold: require('./theKeepOfMetalAndGold'),
   thiefGuild: require('./thiefGuild'),
   thiefMissions: require('./thiefMissions'),
+  thiefTheCircle: require('./thiefTheCircle'),
   thiefTheLastGlass: require('./thiefTheLastGlass')
 }
