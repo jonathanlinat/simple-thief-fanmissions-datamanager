@@ -22,10 +22,33 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  clients: require('./clients'),
-  constants: require('./_constants'),
-  controllers: require('./controllers'),
-  dependencies: require('./_dependencies'),
-  helpers: require('./helpers')
+module.exports = (shared, options) => {
+  const helpersShared = shared.helpers
+
+  const { identifier, recipes } = options
+
+  const recipeSelectorApiHelpers = helpersShared.api.recipeSelector(shared, {
+    recipes
+  })
+  const responseWrapperApiHelpers = helpersShared.api.responseWrapper(shared, {
+    identifier
+  })
+
+  return async ({ request, response }) => {
+    const { path: route } = request
+    const { query: queryParams } = request
+    const { recipeName } = queryParams
+
+    const controllerResponse = await recipeSelectorApiHelpers({
+      module: 'crawler',
+      recipeName
+    })
+    const responseWrapper = responseWrapperApiHelpers({
+      route,
+      queryParams,
+      data: controllerResponse
+    })
+
+    return response.status(200).json(responseWrapper)
+  }
 }

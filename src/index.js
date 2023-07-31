@@ -29,10 +29,18 @@ const shared = require('@shared')
 
 const clientsShared = shared.clients
 const constantsShared = shared.constants
+const controllersShared = shared.controllers
 const helpersShared = shared.helpers
 
 const identifier = 'API'
 
+const deleteCacheControllers = controllersShared.cache.delete(shared, {
+  identifier
+})
+const getCrawlControllers = controllersShared.crawl.get(shared, {
+  identifier,
+  recipes
+})
 const expressClients = clientsShared.express(shared)
 const expressConstants = constantsShared.clients.express
 const controllerHandlerApiHelpers = helpersShared.api.controllerHandler(
@@ -40,13 +48,6 @@ const controllerHandlerApiHelpers = helpersShared.api.controllerHandler(
   { identifier }
 )
 const errorHandlerApiHelpers = helpersShared.api.errorHandler(shared, {
-  identifier
-})
-const flushCacherDataHelpers = helpersShared.data.cacher.flush(shared)
-const recipeSelectorApiHelpers = helpersShared.api.recipeSelector(shared, {
-  recipes
-})
-const responseWrapperApiHelpers = helpersShared.api.responseWrapper(shared, {
   identifier
 })
 
@@ -58,43 +59,16 @@ const responseWrapperApiHelpers = helpersShared.api.responseWrapper(shared, {
   expressClients().get(
     `${prefixRoute}/crawl/:recipeName?`,
     controllerHandlerApiHelpers({
-      controller: async (request, response) => {
-        const { path: route } = request
-        const { query: queryParams } = request
-        const { recipeName } = queryParams
-
-        const controllerResponse = await recipeSelectorApiHelpers({
-          module: 'crawler',
-          recipeName
-        })
-        const responseWrapper = responseWrapperApiHelpers({
-          route,
-          queryParams,
-          data: controllerResponse
-        })
-
-        return response.status(200).json(responseWrapper)
-      }
+      controller: (request, response) =>
+        getCrawlControllers({ request, response })
     })
   )
 
-  expressClients().get(
-    `${prefixRoute}/cache/flush/:recipeName?`,
+  expressClients().delete(
+    `${prefixRoute}/cache/:recipeName?`,
     controllerHandlerApiHelpers({
-      controller: async (request, response) => {
-        const { path: route } = request
-        const { query: queryParams } = request
-        const { recipeName } = queryParams
-
-        const controllerResponse = await flushCacherDataHelpers({ recipeName })
-        const responseWrapper = responseWrapperApiHelpers({
-          route,
-          queryParams,
-          data: controllerResponse
-        })
-
-        return response.status(200).json(responseWrapper)
-      }
+      controller: (request, response) =>
+        deleteCacheControllers({ request, response })
     })
   )
 })()

@@ -22,10 +22,32 @@
  * SOFTWARE.
  */
 
-module.exports = {
-  clients: require('./clients'),
-  constants: require('./_constants'),
-  controllers: require('./controllers'),
-  dependencies: require('./_dependencies'),
-  helpers: require('./helpers')
+module.exports = (shared, options) => {
+  const helpersShared = shared.helpers
+
+  const { identifier } = options
+
+  const flushCacherDataHelpers = helpersShared.data.cacher.flush(shared)
+  const responseWrapperApiHelpers = helpersShared.api.responseWrapper(shared, {
+    identifier
+  })
+
+  return async ({ request, response }) => {
+    const { path: route } = request
+    const { query: queryParams } = request
+    const { recipeName } = queryParams
+
+    const flushedCachedDataResponse = await flushCacherDataHelpers({
+      recipeName
+    })
+    const { response: flushCacherResponse } = flushedCachedDataResponse
+
+    const responseWrapper = responseWrapperApiHelpers({
+      route,
+      queryParams,
+      data: flushCacherResponse
+    })
+
+    return response.status(200).json(responseWrapper)
+  }
 }

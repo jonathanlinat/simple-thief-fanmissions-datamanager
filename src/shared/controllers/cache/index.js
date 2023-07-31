@@ -23,9 +23,5 @@
  */
 
 module.exports = {
-  clients: require('./clients'),
-  constants: require('./_constants'),
-  controllers: require('./controllers'),
-  dependencies: require('./_dependencies'),
-  helpers: require('./helpers')
+  delete: require('./_delete')
 }

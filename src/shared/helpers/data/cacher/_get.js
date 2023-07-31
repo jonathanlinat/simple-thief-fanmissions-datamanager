@@ -36,13 +36,20 @@ module.exports = (shared) => {
   return async (args) => {
     const { cacheKey, recipeName } = args
 
-    const getCacherResponse = await redisClients().get(cacheKey)
+    let getCacherResponse = {}
 
-    if (getCacherResponse !== null) {
+    const cacheResponse = await redisClients().get(cacheKey)
+
+    if (cacheResponse !== null) {
       messageLoggerUtilsHelpers({
         level: 'info',
         message: `(${recipeName}) Specified cache key '${cacheKey}' found successfully`
       })
+
+      getCacherResponse = {
+        status: 'specified_cachekey_found',
+        response: cacheResponse
+      }
 
       return getCacherResponse
     }
@@ -51,6 +58,11 @@ module.exports = (shared) => {
       level: 'info',
       message: `(${recipeName}) Specified cache key '${cacheKey}' not found`
     })
+
+    getCacherResponse = {
+      status: 'specified_cachekey_not_found',
+      response: null
+    }
 
     return getCacherResponse
   }

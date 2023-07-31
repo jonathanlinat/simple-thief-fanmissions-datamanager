@@ -113,6 +113,8 @@ module.exports = (shared) => {
     const { recipeName, fetcherAgent, documentType, pageType, path, params } =
       args
 
+    let fetcherResponse = {}
+
     const encodedPath = urlEncoderHelpers({ url: path })
     const documentReference = withQueryDependencies(encodedPath, params)
 
@@ -155,8 +157,8 @@ module.exports = (shared) => {
     })
 
     const {
-      response: cachedDataResponse,
       status: cachedDataStatus,
+      response: cachedDataResponse,
       ...restOfCachedData
     } = cachedData
 
@@ -166,9 +168,9 @@ module.exports = (shared) => {
 
     const loadedResponse = cheerioDependencies.load(cachedDataResponse)
 
-    const fetcherResponse = {
-      response: loadedResponse,
+    fetcherResponse = {
       status: cachedDataStatus,
+      response: loadedResponse,
       ...restOfCachedData
     }
 

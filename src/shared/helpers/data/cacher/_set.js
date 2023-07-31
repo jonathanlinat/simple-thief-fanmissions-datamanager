@@ -59,19 +59,24 @@ module.exports = (shared) => {
     })
     const cacheKey = `${recipeName}:${documentType}:${pageType}:${hash}`
 
-    const cachedResponse = await getCacherDataHelpers({ cacheKey, recipeName })
+    const getCachedResponse = await getCacherDataHelpers({
+      cacheKey,
+      recipeName
+    })
+    const { status: getCacheStatus, response: getCacheResponse } =
+      getCachedResponse
 
-    if (cachedResponse !== null) {
-      const cachedResponseSize = cachedResponse.length
+    if (getCacheStatus === 'specified_cachekey_found') {
+      const getCacheResponseSize = getCacheResponse.length
 
       messageLoggerUtilsHelpers({
         level: 'info',
-        message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' (${cachedResponseSize} bytes) is already cached (${hash})`
+        message: `(${recipeName}) ${uppercasedDocumentType} document '${documentReference}' (${getCacheResponseSize} bytes) is already cached (${hash})`
       })
 
       setCacherResponse = {
-        status: 'already_cached',
-        response: cachedResponse,
+        status: 'already_cached_document',
+        response: getCacheResponse,
         hash
       }
 
@@ -128,7 +133,7 @@ module.exports = (shared) => {
     })
 
     setCacherResponse = {
-      status: 'recently_cached',
+      status: 'recently_cached_document',
       response: minifiedCallbackResponse,
       hash
     }

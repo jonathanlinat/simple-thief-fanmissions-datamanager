@@ -36,7 +36,7 @@ module.exports = (shared) => {
   return async (args) => {
     const { recipeName } = args
 
-    let flushCacherResponse = ''
+    let flushCacherResponse = {}
 
     if (!recipeName) {
       await redisClients().flushall()
@@ -46,7 +46,10 @@ module.exports = (shared) => {
         message: 'All cache keys flushed successfully'
       })
 
-      flushCacherResponse = 'All cache keys flushed successfully'
+      flushCacherResponse = {
+        status: 'all_cachekeys_flushed',
+        response: null
+      }
 
       return flushCacherResponse
     }
@@ -75,7 +78,10 @@ module.exports = (shared) => {
       message: `(${recipeName}) All related cache keys flushed successfully`
     })
 
-    flushCacherResponse = `(${recipeName}) All related cache keys flushed successfully`
+    flushCacherResponse = {
+      status: 'all_related_cachekeys_flushed',
+      response: null
+    }
 
     return flushCacherResponse
   }
