@@ -39,6 +39,7 @@ module.exports = (shared) => {
   const messageLoggerUtilsHelpers = helpersShared.utils.messageLogger(shared, {
     identifier
   })
+  const responseTimeDependencies = dependenciesShared.responseTime
 
   return () => {
     if (!clientInstance) {
@@ -47,8 +48,9 @@ module.exports = (shared) => {
       clientInstance = expressDependencies()
 
       clientInstance.use(corsDependencies())
-      clientInstance.use(helmetDependencies())
       clientInstance.use(errorHandlerDependencies())
+      clientInstance.use(helmetDependencies())
+      clientInstance.use(responseTimeDependencies())
 
       const listeningServer = clientInstance.listen(port, () => {
         messageLoggerUtilsHelpers({
