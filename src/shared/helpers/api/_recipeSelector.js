@@ -27,7 +27,11 @@ module.exports = (shared, options) => {
   const helpersShared = shared.helpers
 
   const { recipes } = options
+  const identifier = 'Recipe Selector'
 
+  const messageLoggerUtilsHelpers = helpersShared.utils.messageLogger(shared, {
+    identifier
+  })
   const deepMergerUtilsHelpers = helpersShared.utils.deepMerger(shared)
   const multipleSourcesConstants = constantsShared.multipleSources
 
@@ -64,6 +68,11 @@ module.exports = (shared, options) => {
           `No source found for specified recipe name '${specificRecipeName}'; specify another existing one or leave the parameter empty`
         )
       }
+
+      messageLoggerUtilsHelpers({
+        level: 'info',
+        message: `(${specificRecipeName}) Recipe selected successfully`
+      })
 
       sourcesToProcess = filteredSources
     }

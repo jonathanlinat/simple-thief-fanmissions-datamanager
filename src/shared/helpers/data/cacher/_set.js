@@ -27,7 +27,7 @@ module.exports = (shared) => {
   const constantsShared = shared.constants
   const helpersShared = shared.helpers
 
-  const identifier = 'Cacher'
+  const identifier = 'Cacher:Set'
 
   const htmlParserHelpers = helpersShared.utils.htmlParser(shared)
   const messageLoggerUtilsHelpers = helpersShared.utils.messageLogger(shared, {
@@ -59,7 +59,7 @@ module.exports = (shared) => {
     })
     const cacheKey = `${recipeName}:${documentType}:${pageType}:${hash}`
 
-    const cachedResponse = await getCacherDataHelpers({ cacheKey })
+    const cachedResponse = await getCacherDataHelpers({ cacheKey, recipeName })
 
     if (cachedResponse !== null) {
       const cachedResponseSize = cachedResponse.length

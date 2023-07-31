@@ -24,13 +24,33 @@
 
 module.exports = (shared) => {
   const clientsShared = shared.clients
+  const helpersShared = shared.helpers
 
+  const identifier = 'Cacher:Get'
+
+  const messageLoggerUtilsHelpers = helpersShared.utils.messageLogger(shared, {
+    identifier
+  })
   const redisClients = clientsShared.redis(shared)
 
   return async (args) => {
-    const { cacheKey } = args
+    const { cacheKey, recipeName } = args
 
     const getCacherResponse = await redisClients().get(cacheKey)
+
+    if (getCacherResponse !== null) {
+      messageLoggerUtilsHelpers({
+        level: 'info',
+        message: `(${recipeName}) Specified cache key '${cacheKey}' found successfully`
+      })
+
+      return getCacherResponse
+    }
+
+    messageLoggerUtilsHelpers({
+      level: 'info',
+      message: `(${recipeName}) Specified cache key '${cacheKey}' not found`
+    })
 
     return getCacherResponse
   }

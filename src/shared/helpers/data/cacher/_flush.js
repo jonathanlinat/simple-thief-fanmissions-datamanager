@@ -26,7 +26,7 @@ module.exports = (shared) => {
   const clientsShared = shared.clients
   const helpersShared = shared.helpers
 
-  const identifier = 'Cacher'
+  const identifier = 'Cacher:Flush'
 
   const messageLoggerUtilsHelpers = helpersShared.utils.messageLogger(shared, {
     identifier
@@ -43,7 +43,7 @@ module.exports = (shared) => {
 
       messageLoggerUtilsHelpers({
         level: 'info',
-        message: `All cache keys flushed successfully`
+        message: 'All cache keys flushed successfully'
       })
 
       flushCacherResponse = 'All cache keys flushed successfully'
@@ -75,7 +75,7 @@ module.exports = (shared) => {
       message: `(${recipeName}) All related cache keys flushed successfully`
     })
 
-    flushCacherResponse = `All cache keys related to recipe name '${recipeName}' flushed successfully`
+    flushCacherResponse = `(${recipeName}) All related cache keys flushed successfully`
 
     return flushCacherResponse
   }
