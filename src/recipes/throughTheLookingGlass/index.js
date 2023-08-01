@@ -22,21 +22,6 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
-  const helpersShared = shared.helpers
-
-  const deepMergerUtilsHelpers = helpersShared.utils.deepMerger(shared)
-
-  return (args) => {
-    const { wholeObject, status, fetcherOptions, hash } = args
-
-    const crawlerResponseWrapperResponse = deepMergerUtilsHelpers({
-      wholeObject,
-      individualObject: {
-        [status]: [{ ...fetcherOptions, hash }]
-      }
-    })
-
-    return crawlerResponseWrapperResponse
-  }
+module.exports = {
+  crawler: require('./_crawler')
 }

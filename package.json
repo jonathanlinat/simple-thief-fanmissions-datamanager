@@ -1,6 +1,6 @@
 {
-  "name": "simple-thief-fanmissions-datascraper",
-  "description": "A very simple and automated tool to scrape Fan Missions data from multiple sources at once",
+  "name": "simple-thief-fanmissions-datamanager",
+  "description": "A simple and automated tool to crawl, scrape, parse and store Fan Missions data from multiple sources at once",
   "author": "Jonathan Linat <jonathan.linat@gmail.com>",
   "version": "0.1.0",
   "license": "MIT",

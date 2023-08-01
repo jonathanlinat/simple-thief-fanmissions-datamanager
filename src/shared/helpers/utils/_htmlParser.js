@@ -31,7 +31,7 @@ module.exports = (shared) => {
   return (args) => {
     const { htmlContent } = args
 
-    let htmlParserResponse
+    let htmlParserResponse = ''
 
     try {
       const jsDomVirtualConsole = new jsDomDependencies.VirtualConsole()

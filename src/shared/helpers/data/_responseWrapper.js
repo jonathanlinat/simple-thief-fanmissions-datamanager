@@ -4,7 +4,7 @@
  * Copyright (c) 2023 Jonathan Linat <https://github.com/jonathanlinat>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software:"), to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -25,39 +25,18 @@
 module.exports = (shared) => {
   const helpersShared = shared.helpers
 
-  const responseWrapperUtilsHelpers = helpersShared.data.responseWrapper(shared)
-  const fetcherDataHelpers = helpersShared.data.fetcher(shared)
+  const deepMergerUtilsHelpers = helpersShared.utils.deepMerger(shared)
 
-  return async (args) => {
-    const { singleSource } = args
+  return (args) => {
+    const { wholeObject, status, ...restOfArgs } = args
 
-    const { recipeName, fetcherAgent, sourceUrl } = singleSource
-
-    let crawlerResponse = {}
-
-    const fanMissionListingPageFetcherOptions = {
-      recipeName,
-      fetcherAgent,
-      documentType: 'html',
-      pageType: 'fanMissionListingPage',
-      path: sourceUrl + '/fmarchive.php',
-      params: {}
-    }
-    const fetchedFanMissionListingPage = await fetcherDataHelpers(
-      fanMissionListingPageFetcherOptions
-    )
-    const {
-      status: fanMissionListingPageStatus,
-      hash: fanMissionListingPageHash
-    } = fetchedFanMissionListingPage
-
-    crawlerResponse = responseWrapperUtilsHelpers({
-      wholeObject: crawlerResponse,
-      status: fanMissionListingPageStatus,
-      ...fanMissionListingPageFetcherOptions,
-      hash: fanMissionListingPageHash
+    const crawlerResponseWrapperResponse = deepMergerUtilsHelpers({
+      wholeObject,
+      individualObject: {
+        [status]: [{ ...restOfArgs }]
+      }
     })
 
-    return crawlerResponse
+    return crawlerResponseWrapperResponse
   }
 }

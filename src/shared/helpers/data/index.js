@@ -24,5 +24,6 @@
 
 module.exports = {
   cacher: require('./cacher'),
-  fetcher: require('./_fetcher')
+  fetcher: require('./_fetcher'),
+  responseWrapper: require('./_responseWrapper')
 }

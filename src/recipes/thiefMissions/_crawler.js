@@ -29,8 +29,7 @@ module.exports = (shared) => {
   const concurrencyLimiterUtilsHelpers =
     helpersShared.utils.concurrencyLimiter(shared)
   const crawlerConstants = constantsShared.crawler
-  const crawlerResponseWrapperUtilsHelpers =
-    helpersShared.utils.crawlerResponseWrapper(shared)
+  const responseWrapperUtilsHelpers = helpersShared.data.responseWrapper(shared)
   const fetcherDataHelpers = helpersShared.data.fetcher(shared)
 
   return async (args) => {
@@ -58,10 +57,10 @@ module.exports = (shared) => {
       hash: fanMissionListingPageHash
     } = fetchedFanMissionListingPage
 
-    crawlerResponse = crawlerResponseWrapperUtilsHelpers({
+    crawlerResponse = responseWrapperUtilsHelpers({
       wholeObject: crawlerResponse,
       status: fanMissionListingPageStatus,
-      fetcherOptions: fanMissionListingPageFetcherOptions,
+      ...fanMissionListingPageFetcherOptions,
       hash: fanMissionListingPageHash
     })
 
@@ -99,10 +98,10 @@ module.exports = (shared) => {
           hash: fanMissionDetailPageHash
         } = fetchedFanMissionDetailPage
 
-        crawlerResponse = crawlerResponseWrapperUtilsHelpers({
+        crawlerResponse = responseWrapperUtilsHelpers({
           wholeObject: crawlerResponse,
           status: fanMissionDetailPageStatus,
-          fetcherOptions: fanMissionDetailPageFetcherOptions,
+          ...fanMissionDetailPageFetcherOptions,
           hash: fanMissionDetailPageHash
         })
       }

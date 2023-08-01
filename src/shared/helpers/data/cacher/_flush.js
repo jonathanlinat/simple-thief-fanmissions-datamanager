@@ -32,6 +32,7 @@ module.exports = (shared) => {
     identifier
   })
   const redisClients = clientsShared.redis(shared)
+  const responseWrapperUtilsHelpers = helpersShared.data.responseWrapper(shared)
 
   return async (args) => {
     const { recipeName } = args
@@ -46,10 +47,10 @@ module.exports = (shared) => {
         message: 'All cache keys flushed successfully'
       })
 
-      flushCacherResponse = {
-        status: 'all_cachekeys_flushed',
-        response: null
-      }
+      flushCacherResponse = responseWrapperUtilsHelpers({
+        wholeObject: flushCacherResponse,
+        status: 'all_cachekeys_flushed'
+      })
 
       return flushCacherResponse
     }
@@ -59,10 +60,14 @@ module.exports = (shared) => {
 
     const pipeline = redisClients().pipeline()
 
+    let wholeCacheKeys = []
+
     do {
       const clientResponse = await redisClients().scan(cursor, 'MATCH', pattern)
       cursor = clientResponse[0]
       const cacheKeys = clientResponse[1]
+
+      wholeCacheKeys.push(cacheKeys)
 
       if (cacheKeys.length > 0) {
         cacheKeys.forEach((key) => {
@@ -73,15 +78,18 @@ module.exports = (shared) => {
 
     await pipeline.exec()
 
+    wholeCacheKeys = wholeCacheKeys.flat()
+
     messageLoggerUtilsHelpers({
       level: 'info',
       message: `(${recipeName}) All related cache keys flushed successfully`
     })
 
-    flushCacherResponse = {
+    flushCacherResponse = responseWrapperUtilsHelpers({
+      wholeObject: flushCacherResponse,
       status: 'all_related_cachekeys_flushed',
-      response: null
-    }
+      ...wholeCacheKeys
+    })
 
     return flushCacherResponse
   }

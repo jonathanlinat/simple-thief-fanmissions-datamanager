@@ -35,28 +35,54 @@ module.exports = (shared) => {
 
     let crawlerResponse = {}
 
-    const fanMissionListingPageFetcherOptions = {
-      recipeName,
-      fetcherAgent,
-      documentType: 'html',
-      pageType: 'fanMissionListingPage',
-      path: sourceUrl + '/fmarchive.php',
-      params: {}
-    }
-    const fetchedFanMissionListingPage = await fetcherDataHelpers(
-      fanMissionListingPageFetcherOptions
-    )
-    const {
-      status: fanMissionListingPageStatus,
-      hash: fanMissionListingPageHash
-    } = fetchedFanMissionListingPage
+    const forumsPageList = [
+      {
+        pageType: 'azListingForumsPage',
+        params: { t: '144205', pages: [1] }
+      },
+      {
+        pageType: 'briefSummariesForumsPage',
+        params: { t: '148090', pages: [1] }
+      },
+      {
+        pageType: 'kamyksMissionByTypeForumsPage',
+        params: { t: '151394', pages: [1, 2, 3] }
+      },
+      {
+        pageType: 'walkthroughsLootListsAndLetsPlaysForumsPage',
+        params: { t: '151182', pages: [1] }
+      }
+    ]
 
-    crawlerResponse = responseWrapperUtilsHelpers({
-      wholeObject: crawlerResponse,
-      status: fanMissionListingPageStatus,
-      ...fanMissionListingPageFetcherOptions,
-      hash: fanMissionListingPageHash
-    })
+    for (const forumsPage of forumsPageList) {
+      const { pageType, params } = forumsPage
+      const { pages, ...restOfParams } = params
+
+      for (const page of pages) {
+        const briefSummariesForumsPageFetcherOptions = {
+          recipeName,
+          fetcherAgent,
+          documentType: 'html',
+          pageType,
+          path: sourceUrl + '/forums/showthread.php',
+          params: { page, ...restOfParams }
+        }
+        const fetchedbriefSummariesForumsPage = await fetcherDataHelpers(
+          briefSummariesForumsPageFetcherOptions
+        )
+        const {
+          status: briefSummariesForumsPageStatus,
+          hash: briefSummariesForumsPageHash
+        } = fetchedbriefSummariesForumsPage
+
+        crawlerResponse = responseWrapperUtilsHelpers({
+          wholeObject: crawlerResponse,
+          status: briefSummariesForumsPageStatus,
+          ...briefSummariesForumsPageFetcherOptions,
+          hash: briefSummariesForumsPageHash
+        })
+      }
+    }
 
     return crawlerResponse
   }

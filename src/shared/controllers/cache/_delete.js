@@ -37,15 +37,13 @@ module.exports = (shared, options) => {
     const { query: queryParams } = request
     const { recipeName } = queryParams
 
-    const flushedCachedDataResponse = await flushCacherDataHelpers({
+    const controllerResponse = await flushCacherDataHelpers({
       recipeName
     })
-    const { response: flushCacherResponse } = flushedCachedDataResponse
-
     const responseWrapper = responseWrapperApiHelpers({
       route,
       queryParams,
-      data: flushCacherResponse
+      data: controllerResponse
     })
 
     return response.status(200).json(responseWrapper)

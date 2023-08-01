@@ -37,16 +37,19 @@ const identifier = 'API'
 const deleteCacheControllers = controllersShared.cache.delete(shared, {
   identifier
 })
+const getCacheControllers = controllersShared.cache.get(shared, {
+  identifier,
+  recipes
+})
 const getCrawlControllers = controllersShared.crawl.get(shared, {
   identifier,
   recipes
 })
 const expressClients = clientsShared.express(shared)
 const expressConstants = constantsShared.clients.express
-const controllerHandlerApiHelpers = helpersShared.api.controllerHandler(
-  shared,
-  { identifier }
-)
+const tryCatchHandlerApiHelpers = helpersShared.api.tryCatchHandler(shared, {
+  identifier
+})
 const errorHandlerApiHelpers = helpersShared.api.errorHandler(shared, {
   identifier
 })
@@ -54,21 +57,33 @@ const errorHandlerApiHelpers = helpersShared.api.errorHandler(shared, {
 ;(async () => {
   const { prefixRoute } = expressConstants
 
-  expressClients().use(errorHandlerApiHelpers)
+  // Crawler
 
   expressClients().get(
     `${prefixRoute}/crawl/:recipeName?`,
-    controllerHandlerApiHelpers({
+    tryCatchHandlerApiHelpers({
       controller: (request, response) =>
         getCrawlControllers({ request, response })
     })
   )
 
+  // Cacher
+
+  expressClients().get(
+    `${prefixRoute}/cache/:recipeName?`,
+    tryCatchHandlerApiHelpers({
+      controller: (request, response) =>
+        getCacheControllers({ request, response })
+    })
+  )
+
   expressClients().delete(
     `${prefixRoute}/cache/:recipeName?`,
-    controllerHandlerApiHelpers({
+    tryCatchHandlerApiHelpers({
       controller: (request, response) =>
         deleteCacheControllers({ request, response })
     })
   )
+
+  expressClients().use(errorHandlerApiHelpers)
 })()

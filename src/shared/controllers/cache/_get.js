@@ -4,7 +4,7 @@
  * Copyright (c) 2023 Jonathan Linat <https://github.com/jonathanlinat>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software:"), to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -22,42 +22,30 @@
  * SOFTWARE.
  */
 
-module.exports = (shared) => {
+module.exports = (shared, options) => {
   const helpersShared = shared.helpers
 
-  const responseWrapperUtilsHelpers = helpersShared.data.responseWrapper(shared)
-  const fetcherDataHelpers = helpersShared.data.fetcher(shared)
+  const { identifier } = options
 
-  return async (args) => {
-    const { singleSource } = args
+  const getCacherDataHelpers = helpersShared.data.cacher.get(shared)
+  const responseWrapperApiHelpers = helpersShared.api.responseWrapper(shared, {
+    identifier
+  })
 
-    const { recipeName, fetcherAgent, sourceUrl } = singleSource
+  return async ({ request, response }) => {
+    const { path: route } = request
+    const { query: queryParams } = request
+    const { recipeName } = queryParams
 
-    let crawlerResponse = {}
-
-    const fanMissionListingPageFetcherOptions = {
-      recipeName,
-      fetcherAgent,
-      documentType: 'html',
-      pageType: 'fanMissionListingPage',
-      path: sourceUrl + '/fmarchive.php',
-      params: {}
-    }
-    const fetchedFanMissionListingPage = await fetcherDataHelpers(
-      fanMissionListingPageFetcherOptions
-    )
-    const {
-      status: fanMissionListingPageStatus,
-      hash: fanMissionListingPageHash
-    } = fetchedFanMissionListingPage
-
-    crawlerResponse = responseWrapperUtilsHelpers({
-      wholeObject: crawlerResponse,
-      status: fanMissionListingPageStatus,
-      ...fanMissionListingPageFetcherOptions,
-      hash: fanMissionListingPageHash
+    const controllerResponse = await getCacherDataHelpers({
+      recipeName
+    })
+    const responseWrapper = responseWrapperApiHelpers({
+      route,
+      queryParams,
+      data: controllerResponse
     })
 
-    return crawlerResponse
+    return response.status(200).json(responseWrapper)
   }
 }

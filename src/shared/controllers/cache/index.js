@@ -23,5 +23,6 @@
  */
 
 module.exports = {
-  delete: require('./_delete')
+  delete: require('./_delete'),
+  get: require('./_get')
 }

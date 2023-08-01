@@ -65,7 +65,7 @@ module.exports = (shared, options) => {
 
       if (filteredSources.length === 0) {
         throw new Error(
-          `No source found for specified recipe name '${specificRecipeName}'; specify another existing one or leave the parameter empty`
+          `No source found for specified recipe name '${specificRecipeName}'; specify another existing one or leave the query empty`
         )
       }
 

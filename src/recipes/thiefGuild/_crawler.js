@@ -29,13 +29,12 @@ module.exports = (shared) => {
   const concurrencyLimiterUtilsHelpers =
     helpersShared.utils.concurrencyLimiter(shared)
   const crawlerConstants = constantsShared.crawler
-  const crawlerResponseWrapperUtilsHelpers =
-    helpersShared.utils.crawlerResponseWrapper(shared)
+  const responseWrapperUtilsHelpers = helpersShared.data.responseWrapper(shared)
   const fetcherDataHelpers = helpersShared.data.fetcher(shared)
 
   let crawlerResponse = {}
   let pageNumber = 1
-  let maxPageNumber
+  let maxPageNumber = 0
 
   const recursivePageCrawler = async (args) => {
     const { singleSource } = args
@@ -45,6 +44,7 @@ module.exports = (shared) => {
 
     const fanMissionListingPageFetcherOptions = {
       recipeName,
+      fetcherAgent,
       documentType: 'html',
       pageType: 'fanMissionListingPage',
       path: sourceUrl + '/fanmissions',
@@ -66,10 +66,10 @@ module.exports = (shared) => {
       hash: fanMissionListingPageHash
     } = fetchedFanMissionListingPage
 
-    crawlerResponse = crawlerResponseWrapperUtilsHelpers({
+    crawlerResponse = responseWrapperUtilsHelpers({
       wholeObject: crawlerResponse,
       status: fanMissionListingPageStatus,
-      fetcherOptions: fanMissionListingPageFetcherOptions,
+      ...fanMissionListingPageFetcherOptions,
       hash: fanMissionListingPageHash
     })
 
@@ -120,10 +120,10 @@ module.exports = (shared) => {
           hash: fanMissionDetailPageHash
         } = fetchedFanMissionDetailPage
 
-        crawlerResponse = crawlerResponseWrapperUtilsHelpers({
+        crawlerResponse = responseWrapperUtilsHelpers({
           wholeObject: crawlerResponse,
           status: fanMissionDetailPageStatus,
-          fetcherOptions: fanMissionDetailPageFetcherOptions,
+          ...fanMissionDetailPageFetcherOptions,
           hash: fanMissionDetailPageHash
         })
       }

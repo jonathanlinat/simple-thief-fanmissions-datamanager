@@ -23,7 +23,7 @@
  */
 
 module.exports = {
-  controllerHandler: require('./_controllerHandler'),
+  tryCatchHandler: require('./_tryCatchHandler'),
   errorHandler: require('./_errorHandler'),
   recipeSelector: require('./_recipeSelector'),
   responseWrapper: require('./_responseWrapper')

@@ -24,7 +24,6 @@
 
 module.exports = {
   concurrencyLimiter: require('./_concurrentyLimiter'),
-  crawlerResponseWrapper: require('./_crawlerResponseWrapper'),
   deepMerger: require('./_deepMerger'),
   generateTimestamp: require('./_generateTimestamp'),
   htmlParser: require('./_htmlParser'),

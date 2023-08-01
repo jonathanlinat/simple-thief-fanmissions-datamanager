@@ -84,12 +84,18 @@ module.exports = {
       sourceName: 'Thief: The Circle',
       sourceUrl: 'http://www.thief-thecircle.com',
       fetcherAgent: 'socks'
-    }
-    /*     {
+    },
+    {
       recipeName: 'thiefTheLastGlass',
       sourceName: 'Thief - The Last GLASS',
       sourceUrl: 'https://www.ttlg.de',
       fetcherAgent: 'socks'
-    } */
+    },
+    {
+      recipeName: 'throughTheLookingGlass',
+      sourceName: 'Through the Looking Glass',
+      sourceUrl: 'https://www.ttlg.com',
+      fetcherAgent: 'socks'
+    }
   ]
 }
