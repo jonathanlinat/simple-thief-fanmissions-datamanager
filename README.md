@@ -37,13 +37,13 @@ Clone the repository locally.
 
 ```bash
 cd <path/to/your/desired/folder/>
-git clone git@github.com:jonathanlinat/simple-thief-fanmissions-datamanager.git
+git clone git@github.com:jonathanlinat/simple-thief-fanmissions-datascraper.git
 ```
 
 Install the dependencies.
 
 ```bash
-cd simple-thief-fanmissions-datamanager/
+cd simple-thief-fanmissions-datascraper/
 pnpm install
 ```
 

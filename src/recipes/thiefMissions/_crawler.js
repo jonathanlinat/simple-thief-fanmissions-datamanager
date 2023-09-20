@@ -29,8 +29,8 @@ module.exports = (shared) => {
   const concurrencyLimiterUtilsHelpers =
     helpersShared.utils.concurrencyLimiter(shared)
   const crawlerConstants = constantsShared.crawler
-  const responseWrapperUtilsHelpers = helpersShared.data.responseWrapper(shared)
   const fetcherDataHelpers = helpersShared.data.fetcher(shared)
+  const responseWrapperUtilsHelpers = helpersShared.data.responseWrapper(shared)
 
   return async (args) => {
     const { singleSource } = args

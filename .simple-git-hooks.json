@@ -1,4 +1,4 @@
 {
   "commit-msg": "pnpm commitlint --edit $1",
-  "pre-commit": "pnpm git:commit"
+  "pre-commit": "pnpm lint-staged"
 }

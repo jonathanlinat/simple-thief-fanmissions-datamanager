@@ -45,6 +45,10 @@ module.exports = (shared) => {
         params: { t: '148090', pages: [1] }
       },
       {
+        pageType: 'generalFanMissionReviewAndDiscussionMegathread',
+        params: { t: '124349', pages: [1] }
+      },
+      {
         pageType: 'kamyksMissionByTypeForumsPage',
         params: { t: '151394', pages: [1, 2, 3] }
       },
